@@ -106,6 +106,7 @@
     .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
+    .reg-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;display:block;}
     .pay-section{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
     .pay-title{font-weight:600;font-size:14px;margin-bottom:6px;}
     .pay-options{display:flex;flex-direction:column;gap:8px;}
@@ -203,8 +204,8 @@
             </label>
           </div>
           <!-- Square pay link — shown when Credit/Debit selected -->
-          <a id="squarePayBtn" href="https://square.link/u/REPLACE_WITH_SQUARE_LINK" target="_blank" rel="noopener"
-             style="display:none;margin-top:10px;display:none;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;border:none;">
+          <a id="squarePayBtn" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener"
+             style="display:none;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">
             Pay with Square →
           </a>
           <!-- Zelle instructions — shown when Zelle selected -->
@@ -215,6 +216,36 @@
           <!-- Cash/Check note — shown when Cash or Check selected -->
           <div id="cashCheckInfo" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">
             Please bring payment to the event. Make checks payable to <strong>Wings to Fly Dance Company</strong>.
+          </div>
+        </div>
+
+        <!-- Inclusion fields: only shown when ev.inclusion === true -->
+        <div id="inclusionFields" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
+          <div class="pay-title">A few more details</div>
+          <p class="reg-note">This session has inclusive programming. The following helps us ensure every participant has a welcoming and fully supported experience — please share only what you're comfortable with.</p>
+
+          <label class="reg-label" for="regDob">Date of Birth</label>
+          <input type="date" class="reg-input" id="regDob">
+
+          <div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver?</div>
+          <p class="reg-note">This may apply to participants of any age who benefit from having someone present to assist or support them during the session.</p>
+          <div class="pay-options" style="margin-bottom:8px;">
+            <label class="pay-option"><input type="radio" name="careOfCaregiver" value="yes" id="careYes"> Yes, a support person will attend</label>
+            <label class="pay-option"><input type="radio" name="careOfCaregiver" value="no"  id="careNo" checked> No support person needed</label>
+          </div>
+          <div id="caregiverFields" style="display:none;">
+            <input type="text" class="reg-input" id="regCaregiverName"  placeholder="Support person's name">
+            <input type="tel"  class="reg-input" id="regCaregiverPhone" placeholder="Support person's phone number">
+          </div>
+
+          <div class="reg-label" style="margin-top:12px;">Are there any accommodations that would help this participant fully enjoy the session?</div>
+          <p class="reg-note">We are committed to creating an accessible, inclusive space. Please share anything that would help us better support you — no detail is too small.</p>
+          <div class="pay-options" style="margin-bottom:8px;">
+            <label class="pay-option"><input type="radio" name="accommodationsRequested" value="yes" id="accYes"> Yes, I'd like to share some details</label>
+            <label class="pay-option"><input type="radio" name="accommodationsRequested" value="no"  id="accNo" checked> No accommodations needed at this time</label>
+          </div>
+          <div id="accommodationsField" style="display:none;">
+            <textarea class="reg-input" id="regAccommodations" rows="3" placeholder="Please share anything that would help us support you — we'll do our best to make it work." style="resize:vertical;"></textarea>
           </div>
         </div>
         <button class="reg-submit" id="regSubmit">Register</button>
@@ -554,6 +585,20 @@
         regDivider.style.display = 'none';
       }
 
+      // Inclusion fields: show only when event has inclusion = true
+      document.getElementById('inclusionFields').style.display = ev.inclusion ? '' : 'none';
+      if (!ev.inclusion) {
+        // Reset inclusion fields when hidden
+        document.getElementById('regDob').value = '';
+        document.getElementById('careNo').checked = true;
+        document.getElementById('caregiverFields').style.display = 'none';
+        document.getElementById('regCaregiverName').value  = '';
+        document.getElementById('regCaregiverPhone').value = '';
+        document.getElementById('accNo').checked = true;
+        document.getElementById('accommodationsField').style.display = 'none';
+        document.getElementById('regAccommodations').value = '';
+      }
+
       document.getElementById('modalOverlay').classList.add('active');
 
       if (openReg && showReg) {
@@ -580,12 +625,24 @@
         var el = document.getElementById(id);
         el.value = ''; el.disabled = false;
       });
-      // Reset payment selection to "later"
+      // Reset payment
       var laterRadio = document.querySelector('input[name="payMethod"][value="later"]');
       if (laterRadio) laterRadio.checked = true;
       document.getElementById('squarePayBtn').style.display  = 'none';
       document.getElementById('zelleInfo').style.display     = 'none';
       document.getElementById('cashCheckInfo').style.display = 'none';
+      // Reset inclusion fields
+      document.getElementById('regDob').value = '';
+      var careNo = document.getElementById('careNo');
+      if (careNo) careNo.checked = true;
+      document.getElementById('caregiverFields').style.display = 'none';
+      document.getElementById('regCaregiverName').value  = '';
+      document.getElementById('regCaregiverPhone').value = '';
+      var accNo = document.getElementById('accNo');
+      if (accNo) accNo.checked = true;
+      document.getElementById('accommodationsField').style.display = 'none';
+      document.getElementById('regAccommodations').value = '';
+      // Reset submit state
       document.getElementById('regSuccess').textContent = '';
       document.getElementById('regError').textContent   = '';
       document.getElementById('regSubmit').disabled     = false;
@@ -631,29 +688,64 @@
       });
     });
 
+    // Caregiver radio wiring
+    document.querySelectorAll('input[name="careOfCaregiver"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        document.getElementById('caregiverFields').style.display = this.value === 'yes' ? '' : 'none';
+        if (this.value === 'no') {
+          document.getElementById('regCaregiverName').value  = '';
+          document.getElementById('regCaregiverPhone').value = '';
+        }
+      });
+    });
+
+    // Accommodations radio wiring
+    document.querySelectorAll('input[name="accommodationsRequested"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        document.getElementById('accommodationsField').style.display = this.value === 'yes' ? '' : 'none';
+        if (this.value === 'no') document.getElementById('regAccommodations').value = '';
+      });
+    });
+
     document.getElementById('regSubmit').addEventListener('click', function(){
-      var email = document.getElementById('regEmail').value.trim();
-      var name  = document.getElementById('regName').value.trim();
-      var phone = document.getElementById('regPhone').value.trim();
+      var email     = document.getElementById('regEmail').value.trim();
+      var name      = document.getElementById('regName').value.trim();
+      var phone     = document.getElementById('regPhone').value.trim();
       var payMethod = document.querySelector('input[name="payMethod"]:checked');
       var payValue  = payMethod ? payMethod.value : 'later';
-      var errEl = document.getElementById('regError');
+      var errEl     = document.getElementById('regError');
       errEl.textContent = '';
       document.getElementById('regSuccess').textContent = '';
 
       if (!email || !name) { errEl.textContent = 'Please enter your email and full name.'; return; }
       if (!phone)          { errEl.textContent = 'Please enter your phone number.'; return; }
 
+      // Collect inclusion data if fields are visible
+      var inclusionData = null;
+      if (S.activeEv && S.activeEv.inclusion) {
+        var careVal = document.querySelector('input[name="careOfCaregiver"]:checked');
+        var accVal  = document.querySelector('input[name="accommodationsRequested"]:checked');
+        inclusionData = {
+          dob                    : document.getElementById('regDob').value.trim(),
+          careOfCaregiver        : careVal && careVal.value === 'yes',
+          caregiverName          : document.getElementById('regCaregiverName').value.trim(),
+          caregiverPhone         : document.getElementById('regCaregiverPhone').value.trim(),
+          accommodationsRequested: accVal && accVal.value === 'yes',
+          accommodations         : document.getElementById('regAccommodations').value.trim()
+        };
+      }
+
       var btn = this;
       btn.disabled = true; btn.textContent = 'Submitting…';
 
       apiPost({
-        action     : 'register',
-        instanceId : S.activeEv.instanceId,
-        name       : name,
-        email      : email,
-        phone      : phone,
-        payMethod  : payValue
+        action        : 'register',
+        instanceId    : S.activeEv.instanceId,
+        name          : name,
+        email         : email,
+        phone         : phone,
+        payMethod     : payValue,
+        inclusionData : inclusionData
       })
         .then(function(r){
           btn.disabled = false; btn.textContent = 'Register';

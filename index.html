@@ -106,6 +106,20 @@
       return div.innerHTML;
     }
 
+    function formatDuration(minutes) {
+      if(!minutes || minutes === '' || isNaN(minutes)) return '';
+      minutes = Number(minutes);
+      if(minutes < 60) {
+        return minutes + ' min';
+      } else if(minutes % 60 === 0) {
+        return (minutes / 60) + ' hours';
+      } else {
+        var hours = Math.floor(minutes / 60);
+        var mins = minutes % 60;
+        return hours + ' hours ' + mins + ' min';
+      }
+    }
+
     function buildGridHtml(events) {
       var byDay = {};
       STATE.data.days.forEach(function(d){ byDay[d.key] = []; });
@@ -155,8 +169,11 @@
       var btns = document.querySelectorAll('.event-more-info');
       btns.forEach(function(btn) {
         btn.addEventListener('click', function() {
+          var durationRaw = btn.getAttribute('data-duration');
+          var duration = formatDuration(durationRaw);
+          
           document.getElementById('modalTitle').textContent = btn.getAttribute('data-title');
-          document.getElementById('modalDuration').textContent = btn.getAttribute('data-duration');
+          document.getElementById('modalDuration').textContent = duration;
           document.getElementById('modalCategory').textContent = btn.getAttribute('data-category');
           document.getElementById('modalType').textContent = btn.getAttribute('data-type');
           document.getElementById('modalInclusion').textContent = btn.getAttribute('data-inclusion');

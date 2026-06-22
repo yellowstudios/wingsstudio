@@ -157,7 +157,7 @@
     </div>
   </div>
 
-  <script>
+    <script>
     // === CONFIG: Replace this with your Apps Script Web App URL ===
     const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
 
@@ -219,7 +219,7 @@
                 (ev.spotsText ? '<span class="event-spots">' + escapeHtml(ev.spotsText) + '</span>' : "") +
               '</div>' +
               (ev.registrationLink ? '<a class="event-register" href="' + escapeHtml(ev.registrationLink) + '" target="_top" rel="noopener">Register</a>' : "") +
-              '<button class="event-more-info" type="button" data-instance="' + escapeHtml(JSON.stringify(ev)) + '">More Info</button>' +
+              '<button class="event-more-info" type="button" data-event="' + escapeHtml(JSON.stringify(ev)) + '">More Info</button>' +
             '</div>';
           });
         }
@@ -276,6 +276,51 @@
         });
     }
 
+    // Modal logic
+    var modalOverlay = document.getElementById('modalOverlay');
+    var modalClose = document.getElementById('modalClose');
+    var modalTitle = document.getElementById('modalTitle');
+    var modalDuration = document.getElementById('modalDuration');
+    var modalCategory = document.getElementById('modalCategory');
+    var modalType = document.getElementById('modalType');
+    var modalInclusion = document.getElementById('modalInclusion');
+    var modalNotes = document.getElementById('modalNotes');
+
+    function setupMoreInfoButtons() {
+      var buttons = document.querySelectorAll('.event-more-info');
+      buttons.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          // Find the parent event-card and extract data
+          var card = btn.closest('.event-card');
+          var title = card.querySelector('.event-title').textContent;
+          var duration = '';
+          var category = '';
+          var type = '';
+          var inclusion = '';
+          var notes = '';
+
+          // We need to get the actual event data - store it on the button
+          var ev = btn.dataset.event;
+          if (ev) {
+            var eventObj = JSON.parse(ev);
+            duration = eventObj.duration || '';
+            category = eventObj.category || '';
+            type = eventObj.type || '';
+            inclusion = eventObj.inclusion || '';
+            notes = eventObj.participantNotes || '';
+          }
+
+          modalTitle.textContent = title;
+          modalDuration.textContent = duration;
+          modalCategory.textContent = category;
+          modalType.textContent = type;
+          modalInclusion.textContent = inclusion;
+          modalNotes.textContent = notes;
+          modalOverlay.classList.add('active');
+        });
+      });
+    }
+
     document.getElementById("prevBtn").addEventListener("click", function() {
       var prevDate = new Date(STATE.data ? STATE.data.mondayKey : new Date());
       prevDate.setDate(prevDate.getDate() - 7);
@@ -300,31 +345,6 @@
       if (STATE.data) loadWeek(STATE.weekKey);
     });
 
-    // Modal logic
-    var modalOverlay = document.getElementById('modalOverlay');
-    var modalClose = document.getElementById('modalClose');
-    var modalTitle = document.getElementById('modalTitle');
-    var modalDuration = document.getElementById('modalDuration');
-    var modalCategory = document.getElementById('modalCategory');
-    var modalType = document.getElementById('modalType');
-    var modalInclusion = document.getElementById('modalInclusion');
-    var modalNotes = document.getElementById('modalNotes');
-
-    function setupMoreInfoButtons() {
-      document.querySelectorAll('.event-more-info').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var ev = JSON.parse(this.getAttribute('data-instance'));
-          modalTitle.textContent = ev.title || '';
-          modalDuration.textContent = ev.duration || '';
-          modalCategory.textContent = ev.category || '';
-          modalType.textContent = ev.type || '';
-          modalInclusion.textContent = ev.inclusion || '';
-          modalNotes.textContent = ev.participantNotes || '';
-          modalOverlay.classList.add('active');
-        });
-      });
-    }
-
     modalClose.addEventListener('click', function() {
       modalOverlay.classList.remove('active');
     });
@@ -337,6 +357,5 @@
 
     // Initial load
     loadWeek(STATE.weekKey);
-  </script>
-</body>
+  </script></body>
 </html>

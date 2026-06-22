@@ -125,7 +125,7 @@
     .session-card-cost{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;}
     .session-card-toggle{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:7px 12px;cursor:pointer;width:100%;}
     .session-card-toggle:hover{background:#fdf9f0;}
-    .session-instances{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;}
+    .session-instances{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;max-height:260px;overflow-y:auto;}
     .session-instances.open{display:block;}
     .session-instance-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);gap:8px;flex-wrap:wrap;}
     .session-instance-row:last-child{border-bottom:none;}
@@ -412,7 +412,7 @@
       });
       html += '</div>';
       document.getElementById('calendarArea').innerHTML = html;
-      attachCardListeners(document.getElementById('calendarArea'));
+      // listener already attached at boot — no need to re-attach
     }
 
     // ── Month render ──────────────────────────────────────────────────────────
@@ -479,7 +479,7 @@
       }
       document.getElementById('dayPanelContent').innerHTML = html;
       document.getElementById('dayPanelOverlay').classList.add('active');
-      attachCardListeners(document.getElementById('dayPanelContent'));
+      // listener on dayPanelContent attached at boot
     }
 
     document.getElementById('dayPanelClose').addEventListener('click', function(){
@@ -544,15 +544,19 @@
         });
       });
 
-      // One delegated listener on area — replaces any prior one by replacing innerHTML above
-      area.addEventListener('click', function(e) {
-        var regBtn  = e.target.closest('.btn-register');
-        var infoBtn = e.target.closest('.btn-info');
-        if (!regBtn && !infoBtn) return;
-        var raw = (regBtn||infoBtn).getAttribute('data-ev');
-        if (!raw) return;
-        try { openModal(JSON.parse(raw), !!regBtn); } catch(err) { console.error('data-ev parse error', err); }
-      });
+      // Delegated listener on area survives innerHTML replacement of children.
+      // Flag prevents adding duplicates on tab toggle re-renders.
+      if (!area.dataset.listenersAttached) {
+        area.dataset.listenersAttached = '1';
+        area.addEventListener('click', function(e) {
+          var regBtn  = e.target.closest('.btn-register');
+          var infoBtn = e.target.closest('.btn-info');
+          if (!regBtn && !infoBtn) return;
+          var raw = (regBtn||infoBtn).getAttribute('data-ev');
+          if (!raw) return;
+          try { openModal(JSON.parse(raw), !!regBtn); } catch(err) { console.error('data-ev parse', err); }
+        });
+      }
     }
 
     function buildInstanceRows(instances) {
@@ -576,17 +580,18 @@
     }
 
     // ── Card listeners ────────────────────────────────────────────────────────
-    // Uses a fresh clone to avoid accumulating multiple listeners on the same node
+    // Simple delegated listener — added once per container.
+    // Uses a data attribute flag to avoid adding duplicates on re-render.
     function attachCardListeners(root) {
-      var fresh = root.cloneNode(true);
-      root.parentNode.replaceChild(fresh, root);
-      fresh.addEventListener('click', function(e) {
+      if (!root || root.dataset.listenersAttached) return;
+      root.dataset.listenersAttached = '1';
+      root.addEventListener('click', function(e) {
         var regBtn  = e.target.closest('.btn-register');
         var infoBtn = e.target.closest('.btn-info');
         if (!regBtn && !infoBtn) return;
         var raw = (regBtn||infoBtn).getAttribute('data-ev');
         if (!raw) return;
-        try { openModal(JSON.parse(raw), !!regBtn); } catch(err) { console.error('data-ev parse error', err); }
+        try { openModal(JSON.parse(raw), !!regBtn); } catch(err) { console.error('data-ev parse', err, raw); }
       });
     }
 
@@ -832,6 +837,10 @@
     });
 
     // ── Boot ──────────────────────────────────────────────────────────────────
+    // Attach delegated listeners once to stable containers that survive re-renders
+    attachCardListeners(document.getElementById('calendarArea'));
+    attachCardListeners(document.getElementById('dayPanelContent'));
+
     load();
     loadSessions();
 

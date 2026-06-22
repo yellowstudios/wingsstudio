@@ -834,6 +834,30 @@
     // ── Boot ──────────────────────────────────────────────────────────────────
     load();
     loadSessions();
+
+    // ── postMessage height broadcaster ────────────────────────────────────────
+    // Sends the page's full scroll height to the parent window so the Duda
+    // iframe wrapper can resize itself to fit without scroll bars or cutoff.
+    // Works cross-origin because postMessage is designed for that.
+    function broadcastHeight() {
+      var h = Math.max(
+        document.body.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.scrollHeight
+      );
+      window.parent.postMessage({ type: 'wingsHeight', height: h }, '*');
+    }
+
+    // Broadcast on load, then again after data renders (sessions load async)
+    broadcastHeight();
+    setTimeout(broadcastHeight, 800);
+    setTimeout(broadcastHeight, 1800);
+    setTimeout(broadcastHeight, 3500);
+
+    // Also broadcast whenever the DOM changes size (e.g. expanding session dates)
+    if (window.ResizeObserver) {
+      new ResizeObserver(broadcastHeight).observe(document.body);
+    }
   </script>
 </body>
 </html>

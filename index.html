@@ -117,6 +117,45 @@
     @media(max-width:900px){
       .week-grid{grid-template-columns:1fr;}
     }
+
+    /* ── Sessions view ── */
+    .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;padding:16px;}
+    .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+    .session-card-img{width:100%;height:160px;object-fit:cover;display:block;}
+    .session-card-img.placeholder{height:0;}
+    .session-card-body{padding:14px;flex:1;display:flex;flex-direction:column;}
+    .session-card-category{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:4px;}
+    .session-card-title{font-size:16px;font-weight:700;margin-bottom:6px;}
+    .session-card-desc{font-size:13px;color:var(--muted);margin-bottom:10px;flex:1;line-height:1.5;}
+    .session-card-cost{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+    .session-card-toggle{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:7px 12px;cursor:pointer;width:100%;}
+    .session-card-toggle:hover{background:#fdf9f0;}
+    .session-instances{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;}
+    .session-instances.open{display:block;}
+    .session-instance-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);gap:8px;flex-wrap:wrap;}
+    .session-instance-row:last-child{border-bottom:none;}
+    .session-instance-date{font-size:13px;font-weight:600;}
+    .session-instance-time{font-size:12px;color:var(--muted);}
+    .session-instance-spots{font-size:12px;font-style:italic;color:var(--muted);}
+    .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
+    .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .session-no-instances{font-size:13px;color:var(--muted);padding:8px 0;}
+
+    /* ── Upcoming view ── */
+    .upcoming-list{padding:12px 16px;max-width:700px;margin:0 auto;}
+    .upcoming-month-label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px;}
+    .upcoming-row{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:8px;}
+    .upcoming-date-block{text-align:center;min-width:44px;}
+    .upcoming-date-day{font-size:10px;text-transform:uppercase;color:var(--muted);letter-spacing:.05em;}
+    .upcoming-date-num{font-size:22px;font-weight:700;line-height:1;}
+    .upcoming-date-mon{font-size:10px;color:var(--muted);}
+    .upcoming-body{flex:1;min-width:0;}
+    .upcoming-title{font-weight:600;font-size:14px;margin-bottom:2px;}
+    .upcoming-meta{font-size:12px;color:var(--muted);margin-bottom:6px;}
+    .upcoming-btns{display:flex;gap:6px;flex-wrap:wrap;}
+    .upcoming-btns button{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);}
+    .upcoming-btns button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .upcoming-empty{padding:40px 0;text-align:center;color:var(--muted);font-size:14px;}
   </style>
 </head>
 <body>
@@ -130,8 +169,10 @@
     </div>
     <div class="controls">
       <div class="view-toggle">
-        <button id="viewWeek" class="active">Week</button>
+        <button id="viewWeek"     class="active">Week</button>
         <button id="viewMonth">Month</button>
+        <button id="viewSessions">Sessions</button>
+        <button id="viewUpcoming">Upcoming</button>
       </div>
       <div class="divider"></div>
       <div class="tabs">
@@ -262,7 +303,7 @@
 
     // ── State ────────────────────────────────────────────────────────────────
     var S = {
-      view         : 'week',        // 'week' | 'month'
+      view         : 'week',   // 'week' | 'month' | 'sessions' | 'upcoming'
       showClasses  : true,
       showShows    : false,
       currentMonday: mondayOf(new Date()),
@@ -318,9 +359,16 @@
     // ── Load ─────────────────────────────────────────────────────────────────
     function load() {
       setLoading(true);
-      var params = S.view === 'month'
-        ? { month: S.currentMonth }
-        : { week:  dateKey(S.currentMonday) };
+      var params;
+      if (S.view === 'sessions') {
+        params = { view: 'sessions' };
+      } else if (S.view === 'upcoming') {
+        params = { view: 'upcoming' };
+      } else if (S.view === 'month') {
+        params = { month: S.currentMonth };
+      } else {
+        params = { week: dateKey(S.currentMonday) };
+      }
 
       apiGet(params).then(function(data){
         S.data = data;
@@ -335,14 +383,25 @@
 
     // ── Master render ─────────────────────────────────────────────────────────
     function render() {
-      document.getElementById('periodLabel').textContent =
-        S.data.weekLabel || S.data.monthLabel || '';
+      var label = S.data.weekLabel || S.data.monthLabel || '';
+      if (S.view === 'sessions')  label = 'All Sessions';
+      if (S.view === 'upcoming')  label = 'Upcoming Events';
+      document.getElementById('periodLabel').textContent = label;
+
+      // Show/hide Prev/Next — not meaningful for sessions or upcoming
+      var showNav = (S.view === 'week' || S.view === 'month');
+      document.getElementById('prevBtn').style.display = showNav ? '' : 'none';
+      document.getElementById('nextBtn').style.display = showNav ? '' : 'none';
 
       var events = filteredEvents();
       if (S.view === 'week') {
         renderWeek(events);
-      } else {
+      } else if (S.view === 'month') {
         renderMonth(events);
+      } else if (S.view === 'sessions') {
+        renderSessions();
+      } else if (S.view === 'upcoming') {
+        renderUpcoming(events);
       }
     }
 
@@ -507,6 +566,146 @@
     document.getElementById('dayPanelOverlay').addEventListener('click', function(e){
       if (e.target === this) closeDayPanel();
     });
+
+    // ── Sessions view ─────────────────────────────────────────────────────────
+    function renderSessions() {
+      var sessions = S.data.sessions || [];
+
+      // Filter by tab selection
+      var filtered = sessions.filter(function(s) {
+        var isShow = (s.type === 'Event' || s.category === 'Performance' ||
+                     (s.instances[0] && (function(ct){
+                       return ct === 'show' || ct === 'shows' || ct === 'event';
+                     })(String(s.type||'').toLowerCase())));
+        if (S.showClasses && !S.showShows && isShow) return false;
+        if (S.showShows  && !S.showClasses && !isShow) return false;
+        return true;
+      });
+
+      if (!filtered.length) {
+        document.getElementById('calendarArea').innerHTML =
+          '<div style="text-align:center;padding:60px 16px;color:var(--muted);font-size:14px;">No sessions found.</div>';
+        return;
+      }
+
+      var html = '<div class="sessions-grid">';
+      filtered.forEach(function(s) {
+        var hasImg = s.imageUrl && s.imageUrl.trim();
+        html +=
+          '<div class="session-card">' +
+            (hasImg ? '<img class="session-card-img" src="' + esc(s.imageUrl) + '" alt="' + esc(s.title) + '" loading="lazy">' : '') +
+            '<div class="session-card-body">' +
+              '<div class="session-card-category">' + esc(s.category || s.type || '') + '</div>' +
+              '<div class="session-card-title">' + esc(s.title) + '</div>' +
+              (s.description ? '<div class="session-card-desc">' + esc(s.description) + '</div>' : '') +
+              (s.costText ? '<div class="session-card-cost">' + esc(s.costText) + ' per session</div>' : '') +
+              '<button class="session-card-toggle" data-sid="' + esc(s.sessionId) + '">' +
+                s.instances.length + (s.instances.length === 1 ? ' upcoming date' : ' upcoming dates') + ' — view all' +
+              '</button>' +
+              '<div class="session-instances" id="si-' + esc(s.sessionId) + '">' +
+                buildInstanceRows(s.instances) +
+              '</div>' +
+            '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+
+      document.getElementById('calendarArea').innerHTML = html;
+
+      // Wire expand/collapse toggles
+      document.querySelectorAll('.session-card-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var sid  = this.getAttribute('data-sid');
+          var panel = document.getElementById('si-' + sid);
+          var open  = panel.classList.toggle('open');
+          this.textContent = open
+            ? 'Hide dates'
+            : panel.querySelectorAll('.session-instance-row').length + ' upcoming dates — view all';
+        });
+      });
+
+      attachCardListeners();
+    }
+
+    function buildInstanceRows(instances) {
+      if (!instances.length) return '<div class="session-no-instances">No upcoming dates scheduled.</div>';
+      return instances.map(function(ev) {
+        var dataAttr = "data-ev='" + esc(JSON.stringify(ev)) + "'";
+        var canReg   = ev.isPublic && !ev.isFull;
+        return '<div class="session-instance-row">' +
+          '<div>' +
+            '<div class="session-instance-date">' + esc(ev.dateLabel) + '</div>' +
+            '<div class="session-instance-time">' + esc(ev.startTime) + ' – ' + esc(ev.endTime) + '</div>' +
+            (ev.location ? '<div class="session-instance-spots">' + esc(ev.location) + '</div>' : '') +
+            (ev.spotsText ? '<div class="session-instance-spots">' + esc(ev.spotsText) + '</div>' : '') +
+          '</div>' +
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+            (canReg ? '<button class="session-instance-btn primary event-register" ' + dataAttr + '>Register</button>' : '') +
+            '<button class="session-instance-btn event-more-info" ' + dataAttr + '>Details</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // ── Upcoming view ─────────────────────────────────────────────────────────
+    function renderUpcoming(events) {
+      if (!events.length) {
+        document.getElementById('calendarArea').innerHTML =
+          '<div class="upcoming-empty">No upcoming events found.</div>';
+        return;
+      }
+
+      // Group by month label
+      var months = {};
+      var monthOrder = [];
+      events.forEach(function(ev) {
+        var d   = new Date(ev.startMs);
+        var key = d.getFullYear() + '-' + pad(d.getMonth() + 1);
+        var lbl = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        if (!months[key]) { months[key] = { label: lbl, events: [] }; monthOrder.push(key); }
+        months[key].events.push(ev);
+      });
+
+      var html = '<div class="upcoming-list">';
+      monthOrder.forEach(function(key) {
+        var group = months[key];
+        html += '<div class="upcoming-month-label">' + esc(group.label) + '</div>';
+        group.events.forEach(function(ev) {
+          var d        = new Date(ev.startMs);
+          var dayName  = d.toLocaleDateString('en-US', { weekday: 'short' });
+          var dayNum   = d.getDate();
+          var monAbbr  = d.toLocaleDateString('en-US', { month: 'short' });
+          var dataAttr = "data-ev='" + esc(JSON.stringify(ev)) + "'";
+          var canReg   = ev.isPublic && !ev.isFull;
+
+          html +=
+            '<div class="upcoming-row">' +
+              '<div class="upcoming-date-block">' +
+                '<div class="upcoming-date-day">' + dayName + '</div>' +
+                '<div class="upcoming-date-num">' + dayNum + '</div>' +
+                '<div class="upcoming-date-mon">' + monAbbr + '</div>' +
+              '</div>' +
+              '<div class="upcoming-body">' +
+                '<div class="upcoming-title">' + esc(ev.title) + '</div>' +
+                '<div class="upcoming-meta">' +
+                  esc(ev.startTime) + ' – ' + esc(ev.endTime) +
+                  (ev.location ? ' · ' + esc(ev.location) : '') +
+                  (ev.costText  ? ' · ' + esc(ev.costText)  : '') +
+                  (ev.spotsText ? ' · ' + esc(ev.spotsText) : '') +
+                '</div>' +
+                '<div class="upcoming-btns">' +
+                  (canReg ? '<button class="primary event-register" ' + dataAttr + '>Register</button>' : '') +
+                  '<button class="event-more-info" ' + dataAttr + '>More Info</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+        });
+      });
+      html += '</div>';
+
+      document.getElementById('calendarArea').innerHTML = html;
+      attachCardListeners();
+    }
 
     // ── Card listeners (delegation) ───────────────────────────────────────────
     function attachCardListeners(root) {
@@ -774,40 +973,58 @@
     document.getElementById('prevBtn').addEventListener('click', function(){
       if (S.view === 'week') {
         S.currentMonday = addDays(S.currentMonday, -7);
-      } else {
-        var d = new Date(S.currentMonth + '-01');
-        d.setMonth(d.getMonth() - 1);
-        S.currentMonth = monthKey(d);
+        load();
+      } else if (S.view === 'month') {
+        // Fix: parse month key directly, don't use Date constructor on YYYY-MM string
+        var parts = S.currentMonth.split('-');
+        var y = parseInt(parts[0], 10);
+        var m = parseInt(parts[1], 10) - 1; // 0-indexed
+        var prev = new Date(y, m - 1, 1);
+        S.currentMonth = monthKey(prev);
+        load();
       }
-      load();
     });
 
     document.getElementById('nextBtn').addEventListener('click', function(){
       if (S.view === 'week') {
         S.currentMonday = addDays(S.currentMonday, 7);
-      } else {
-        var d = new Date(S.currentMonth + '-01');
-        d.setMonth(d.getMonth() + 1);
-        S.currentMonth = monthKey(d);
+        load();
+      } else if (S.view === 'month') {
+        var parts = S.currentMonth.split('-');
+        var y = parseInt(parts[0], 10);
+        var m = parseInt(parts[1], 10) - 1;
+        var next = new Date(y, m + 1, 1);
+        S.currentMonth = monthKey(next);
+        load();
       }
-      load();
     });
+
+    function setActiveView(view) {
+      S.view = view;
+      ['viewWeek','viewMonth','viewSessions','viewUpcoming'].forEach(function(id) {
+        document.getElementById(id).classList.toggle('active', id === 'view' + view.charAt(0).toUpperCase() + view.slice(1));
+      });
+    }
 
     document.getElementById('viewWeek').addEventListener('click', function(){
       if (S.view === 'week') return;
-      S.view = 'week';
-      this.classList.add('active');
-      document.getElementById('viewMonth').classList.remove('active');
+      setActiveView('week');
       load();
     });
-
     document.getElementById('viewMonth').addEventListener('click', function(){
       if (S.view === 'month') return;
-      S.view = 'month';
-      this.classList.add('active');
-      document.getElementById('viewWeek').classList.remove('active');
-      // Sync month to current week's month
       S.currentMonth = monthKey(S.currentMonday);
+      setActiveView('month');
+      load();
+    });
+    document.getElementById('viewSessions').addEventListener('click', function(){
+      if (S.view === 'sessions') return;
+      setActiveView('sessions');
+      load();
+    });
+    document.getElementById('viewUpcoming').addEventListener('click', function(){
+      if (S.view === 'upcoming') return;
+      setActiveView('upcoming');
       load();
     });
 

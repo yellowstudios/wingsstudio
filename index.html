@@ -74,7 +74,7 @@
 
     .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;overflow:hidden;}
     .modal-overlay.active{display:flex;}
-    .modal-content{background:#fff;border-radius:12px;padding:24px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+    .modal-content{background:#fff;border-radius:12px;padding:24px;max-width:440px;width:100%;max-height:calc(100vh - 32px);overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
     .modal-close{position:absolute;top:12px;right:14px;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
     .modal-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
     .modal-img.show{display:block;}
@@ -105,11 +105,7 @@
     .pay-option:hover{background:#fdf9f0;}
     .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
 
-    .sessions-section{
-      padding:16px;
-      max-height:none;
-      overflow:visible;
-    }
+    .sessions-section{padding:16px;max-height:none;overflow:visible;}
     .sessions-section-heading{font-size:18px;font-weight:700;margin:0 0 4px;}
     .sessions-section-sub{font-size:13px;color:var(--muted);margin:0 0 14px;}
     .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
@@ -470,11 +466,9 @@
 
     function openModal(ev, openReg, triggerEl){
       S.activeEv = ev;
-
       if(triggerEl && triggerEl.scrollIntoView){
         triggerEl.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});
       }
-
       var img=document.getElementById('modalImg');
       if(ev.imageUrl && ev.imageUrl.trim()){
         img.src=ev.imageUrl;
@@ -515,13 +509,11 @@
       }
       document.getElementById('inclusionFields').style.display = ev.inclusion ? '' : 'none';
       if(!ev.inclusion) resetInclusionFields();
-
       lockBodyScroll();
       document.getElementById('modalOverlay').classList.add('active');
       setTimeout(function(){
         document.getElementById('modalContentTop').scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});
       }, 50);
-
       if(openReg && showReg){
         setTimeout(function(){
           document.getElementById('regSection').scrollIntoView({behavior:'smooth', block:'start'});

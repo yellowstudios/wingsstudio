@@ -165,6 +165,8 @@
       <div class="modal-row" id="rowType"     style="display:none"><span class="modal-label">Type</span><span class="modal-value" id="modalType"></span></div>
       <div class="modal-row" id="rowInclusion" style="display:none"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>
       <div class="modal-row" id="rowSpots"    style="display:none"><span class="modal-label">Availability</span><span class="modal-value" id="modalSpots"></span></div>
+      <div class="modal-row" id="rowFull"     style="display:none"><span class="modal-value" id="modalFull" style="color:#c0392b;font-style:italic;"></span></div>
+      <div class="modal-row" id="rowPublic"><span class="modal-label">Open to Public</span><span class="modal-value" id="modalPublic"></span></div>
       <div class="modal-row" id="rowNotes"    style="display:none"><span class="modal-label">Notes</span><span class="modal-value" id="modalNotes"></span></div>
       <hr class="modal-divider" id="regDivider" style="display:none">
       <div class="reg-section" id="regSection">
@@ -175,6 +177,7 @@
         <input type="tel"   class="reg-input" id="regPhone" placeholder="Phone (optional)" autocomplete="tel">
         <button class="reg-submit" id="regSubmit">Register</button>
         <div class="reg-success" id="regSuccess"></div>
+        <button id="regCloseBtn" style="display:none;width:100%;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;font:inherit;font-size:14px;cursor:pointer;">Close</button>
         <div class="reg-error"   id="regError"></div>
       </div>
     </div>
@@ -304,8 +307,8 @@
                   (ev.costText  ? '<span class="event-cost">'  + esc(ev.costText)  + '</span>' : '') +
                   (ev.spotsText ? '<span class="event-spots">' + esc(ev.spotsText) + '</span>' : '') +
                 '</div>' +
-                // Register button: only if isPublic === true
-                (ev.isPublic
+                // Register button: only if isPublic AND not full
+                (ev.isPublic && !ev.isFull
                   ? '<button class="event-register" '+dataAttr+'>Register</button>'
                   : '') +
                 '<button class="event-more-info" '+dataAttr+'>More Info</button>' +
@@ -408,7 +411,7 @@
                 (ev.spotsText ? '· '+esc(ev.spotsText) : '') +
               '</div>' +
               '<div class="day-panel-btns">' +
-                (ev.isPublic
+                (ev.isPublic && !ev.isFull
                   ? '<button class="primary event-register" '+dataAttr+'>Register</button>'
                   : '') +
                 '<button class="event-more-info" '+dataAttr+'>More Info</button>' +
@@ -478,13 +481,26 @@
       setModalRow('rowCategory', 'modalCategory', ev.category);
       setModalRow('rowType',     'modalType',     ev.type);
       setModalRow('rowSpots',    'modalSpots',    ev.spotsText);
+      setModalRow('rowPublic',   'modalPublic',   ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event');
       setModalRow('rowNotes',    'modalNotes',    ev.participantNotes);
+
+      // Full capacity notice
+      var fullRow = document.getElementById('rowFull');
+      if (ev.isFull) {
+        document.getElementById('modalFull').textContent = 'This event is currently full. Check back for future sessions!';
+        fullRow.style.display = '';
+      } else {
+        fullRow.style.display = 'none';
+      }
+
+      // Always show Public row
+      document.getElementById('rowPublic').style.display = '';
 
       // Inclusion: show row ONLY if value is boolean true (set server-side)
       document.getElementById('rowInclusion').style.display = ev.inclusion ? '' : 'none';
 
       // Registration form: show only if isPublic AND not full
-      var showReg = ev.isPublic && ev.spotsText !== 'Full';
+      var showReg = ev.isPublic && !ev.isFull;
       var regSection = document.getElementById('regSection');
       var regDivider = document.getElementById('regDivider');
       if (showReg) {
@@ -514,6 +530,7 @@
     document.getElementById('modalOverlay').addEventListener('click', function(e){
       if (e.target === this) closeModal();
     });
+    document.getElementById('regCloseBtn').addEventListener('click', closeModal);
 
     // ── Registration form ─────────────────────────────────────────────────────
     function resetRegForm() {
@@ -526,6 +543,7 @@
       document.getElementById('regSubmit').disabled     = false;
       document.getElementById('regSubmit').textContent  = 'Register';
       document.getElementById('regSubmit').style.display = '';
+      document.getElementById('regCloseBtn').style.display = 'none';
     }
 
     // Email lookup with debounce
@@ -569,6 +587,7 @@
             document.getElementById('regSuccess').textContent = r.message || 'You\'re registered!';
             ['regEmail','regName','regPhone'].forEach(function(id){ document.getElementById(id).disabled = true; });
             btn.style.display = 'none';
+            document.getElementById('regCloseBtn').style.display = 'block';
           } else {
             errEl.textContent = (r && r.message) ? r.message : 'Something went wrong. Please try again.';
           }

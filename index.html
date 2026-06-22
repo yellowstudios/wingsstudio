@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Wings to Fly — Weekly Schedule</title>
+  <title>Wings to Fly — Schedule</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <style>
     :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
@@ -10,27 +10,29 @@
     html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
 
     /* ── Toolbar ── */
-    .toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px;}
-    .toolbar .nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
+    .toolbar .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
     .toolbar button.nav-btn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:14px;background:#fff;cursor:pointer;}
     .toolbar button.nav-btn:hover{background:#f0f0f0;}
     .toolbar button.nav-btn:disabled{opacity:.5;cursor:default;}
-    .toolbar .week-label{font-weight:600;font-size:16px;}
-    .toolbar .tabs{display:flex;gap:8px;flex-wrap:wrap;}
-    .toolbar .tabs button{font:inherit;color:var(--muted);font-size:14px;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:none;cursor:pointer;}
+    .toolbar .week-label{font-weight:600;font-size:15px;}
+    .toolbar .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .toolbar .tabs button,.toolbar .view-toggle button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:none;cursor:pointer;color:var(--muted);}
     .toolbar .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .toolbar .view-toggle button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+    .toolbar .divider{width:1px;height:24px;background:var(--line);}
 
     /* ── Week grid ── */
-    .week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:12px;min-height:400px;}
-    .day-column{background:#fff;border:1px solid var(--line);border-radius:8px;min-height:400px;display:flex;flex-direction:column;min-width:0;}
+    .week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:12px;}
+    .day-column{background:#fff;border:1px solid var(--line);border-radius:8px;min-height:380px;display:flex;flex-direction:column;min-width:0;}
     .day-column.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
-    .day-header{padding:8px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;background:#fcfaf5;}
+    .day-header{padding:8px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;background:#fcfaf5;border-radius:8px 8px 0 0;}
     .day-name{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
     .day-num{font-size:18px;font-weight:600;}
-    .day-events{padding:8px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;min-height:350px;}
-    .no-events{color:#bbb;text-align:center;font-size:13px;padding:14px 0;height:100%;}
+    .day-events{padding:8px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
+    .no-events{color:#bbb;text-align:center;font-size:13px;padding:14px 0;}
 
-    /* ── Event cards ── */
+    /* ── Week event cards ── */
     .event-card{border:1px solid var(--line);border-radius:6px;padding:8px;background:#fff;font-size:12px;min-width:0;}
     .event-time{color:var(--muted);font-size:11px;margin-bottom:2px;}
     .event-title{font-weight:600;font-size:13px;margin-bottom:2px;word-wrap:break-word;}
@@ -38,271 +40,428 @@
     .event-meta{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap;}
     .event-cost{font-weight:600;color:var(--ink);}
     .event-spots{font-style:italic;}
-    .event-register{display:block;text-align:center;background:var(--accent);color:#fff;border:none;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;width:100%;margin-bottom:4px;}
+    .event-register{display:block;width:100%;text-align:center;background:var(--accent);color:#fff;border:none;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;margin-bottom:4px;}
     .event-register:hover{opacity:.9;}
-    .event-more-info{display:block;text-align:center;background:#fff;color:var(--ink);border:1px solid var(--line);font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;width:100%;}
+    .event-more-info{display:block;width:100%;text-align:center;background:#fff;color:var(--ink);border:1px solid var(--line);font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;}
     .event-more-info:hover{background:#f0f0f0;}
+
+    /* ── Month grid ── */
+    .month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:12px;}
+    .month-day-header{background:#fcfaf5;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:6px 0;}
+    .month-cell{background:#fff;min-height:90px;padding:4px;display:flex;flex-direction:column;cursor:pointer;transition:background .1s;}
+    .month-cell:hover{background:#fdf9f0;}
+    .month-cell.today .month-cell-num{background:var(--accent);color:#fff;border-radius:50%;}
+    .month-cell.other-month .month-cell-num{color:#ccc;}
+    .month-cell.has-events{cursor:pointer;}
+    .month-cell-num{font-size:13px;font-weight:600;width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;flex-shrink:0;}
+    .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+    .month-event-pill.show-type{background:#6c757d;}
+    .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
+
+    /* ── Day expand panel (month view) ── */
+    .day-panel-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:9500;padding:0;}
+    .day-panel-overlay.active{display:flex;}
+    @media(min-width:600px){.day-panel-overlay{align-items:center;padding:16px;}}
+    .day-panel{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;padding:20px;}
+    @media(min-width:600px){.day-panel{border-radius:12px;}}
+    .day-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+    .day-panel-title{font-weight:700;font-size:16px;}
+    .day-panel-close{font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
+    .day-panel-event{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;}
+    .day-panel-event-time{font-size:12px;color:var(--muted);margin-bottom:2px;}
+    .day-panel-event-title{font-weight:600;font-size:14px;margin-bottom:4px;}
+    .day-panel-event-meta{font-size:12px;color:var(--muted);margin-bottom:6px;}
+    .day-panel-btns{display:flex;gap:6px;}
+    .day-panel-btns button{flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);}
+    .day-panel-btns button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .day-panel-empty{color:var(--muted);text-align:center;padding:20px 0;font-size:14px;}
 
     /* ── Loading overlay ── */
     .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;}
     .loading-overlay.active{display:flex;}
 
-    /* ── Modal ── */
-    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;}
+    /* ── Event detail + registration modal ── */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;}
     .modal-overlay.active{display:flex;}
-    .modal-content{background:#fff;border-radius:10px;padding:24px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;position:relative;}
+    .modal-content{background:#fff;border-radius:12px;padding:24px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;position:relative;}
     .modal-close{position:absolute;top:12px;right:14px;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
+    .modal-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
+    .modal-img.show{display:block;}
     .modal-title{font-weight:700;font-size:18px;margin-bottom:4px;padding-right:24px;}
     .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:14px;}
-    .modal-image{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
-    .modal-image.show{display:block;}
-    .modal-row{margin-bottom:8px;font-size:13px;display:flex;gap:6px;}
-    .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;}
+    .modal-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
+    .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;min-width:80px;}
     .modal-value{color:var(--muted);}
     .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
 
-    /* ── Registration form inside modal ── */
+    /* ── Registration form ── */
     .reg-section{display:none;}
     .reg-section.active{display:block;}
-    .reg-title{font-weight:600;font-size:14px;margin-bottom:10px;}
+    .reg-title{font-weight:600;font-size:14px;margin-bottom:6px;}
+    .reg-note{font-size:12px;color:var(--muted);margin-bottom:10px;}
     .reg-input{width:100%;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;}
     .reg-input:focus{outline:none;border-color:var(--accent);}
     .reg-input:disabled{background:#f5f5f5;color:var(--muted);}
-    .reg-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;}
-    .reg-submit:hover{opacity:.9;}
+    .reg-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:2px;}
     .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
-    .reg-note{font-size:12px;color:var(--muted);margin-bottom:10px;}
 
-    @media (max-width:900px){.week-grid{grid-template-columns:1fr;}}
+    @media(max-width:900px){
+      .week-grid{grid-template-columns:1fr;}
+    }
   </style>
 </head>
 <body>
 
+  <!-- Toolbar -->
   <div class="toolbar">
     <div class="nav">
       <button class="nav-btn" id="prevBtn">‹ Prev</button>
-      <span class="week-label" id="weekLabel">Loading…</span>
+      <span class="week-label" id="periodLabel">Loading…</span>
       <button class="nav-btn" id="nextBtn">Next ›</button>
     </div>
-    <div class="tabs">
-      <button id="tab-classes" class="active">Classes &amp; Rehearsals</button>
-      <button id="tab-shows">Shows &amp; Events</button>
+    <div class="controls">
+      <div class="view-toggle">
+        <button id="viewWeek" class="active">Week</button>
+        <button id="viewMonth">Month</button>
+      </div>
+      <div class="divider"></div>
+      <div class="tabs">
+        <button id="tabClasses" class="active">Classes &amp; Rehearsals</button>
+        <button id="tabShows">Shows &amp; Events</button>
+      </div>
     </div>
   </div>
 
-  <div id="grid" class="week-grid"></div>
+  <!-- Calendar area -->
+  <div id="calendarArea"></div>
+
+  <!-- Loading -->
   <div class="loading-overlay" id="loadingOverlay">Loading…</div>
+
+  <!-- Day expand panel (month view) -->
+  <div class="day-panel-overlay" id="dayPanelOverlay">
+    <div class="day-panel">
+      <div class="day-panel-header">
+        <div class="day-panel-title" id="dayPanelTitle"></div>
+        <span class="day-panel-close" id="dayPanelClose">×</span>
+      </div>
+      <div id="dayPanelContent"></div>
+    </div>
+  </div>
 
   <!-- Event detail + registration modal -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
       <span class="modal-close" id="modalClose">×</span>
-      <img class="modal-image" id="modalImage" alt="">
+      <img class="modal-img" id="modalImg" alt="">
       <div class="modal-title" id="modalTitle"></div>
       <div class="modal-subtitle" id="modalSubtitle"></div>
-
-      <div class="modal-row"><span class="modal-label">Location:</span><span class="modal-value" id="modalLocation"></span></div>
-      <div class="modal-row" id="modalDurationRow"><span class="modal-label">Duration:</span><span class="modal-value" id="modalDuration"></span></div>
-      <div class="modal-row" id="modalCostRow"><span class="modal-label">Cost:</span><span class="modal-value" id="modalCost"></span></div>
-      <div class="modal-row" id="modalCategoryRow"><span class="modal-label">Category:</span><span class="modal-value" id="modalCategory"></span></div>
-      <div class="modal-row" id="modalTypeRow"><span class="modal-label">Type:</span><span class="modal-value" id="modalType"></span></div>
-      <div class="modal-row" id="modalSpotsRow"><span class="modal-label">Availability:</span><span class="modal-value" id="modalSpots"></span></div>
-      <div class="modal-row" id="modalNotesRow"><span class="modal-label">Notes:</span><span class="modal-value" id="modalNotes"></span></div>
-
-      <hr class="modal-divider" id="modalRegDivider" style="display:none;">
-
-      <!-- Registration form -->
+      <div class="modal-row" id="rowLocation" style="display:none"><span class="modal-label">Location</span><span class="modal-value" id="modalLocation"></span></div>
+      <div class="modal-row" id="rowDuration" style="display:none"><span class="modal-label">Duration</span><span class="modal-value" id="modalDuration"></span></div>
+      <div class="modal-row" id="rowCost"     style="display:none"><span class="modal-label">Cost</span><span class="modal-value" id="modalCost"></span></div>
+      <div class="modal-row" id="rowCategory" style="display:none"><span class="modal-label">Category</span><span class="modal-value" id="modalCategory"></span></div>
+      <div class="modal-row" id="rowType"     style="display:none"><span class="modal-label">Type</span><span class="modal-value" id="modalType"></span></div>
+      <div class="modal-row" id="rowInclusion" style="display:none"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>
+      <div class="modal-row" id="rowSpots"    style="display:none"><span class="modal-label">Availability</span><span class="modal-value" id="modalSpots"></span></div>
+      <div class="modal-row" id="rowNotes"    style="display:none"><span class="modal-label">Notes</span><span class="modal-value" id="modalNotes"></span></div>
+      <hr class="modal-divider" id="regDivider" style="display:none">
       <div class="reg-section" id="regSection">
         <div class="reg-title">Register for this event</div>
-        <p class="reg-note">Enter your email — if you've registered before, we'll fill in your details automatically.</p>
+        <p class="reg-note">Enter your email — if you've registered before, we'll fill in your details.</p>
         <input type="email" class="reg-input" id="regEmail" placeholder="Email address *" autocomplete="email">
-        <input type="text" class="reg-input" id="regName" placeholder="Full name *" autocomplete="name">
-        <input type="tel" class="reg-input" id="regPhone" placeholder="Phone (optional)" autocomplete="tel">
+        <input type="text"  class="reg-input" id="regName"  placeholder="Full name *"     autocomplete="name">
+        <input type="tel"   class="reg-input" id="regPhone" placeholder="Phone (optional)" autocomplete="tel">
         <button class="reg-submit" id="regSubmit">Register</button>
         <div class="reg-success" id="regSuccess"></div>
-        <div class="reg-error" id="regError"></div>
+        <div class="reg-error"   id="regError"></div>
       </div>
     </div>
   </div>
 
   <script>
-    // ── Config ──────────────────────────────────────────────────────────────
-    var API_URL = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
+    // ── Config ───────────────────────────────────────────────────────────────
+    var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
 
     // ── State ────────────────────────────────────────────────────────────────
-    var STATE = {
-      showClasses: true,
-      showShows: false,
-      currentMonday: getMondayOfWeek(new Date()),
-      data: null,
-      currentInstanceId: null
+    var S = {
+      view         : 'week',        // 'week' | 'month'
+      showClasses  : true,
+      showShows    : false,
+      currentMonday: mondayOf(new Date()),
+      currentMonth : monthKey(new Date()),
+      data         : null,
+      activeEv     : null
     };
 
     // ── Date helpers ─────────────────────────────────────────────────────────
-    function formatDateKey(date) {
+    function mondayOf(date) {
+      var d = new Date(date); d.setHours(0,0,0,0);
+      var day = d.getDay(), diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff); return d;
+    }
+    function addDays(date, n) { var d = new Date(date); d.setDate(d.getDate()+n); return d; }
+    function dateKey(date) {
       var d = new Date(date);
-      return d.getFullYear() + '-' +
-        String(d.getMonth() + 1).padStart(2, '0') + '-' +
-        String(d.getDate()).padStart(2, '0');
+      return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
     }
-
-    function getMondayOfWeek(date) {
+    function monthKey(date) {
       var d = new Date(date);
-      d.setHours(0, 0, 0, 0);
-      var day = d.getDay();
-      var diff = (day === 0) ? -6 : 1 - day;
-      d.setDate(d.getDate() + diff);
-      return d;
+      return d.getFullYear()+'-'+pad(d.getMonth()+1);
     }
+    function pad(n){ return String(n).padStart(2,'0'); }
 
-    function addDays(date, days) {
-      var d = new Date(date);
-      d.setDate(d.getDate() + days);
-      return d;
-    }
-
-    // ── Utilities ────────────────────────────────────────────────────────────
-    function escapeHtml(str) {
-      var div = document.createElement('div');
-      div.textContent = String(str == null ? '' : str);
-      return div.innerHTML;
-    }
-
-    function formatDuration(minutes) {
-      if (!minutes || isNaN(Number(minutes))) return '';
-      var m = Number(minutes);
+    function formatDuration(min) {
+      if (!min || isNaN(Number(min))) return '';
+      var m = Number(min);
       if (m < 60) return m + ' min';
-      if (m % 60 === 0) return (m / 60) + (m / 60 === 1 ? ' hour' : ' hours');
-      return Math.floor(m / 60) + ' hr ' + (m % 60) + ' min';
+      if (m % 60 === 0) return (m/60) + (m/60===1?' hour':' hours');
+      return Math.floor(m/60)+' hr '+(m%60)+' min';
     }
 
-    function showRow(id, value) {
-      var row = document.getElementById(id + 'Row') || null;
-      var val = document.getElementById(id);
-      if (!val) return;
-      var show = value && String(value).trim();
-      val.textContent = show || '';
-      if (row) row.style.display = show ? '' : 'none';
+    // ── Escape ───────────────────────────────────────────────────────────────
+    function esc(str) {
+      var d = document.createElement('div');
+      d.textContent = String(str == null ? '' : str);
+      return d.innerHTML;
     }
 
-    // ── API calls (all fetch-based, no google.script.run) ────────────────────
-
+    // ── API ──────────────────────────────────────────────────────────────────
     function apiGet(params) {
-      var qs = Object.keys(params).map(function(k) {
-        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+      var qs = Object.keys(params).map(function(k){
+        return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);
       }).join('&');
-      return fetch(API_URL + '?' + qs).then(function(r) {
-        if (!r.ok) throw new Error('Network error ' + r.status);
-        return r.json();
-      });
+      return fetch(API+'?'+qs).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
     }
-
     function apiPost(body) {
-      return fetch(API_URL, {
-        method: 'POST',
-        body: JSON.stringify(body)
-      }).then(function(r) {
-        if (!r.ok) throw new Error('Network error ' + r.status);
-        return r.json();
+      return fetch(API, { method:'POST', body: JSON.stringify(body) })
+        .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); });
+    }
+
+    // ── Load ─────────────────────────────────────────────────────────────────
+    function load() {
+      setLoading(true);
+      var params = S.view === 'month'
+        ? { month: S.currentMonth }
+        : { week:  dateKey(S.currentMonday) };
+
+      apiGet(params).then(function(data){
+        S.data = data;
+        render();
+        setLoading(false);
+      }).catch(function(err){
+        setLoading(false);
+        document.getElementById('periodLabel').textContent = 'Error — try again';
+        console.error(err);
       });
     }
 
-    // ── Load week data ───────────────────────────────────────────────────────
-    function loadWeek(mondayDate) {
-      STATE.currentMonday = mondayDate;
-      setLoading(true);
-      apiGet({ week: formatDateKey(mondayDate) })
-        .then(function(data) {
-          STATE.data = data;
-          render();
-          setLoading(false);
-        })
-        .catch(function(err) {
-          setLoading(false);
-          console.error(err);
-          document.getElementById('weekLabel').textContent = 'Error loading — try again';
-        });
-    }
-
-    // ── Render ───────────────────────────────────────────────────────────────
+    // ── Master render ─────────────────────────────────────────────────────────
     function render() {
-      document.getElementById('weekLabel').textContent = STATE.data.weekLabel;
+      document.getElementById('periodLabel').textContent =
+        S.data.weekLabel || S.data.monthLabel || '';
 
-      var events = [];
-      if (STATE.showClasses) events = events.concat(STATE.data.classes || []);
-      if (STATE.showShows)   events = events.concat(STATE.data.shows   || []);
-
-      // Sort by startTimestamp (ms) sent from server
-      events.sort(function(a, b) { return (a.startMs || 0) - (b.startMs || 0); });
-
-      document.getElementById('grid').innerHTML = buildGridHtml(events);
-      attachCardListeners();
+      var events = filteredEvents();
+      if (S.view === 'week') {
+        renderWeek(events);
+      } else {
+        renderMonth(events);
+      }
     }
 
-    function buildGridHtml(events) {
+    function filteredEvents() {
+      var evs = [];
+      if (S.showClasses) evs = evs.concat(S.data.classes || []);
+      if (S.showShows)   evs = evs.concat(S.data.shows   || []);
+      evs.sort(function(a,b){ return (a.startMs||0)-(b.startMs||0); });
+      return evs;
+    }
+
+    // ── Week render ───────────────────────────────────────────────────────────
+    function renderWeek(events) {
       var byDay = {};
-      STATE.data.days.forEach(function(d) { byDay[d.key] = []; });
-      events.forEach(function(ev) { if (byDay[ev.dayKey]) byDay[ev.dayKey].push(ev); });
+      S.data.days.forEach(function(d){ byDay[d.key] = []; });
+      events.forEach(function(ev){ if(byDay[ev.dayKey]) byDay[ev.dayKey].push(ev); });
 
-      var html = '';
-      STATE.data.days.forEach(function(d) {
-        var isToday = d.key === STATE.data.todayKey;
-        var dayEvents = byDay[d.key];
-        var evHtml = '';
+      var html = '<div class="week-grid">';
+      S.data.days.forEach(function(d) {
+        var isToday = d.key === S.data.todayKey;
+        var dayEvs  = byDay[d.key];
+        var evHtml  = '';
 
-        if (dayEvents.length === 0) {
+        if (!dayEvs.length) {
           evHtml = '<div class="no-events">—</div>';
         } else {
-          dayEvents.forEach(function(ev) {
-            var dataAttr = "data-ev='" + escapeHtml(JSON.stringify(ev)) + "'";
+          dayEvs.forEach(function(ev) {
+            var dataAttr = "data-ev='" + esc(JSON.stringify(ev)) + "'";
             evHtml +=
               '<div class="event-card">' +
-                '<div class="event-time">' + escapeHtml(ev.startTime) + ' – ' + escapeHtml(ev.endTime) + '</div>' +
-                '<div class="event-title">' + escapeHtml(ev.title) + '</div>' +
-                (ev.location ? '<div class="event-location">' + escapeHtml(ev.location) + '</div>' : '') +
+                '<div class="event-time">'  + esc(ev.startTime) + ' – ' + esc(ev.endTime) + '</div>' +
+                '<div class="event-title">' + esc(ev.title) + '</div>' +
+                (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '') +
                 '<div class="event-meta">' +
-                  (ev.costText  ? '<span class="event-cost">'  + escapeHtml(ev.costText)  + '</span>' : '') +
-                  (ev.spotsText ? '<span class="event-spots">' + escapeHtml(ev.spotsText) + '</span>' : '') +
+                  (ev.costText  ? '<span class="event-cost">'  + esc(ev.costText)  + '</span>' : '') +
+                  (ev.spotsText ? '<span class="event-spots">' + esc(ev.spotsText) + '</span>' : '') +
                 '</div>' +
-                '<button class="event-register" ' + dataAttr + '>Register</button>' +
-                '<button class="event-more-info" ' + dataAttr + '>More Info</button>' +
+                // Register button: only if isPublic === true
+                (ev.isPublic
+                  ? '<button class="event-register" '+dataAttr+'>Register</button>'
+                  : '') +
+                '<button class="event-more-info" '+dataAttr+'>More Info</button>' +
               '</div>';
           });
         }
 
         html +=
-          '<div class="day-column' + (isToday ? ' today' : '') + '">' +
-            '<div class="day-header"><span class="day-name">' + d.name + '</span><span class="day-num">' + d.num + '</span></div>' +
-            '<div class="day-events">' + evHtml + '</div>' +
+          '<div class="day-column'+(isToday?' today':'')+'">' +
+            '<div class="day-header">' +
+              '<span class="day-name">'+d.name+'</span>' +
+              '<span class="day-num">'+d.num+'</span>' +
+            '</div>' +
+            '<div class="day-events">'+evHtml+'</div>' +
+          '</div>';
+      });
+      html += '</div>';
+
+      document.getElementById('calendarArea').innerHTML = html;
+      attachCardListeners();
+    }
+
+    // ── Month render ──────────────────────────────────────────────────────────
+    function renderMonth(events) {
+      var byDay = {};
+      S.data.days.forEach(function(d){ byDay[d.key] = []; });
+      events.forEach(function(ev){ if(byDay[ev.dayKey]) byDay[ev.dayKey].push(ev); });
+
+      // Current month number to grey-out other-month days
+      var currentMonthNum = parseInt(S.currentMonth.split('-')[1], 10);
+
+      var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      var html = '<div class="month-grid">';
+
+      // Day-of-week headers
+      DOW.forEach(function(name){
+        html += '<div class="month-day-header">'+name+'</div>';
+      });
+
+      // Day cells
+      S.data.days.forEach(function(d) {
+        var isToday    = d.key === S.data.todayKey;
+        var otherMonth = parseInt(d.monthNum,10) !== currentMonthNum;
+        var dayEvs     = byDay[d.key] || [];
+        var MAX_PILLS  = 3;
+
+        var pillsHtml = '';
+        dayEvs.slice(0, MAX_PILLS).forEach(function(ev){
+          var isShow = S.showShows && !S.showClasses;
+          pillsHtml +=
+            '<div class="month-event-pill" data-key="'+esc(d.key)+'">' +
+              esc(ev.startTime+' '+ev.title) +
+            '</div>';
+        });
+        if (dayEvs.length > MAX_PILLS) {
+          pillsHtml += '<div class="month-more">+' + (dayEvs.length - MAX_PILLS) + ' more</div>';
+        }
+
+        html +=
+          '<div class="month-cell'+(isToday?' today':'')+(otherMonth?' other-month':'')+'" data-key="'+esc(d.key)+'">' +
+            '<div class="month-cell-num">'+d.num+'</div>' +
+            pillsHtml +
           '</div>';
       });
 
-      return html;
+      html += '</div>';
+      document.getElementById('calendarArea').innerHTML = html;
+
+      // Click any cell or pill → open day panel
+      document.getElementById('calendarArea').addEventListener('click', function(e) {
+        var cell = e.target.closest('.month-cell');
+        if (!cell) return;
+        var key = cell.getAttribute('data-key');
+        openDayPanel(key, byDay[key] || []);
+      });
     }
 
-    // ── Card button listeners (event delegation) ─────────────────────────────
-    function attachCardListeners() {
-      var grid = document.getElementById('grid');
+    // ── Day panel (month view) ────────────────────────────────────────────────
+    function openDayPanel(dayKey, events) {
+      // Format display date from dayKey
+      var parts = dayKey.split('-');
+      var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+      var opts = { weekday:'long', month:'long', day:'numeric' };
+      document.getElementById('dayPanelTitle').textContent =
+        d.toLocaleDateString('en-US', opts);
 
-      grid.onclick = function(e) {
+      var html = '';
+      if (!events.length) {
+        html = '<div class="day-panel-empty">No events this day.</div>';
+      } else {
+        events.forEach(function(ev) {
+          var dataAttr = "data-ev='" + esc(JSON.stringify(ev)) + "'";
+          html +=
+            '<div class="day-panel-event">' +
+              '<div class="day-panel-event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>' +
+              '<div class="day-panel-event-title">'+esc(ev.title)+'</div>' +
+              (ev.location ? '<div class="day-panel-event-meta">'+esc(ev.location)+'</div>' : '') +
+              '<div class="day-panel-event-meta">' +
+                (ev.costText  ? esc(ev.costText)+' ' : '') +
+                (ev.spotsText ? '· '+esc(ev.spotsText) : '') +
+              '</div>' +
+              '<div class="day-panel-btns">' +
+                (ev.isPublic
+                  ? '<button class="primary event-register" '+dataAttr+'>Register</button>'
+                  : '') +
+                '<button class="event-more-info" '+dataAttr+'>More Info</button>' +
+              '</div>' +
+            '</div>';
+        });
+      }
+
+      document.getElementById('dayPanelContent').innerHTML = html;
+      document.getElementById('dayPanelOverlay').classList.add('active');
+
+      // Wire buttons inside panel
+      attachCardListeners(document.getElementById('dayPanelContent'));
+    }
+
+    function closeDayPanel() {
+      document.getElementById('dayPanelOverlay').classList.remove('active');
+    }
+    document.getElementById('dayPanelClose').addEventListener('click', closeDayPanel);
+    document.getElementById('dayPanelOverlay').addEventListener('click', function(e){
+      if (e.target === this) closeDayPanel();
+    });
+
+    // ── Card listeners (delegation) ───────────────────────────────────────────
+    function attachCardListeners(root) {
+      root = root || document.getElementById('calendarArea');
+      root.addEventListener('click', function(e) {
         var regBtn  = e.target.closest('.event-register');
         var infoBtn = e.target.closest('.event-more-info');
         if (!regBtn && !infoBtn) return;
-
-        var ev = JSON.parse((regBtn || infoBtn).getAttribute('data-ev'));
+        var ev = JSON.parse((regBtn||infoBtn).getAttribute('data-ev'));
         openModal(ev, !!regBtn);
-      };
+      });
     }
 
     // ── Modal ─────────────────────────────────────────────────────────────────
-    function openModal(ev, openRegForm) {
-      STATE.currentInstanceId = ev.instanceId;
+    function setModalRow(rowId, valId, value) {
+      var row = document.getElementById(rowId);
+      var val = document.getElementById(valId);
+      if (value && String(value).trim()) {
+        if (val) val.textContent = value;
+        if (row) row.style.display = '';
+      } else {
+        if (row) row.style.display = 'none';
+      }
+    }
+
+    function openModal(ev, openReg) {
+      S.activeEv = ev;
 
       // Image
-      var img = document.getElementById('modalImage');
-      if (ev.imageUrl) {
+      var img = document.getElementById('modalImg');
+      if (ev.imageUrl && ev.imageUrl.trim()) {
         img.src = ev.imageUrl;
         img.classList.add('show');
       } else {
@@ -310,23 +469,25 @@
         img.removeAttribute('src');
       }
 
-      document.getElementById('modalTitle').textContent = ev.title;
+      document.getElementById('modalTitle').textContent    = ev.title;
       document.getElementById('modalSubtitle').textContent = ev.startTime + ' – ' + ev.endTime;
 
-      showRow('modalLocation', ev.location);
-      showRow('modalDuration', formatDuration(ev.duration));
-      showRow('modalCost', ev.costText);
-      showRow('modalCategory', ev.category);
-      showRow('modalType', ev.type);
-      showRow('modalSpots', ev.spotsText);
-      showRow('modalNotes', ev.participantNotes);
+      setModalRow('rowLocation', 'modalLocation', ev.location);
+      setModalRow('rowDuration', 'modalDuration', formatDuration(ev.duration));
+      setModalRow('rowCost',     'modalCost',     ev.costText);
+      setModalRow('rowCategory', 'modalCategory', ev.category);
+      setModalRow('rowType',     'modalType',     ev.type);
+      setModalRow('rowSpots',    'modalSpots',    ev.spotsText);
+      setModalRow('rowNotes',    'modalNotes',    ev.participantNotes);
 
-      // Registration form
-      var regSection  = document.getElementById('regSection');
-      var regDivider  = document.getElementById('modalRegDivider');
-      var hasRegLink  = ev.registrationLink && ev.spotsText !== 'Full';
+      // Inclusion: show row ONLY if value is boolean true (set server-side)
+      document.getElementById('rowInclusion').style.display = ev.inclusion ? '' : 'none';
 
-      if (hasRegLink) {
+      // Registration form: show only if isPublic AND not full
+      var showReg = ev.isPublic && ev.spotsText !== 'Full';
+      var regSection = document.getElementById('regSection');
+      var regDivider = document.getElementById('regDivider');
+      if (showReg) {
         regSection.classList.add('active');
         regDivider.style.display = '';
         resetRegForm();
@@ -337,133 +498,148 @@
 
       document.getElementById('modalOverlay').classList.add('active');
 
-      // If Register button was clicked, scroll to form
-      if (openRegForm && hasRegLink) {
-        setTimeout(function() {
-          document.getElementById('regSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (openReg && showReg) {
+        setTimeout(function(){
+          document.getElementById('regSection').scrollIntoView({ behavior:'smooth', block:'start' });
         }, 80);
       }
     }
 
     function closeModal() {
       document.getElementById('modalOverlay').classList.remove('active');
-      STATE.currentInstanceId = null;
+      S.activeEv = null;
     }
 
-    function resetRegForm() {
-      document.getElementById('regEmail').value = '';
-      document.getElementById('regName').value = '';
-      document.getElementById('regPhone').value = '';
-      document.getElementById('regName').disabled = false;
-      document.getElementById('regPhone').disabled = false;
-      document.getElementById('regSuccess').textContent = '';
-      document.getElementById('regError').textContent = '';
-      document.getElementById('regSubmit').disabled = false;
-      document.getElementById('regSubmit').textContent = 'Register';
-    }
-
-    // ── Email lookup (auto-fill if returning participant) ────────────────────
-    var emailLookupTimer = null;
-    document.getElementById('regEmail').addEventListener('input', function() {
-      var email = this.value.trim();
-      clearTimeout(emailLookupTimer);
-      // Reset name/phone to editable while typing
-      document.getElementById('regName').disabled = false;
-      document.getElementById('regPhone').disabled = false;
-      if (email.length < 5 || email.indexOf('@') < 0) return;
-      emailLookupTimer = setTimeout(function() {
-        apiPost({ action: 'checkParticipant', email: email })
-          .then(function(result) {
-            if (result && result.exists) {
-              document.getElementById('regName').value  = result.name  || '';
-              document.getElementById('regPhone').value = result.phone || '';
-              document.getElementById('regName').disabled  = true;
-              document.getElementById('regPhone').disabled = true;
-            }
-          })
-          .catch(function() {}); // silent — non-critical
-      }, 600); // debounce 600ms
-    });
-
-    // ── Registration submit ──────────────────────────────────────────────────
-    document.getElementById('regSubmit').addEventListener('click', function() {
-      var email = document.getElementById('regEmail').value.trim();
-      var name  = document.getElementById('regName').value.trim();
-      var phone = document.getElementById('regPhone').value.trim();
-
-      document.getElementById('regError').textContent = '';
-      document.getElementById('regSuccess').textContent = '';
-
-      if (!email || !name) {
-        document.getElementById('regError').textContent = 'Please enter your email and full name.';
-        return;
-      }
-
-      var btn = document.getElementById('regSubmit');
-      btn.disabled = true;
-      btn.textContent = 'Submitting…';
-
-      apiPost({
-        action: 'register',
-        instanceId: STATE.currentInstanceId,
-        name: name,
-        email: email,
-        phone: phone
-      })
-      .then(function(result) {
-        btn.disabled = false;
-        btn.textContent = 'Register';
-        if (result && result.success) {
-          document.getElementById('regSuccess').textContent = result.message || 'You\'re registered!';
-          document.getElementById('regEmail').disabled = true;
-          document.getElementById('regName').disabled  = true;
-          document.getElementById('regPhone').disabled = true;
-          btn.style.display = 'none';
-        } else {
-          document.getElementById('regError').textContent = (result && result.message) ? result.message : 'Something went wrong. Please try again.';
-        }
-      })
-      .catch(function(err) {
-        btn.disabled = false;
-        btn.textContent = 'Register';
-        document.getElementById('regError').textContent = 'Connection error. Please try again.';
-        console.error(err);
-      });
-    });
-
-    // ── Modal close ──────────────────────────────────────────────────────────
     document.getElementById('modalClose').addEventListener('click', closeModal);
-    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    document.getElementById('modalOverlay').addEventListener('click', function(e){
       if (e.target === this) closeModal();
     });
 
-    // ── Toolbar buttons ──────────────────────────────────────────────────────
+    // ── Registration form ─────────────────────────────────────────────────────
+    function resetRegForm() {
+      ['regEmail','regName','regPhone'].forEach(function(id){
+        var el = document.getElementById(id);
+        el.value = ''; el.disabled = false;
+      });
+      document.getElementById('regSuccess').textContent = '';
+      document.getElementById('regError').textContent   = '';
+      document.getElementById('regSubmit').disabled     = false;
+      document.getElementById('regSubmit').textContent  = 'Register';
+      document.getElementById('regSubmit').style.display = '';
+    }
+
+    // Email lookup with debounce
+    var emailTimer = null;
+    document.getElementById('regEmail').addEventListener('input', function(){
+      var email = this.value.trim();
+      clearTimeout(emailTimer);
+      document.getElementById('regName').disabled  = false;
+      document.getElementById('regPhone').disabled = false;
+      if (email.length < 5 || !email.includes('@')) return;
+      emailTimer = setTimeout(function(){
+        apiPost({ action:'checkParticipant', email: email })
+          .then(function(r){
+            if (r && r.exists) {
+              document.getElementById('regName').value    = r.name  || '';
+              document.getElementById('regPhone').value   = r.phone || '';
+              document.getElementById('regName').disabled  = true;
+              document.getElementById('regPhone').disabled = true;
+            }
+          }).catch(function(){});
+      }, 600);
+    });
+
+    document.getElementById('regSubmit').addEventListener('click', function(){
+      var email = document.getElementById('regEmail').value.trim();
+      var name  = document.getElementById('regName').value.trim();
+      var phone = document.getElementById('regPhone').value.trim();
+      var errEl = document.getElementById('regError');
+      errEl.textContent = '';
+      document.getElementById('regSuccess').textContent = '';
+
+      if (!email || !name) { errEl.textContent = 'Please enter your email and full name.'; return; }
+
+      var btn = this;
+      btn.disabled = true; btn.textContent = 'Submitting…';
+
+      apiPost({ action:'register', instanceId: S.activeEv.instanceId, name:name, email:email, phone:phone })
+        .then(function(r){
+          btn.disabled = false; btn.textContent = 'Register';
+          if (r && r.success) {
+            document.getElementById('regSuccess').textContent = r.message || 'You\'re registered!';
+            ['regEmail','regName','regPhone'].forEach(function(id){ document.getElementById(id).disabled = true; });
+            btn.style.display = 'none';
+          } else {
+            errEl.textContent = (r && r.message) ? r.message : 'Something went wrong. Please try again.';
+          }
+        }).catch(function(){
+          btn.disabled = false; btn.textContent = 'Register';
+          errEl.textContent = 'Connection error. Please try again.';
+        });
+    });
+
+    // ── Loading ───────────────────────────────────────────────────────────────
     function setLoading(on) {
       document.getElementById('loadingOverlay').classList.toggle('active', on);
       document.getElementById('prevBtn').disabled = on;
       document.getElementById('nextBtn').disabled = on;
     }
 
-    document.getElementById('prevBtn').addEventListener('click', function() {
-      loadWeek(addDays(STATE.currentMonday, -7));
-    });
-    document.getElementById('nextBtn').addEventListener('click', function() {
-      loadWeek(addDays(STATE.currentMonday, 7));
-    });
-
-    document.getElementById('tab-classes').addEventListener('click', function() {
-      this.classList.toggle('active');
-      STATE.showClasses = this.classList.contains('active');
-      render();
-    });
-    document.getElementById('tab-shows').addEventListener('click', function() {
-      this.classList.toggle('active');
-      STATE.showShows = this.classList.contains('active');
-      render();
+    // ── Toolbar wiring ────────────────────────────────────────────────────────
+    document.getElementById('prevBtn').addEventListener('click', function(){
+      if (S.view === 'week') {
+        S.currentMonday = addDays(S.currentMonday, -7);
+      } else {
+        var d = new Date(S.currentMonth + '-01');
+        d.setMonth(d.getMonth() - 1);
+        S.currentMonth = monthKey(d);
+      }
+      load();
     });
 
-    // ── Boot ─────────────────────────────────────────────────────────────────
-    loadWeek(STATE.currentMonday);
+    document.getElementById('nextBtn').addEventListener('click', function(){
+      if (S.view === 'week') {
+        S.currentMonday = addDays(S.currentMonday, 7);
+      } else {
+        var d = new Date(S.currentMonth + '-01');
+        d.setMonth(d.getMonth() + 1);
+        S.currentMonth = monthKey(d);
+      }
+      load();
+    });
+
+    document.getElementById('viewWeek').addEventListener('click', function(){
+      if (S.view === 'week') return;
+      S.view = 'week';
+      this.classList.add('active');
+      document.getElementById('viewMonth').classList.remove('active');
+      load();
+    });
+
+    document.getElementById('viewMonth').addEventListener('click', function(){
+      if (S.view === 'month') return;
+      S.view = 'month';
+      this.classList.add('active');
+      document.getElementById('viewWeek').classList.remove('active');
+      // Sync month to current week's month
+      S.currentMonth = monthKey(S.currentMonday);
+      load();
+    });
+
+    document.getElementById('tabClasses').addEventListener('click', function(){
+      this.classList.toggle('active');
+      S.showClasses = this.classList.contains('active');
+      if (S.data) render();
+    });
+
+    document.getElementById('tabShows').addEventListener('click', function(){
+      this.classList.toggle('active');
+      S.showShows = this.classList.contains('active');
+      if (S.data) render();
+    });
+
+    // ── Boot ──────────────────────────────────────────────────────────────────
+    load();
   </script>
 </body>
 </html>

@@ -85,7 +85,7 @@
   <script>
     const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
     
-    var STATE = { tab: 'classes', weekKey: formatDateKey(new Date()), data: null };
+    var STATE = { tab: 'classes', currentMonday: getMondayOfWeek(new Date()), data: null };
 
     function formatDateKey(date) {
       var d = new Date(date);
@@ -93,12 +93,19 @@
     }
 
     function getMondayOfWeek(date) {
-      var d = new Date(date); d.setHours(0,0,0,0);
-      var day = d.getDay(); var diff = (day===0)?-6:1-day;
-      d.setDate(d.getDate()+diff); return d;
+      var d = new Date(date);
+      d.setHours(0,0,0,0);
+      var day = d.getDay();
+      var diff = (day === 0) ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      return d;
     }
 
-    function addDays(date,days) { var d=new Date(date); d.setDate(d.getDate()+days); return d; }
+    function addDays(date, days) {
+      var d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
 
     function escapeHtml(str) {
       var div = document.createElement("div");
@@ -196,37 +203,45 @@
       document.getElementById("nextBtn").disabled = isLoading;
     }
 
-    function loadWeek(weekKey) {
+    function loadWeek(mondayDate) {
+      STATE.currentMonday = mondayDate;
+      var weekKey = formatDateKey(mondayDate);
       setLoading(true);
+      
       fetch(APPS_SCRIPT_WEB_APP_URL + "?calType=" + STATE.tab + "&week=" + weekKey)
         .then(function(res) { if(!res.ok) throw new Error("Network error"); return res.json(); })
         .then(function(data) {
-          STATE.data = data; STATE.weekKey = weekKey;
-          render(); setLoading(false);
+          STATE.data = data;
+          render();
+          setLoading(false);
         })
         .catch(function(err) {
-          setLoading(false); alert("Could not load that week."); console.error(err);
+          setLoading(false);
+          alert("Could not load that week.");
+          console.error(err);
         });
     }
 
     document.getElementById("prevBtn").onclick = function() {
-      var prev = new Date(STATE.data ? STATE.data.mondayKey : new Date());
-      prev.setDate(prev.getDate() - 7);
-      loadWeek(formatDateKey(prev));
+      var prevMonday = addDays(STATE.currentMonday, -7);
+      loadWeek(prevMonday);
     };
 
     document.getElementById("nextBtn").onclick = function() {
-      var next = new Date(STATE.data ? STATE.data.mondayKey : new Date());
-      next.setDate(next.getDate() + 7);
-      loadWeek(formatDateKey(next));
+      var nextMonday = addDays(STATE.currentMonday, 7);
+      loadWeek(nextMonday);
     };
 
     document.getElementById("tab-classes").onclick = function() {
-      STATE.tab = "classes"; applyTab(); if(STATE.data) loadWeek(STATE.weekKey);
+      STATE.tab = "classes";
+      applyTab();
+      if(STATE.data) loadWeek(STATE.currentMonday);
     };
 
     document.getElementById("tab-shows").onclick = function() {
-      STATE.tab = "shows"; applyTab(); if(STATE.data) loadWeek(STATE.weekKey);
+      STATE.tab = "shows";
+      applyTab();
+      if(STATE.data) loadWeek(STATE.currentMonday);
     };
 
     document.getElementById("modalClose").onclick = function() {
@@ -239,7 +254,8 @@
       }
     };
 
-    loadWeek(STATE.weekKey);
+    // Initial load - load the current week
+    loadWeek(STATE.currentMonday);
   </script>
 </body>
 </html>

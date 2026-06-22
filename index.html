@@ -15,8 +15,8 @@
     .toolbar button.nav-btn:disabled{opacity:.5;cursor:default;}
     .toolbar .week-label{font-weight:600;font-size:16px;}
     .toolbar .tabs{display:flex;gap:8px;flex-wrap:wrap;}
-    .toolbar .tabs button{font:inherit;color:var(--muted);font-size:14px;padding:6px 12px;border-radius:6px;border:none;background:none;cursor:pointer;}
-    .toolbar .tabs button.active{background:var(--accent);color:#fff;}
+    .toolbar .tabs button{font:inherit;color:var(--muted);font-size:14px;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:none;cursor:pointer;}
+    .toolbar .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
     .week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:12px;min-height:400px;}
     .day-column{background:#fff;border:1px solid var(--line);border-radius:8px;min-height:400px;display:flex;flex-direction:column;min-width:0;}
     .day-column.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
@@ -61,7 +61,7 @@
     </div>
     <div class="tabs">
       <button id="tab-classes" class="active">Classes &amp; Rehearsals</button>
-      <button id="tab-shows" class="active">Shows &amp; Events</button>
+      <button id="tab-shows">Shows &amp; Events</button>
     </div>
   </div>
 
@@ -83,7 +83,12 @@
   <script>
     const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
     
-    var STATE = { currentMonday: getMondayOfWeek(new Date()), data: null };
+    var STATE = { 
+      showClasses: true, 
+      showShows: false,
+      currentMonday: getMondayOfWeek(new Date()), 
+      data: null 
+    };
 
     function formatDateKey(date) {
       var d = new Date(date);
@@ -165,11 +170,19 @@
     function render() {
       document.getElementById("weekLabel").textContent = STATE.data.weekLabel;
       
-      // Combine both classes and shows
-      var allEvents = STATE.data.classes.concat(STATE.data.shows);
-      allEvents.sort(function(a, b) { return a.start - b.start; });
+      // Filter events based on toggles
+      var filteredEvents = [];
+      if(STATE.showClasses) {
+        filteredEvents = filteredEvents.concat(STATE.data.classes);
+      }
+      if(STATE.showShows) {
+        filteredEvents = filteredEvents.concat(STATE.data.shows);
+      }
       
-      document.getElementById("grid").innerHTML = buildGridHtml(allEvents);
+      // Sort by time
+      filteredEvents.sort(function(a, b) { return a.start - b.start; });
+      
+      document.getElementById("grid").innerHTML = buildGridHtml(filteredEvents);
       setupMoreInfo();
     }
 
@@ -227,13 +240,15 @@
     };
 
     document.getElementById("tab-classes").onclick = function() {
-      this.classList.add("active");
-      document.getElementById("tab-shows").classList.add("active");
+      this.classList.toggle("active");
+      STATE.showClasses = this.classList.contains("active");
+      render();
     };
 
     document.getElementById("tab-shows").onclick = function() {
-      this.classList.add("active");
-      document.getElementById("tab-classes").classList.add("active");
+      this.classList.toggle("active");
+      STATE.showShows = this.classList.contains("active");
+      render();
     };
 
     document.getElementById("modalClose").onclick = function() {

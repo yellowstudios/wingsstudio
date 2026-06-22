@@ -104,7 +104,11 @@
     .pay-option:hover{background:#fdf9f0;}
     .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
 
-    .sessions-section{padding:16px;}
+    .sessions-section{
+      padding:16px;
+      max-height: calc(100vh - 520px);
+      overflow-y: auto;
+    }
     .sessions-section-heading{font-size:18px;font-weight:700;margin:0 0 4px;}
     .sessions-section-sub{font-size:13px;color:var(--muted);margin:0 0 14px;}
     .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
@@ -127,7 +131,10 @@
     .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
     .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
 
-    @media(max-width:900px){.week-grid{grid-template-columns:1fr;}}
+    @media(max-width:900px){
+      .week-grid{grid-template-columns:1fr;}
+      .sessions-section{max-height:none; overflow:visible;}
+    }
   </style>
 </head>
 <body>
@@ -779,7 +786,9 @@
 
     function broadcastHeight(){
       try{
-        var h=Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        var bodyH = document.body.scrollHeight;
+        var docH = document.documentElement.scrollHeight;
+        var h = Math.max(bodyH, docH) + 80;
         window.parent.postMessage({type:'wingsHeight', height:h}, '*');
       }catch(e){}
     }
@@ -796,8 +805,9 @@
     loadSessions();
     broadcastHeight();
     setTimeout(broadcastHeight,800);
-    setTimeout(broadcastHeight,1800);
-    setTimeout(broadcastHeight,3500);
+    setTimeout(broadcastHeight,1200);
+    setTimeout(broadcastHeight,2500);
+    setTimeout(broadcastHeight,5000);
     if(window.ResizeObserver){new ResizeObserver(broadcastHeight).observe(document.body);}
   </script>
 </body>

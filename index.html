@@ -106,6 +106,12 @@
     .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
+    .pay-section{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
+    .pay-title{font-weight:600;font-size:14px;margin-bottom:6px;}
+    .pay-options{display:flex;flex-direction:column;gap:8px;}
+    .pay-option{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;padding:8px 10px;border:1px solid var(--line);border-radius:6px;}
+    .pay-option:hover{background:#fdf9f0;}
+    .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
 
     @media(max-width:900px){
       .week-grid{grid-template-columns:1fr;}
@@ -174,7 +180,43 @@
         <p class="reg-note">Enter your email — if you've registered before, we'll fill in your details.</p>
         <input type="email" class="reg-input" id="regEmail" placeholder="Email address *" autocomplete="email">
         <input type="text"  class="reg-input" id="regName"  placeholder="Full name *"     autocomplete="name">
-        <input type="tel"   class="reg-input" id="regPhone" placeholder="Phone (optional)" autocomplete="tel">
+        <input type="tel"   class="reg-input" id="regPhone" placeholder="Phone number *"  autocomplete="tel">
+
+        <div class="pay-section">
+          <div class="pay-title">Payment method</div>
+          <p class="reg-note" style="margin-bottom:8px;">Choose how you plan to pay. You can register now and pay later — payment is not required to complete registration.</p>
+          <div class="pay-options">
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="square"> Credit / Debit Card
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="zelle"> Zelle
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="cash"> Cash
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="check"> Check
+            </label>
+            <label class="pay-option">
+              <input type="radio" name="payMethod" value="later" checked> Pay later / Decide later
+            </label>
+          </div>
+          <!-- Square pay link — shown when Credit/Debit selected -->
+          <a id="squarePayBtn" href="https://square.link/u/REPLACE_WITH_SQUARE_LINK" target="_blank" rel="noopener"
+             style="display:none;margin-top:10px;display:none;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;border:none;">
+            Pay with Square →
+          </a>
+          <!-- Zelle instructions — shown when Zelle selected -->
+          <div id="zelleInfo" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">
+            Send payment via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>
+            Include your name and event name in the memo.
+          </div>
+          <!-- Cash/Check note — shown when Cash or Check selected -->
+          <div id="cashCheckInfo" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">
+            Please bring payment to the event. Make checks payable to <strong>Wings to Fly Dance Company</strong>.
+          </div>
+        </div>
         <button class="reg-submit" id="regSubmit">Register</button>
         <div class="reg-success" id="regSuccess"></div>
         <button id="regCloseBtn" style="display:none;width:100%;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;font:inherit;font-size:14px;cursor:pointer;">Close</button>
@@ -538,6 +580,12 @@
         var el = document.getElementById(id);
         el.value = ''; el.disabled = false;
       });
+      // Reset payment selection to "later"
+      var laterRadio = document.querySelector('input[name="payMethod"][value="later"]');
+      if (laterRadio) laterRadio.checked = true;
+      document.getElementById('squarePayBtn').style.display  = 'none';
+      document.getElementById('zelleInfo').style.display     = 'none';
+      document.getElementById('cashCheckInfo').style.display = 'none';
       document.getElementById('regSuccess').textContent = '';
       document.getElementById('regError').textContent   = '';
       document.getElementById('regSubmit').disabled     = false;
@@ -567,20 +615,46 @@
       }, 600);
     });
 
+    // Payment method radio wiring
+    document.querySelectorAll('input[name="payMethod"]').forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        document.getElementById('squarePayBtn').style.display  = 'none';
+        document.getElementById('zelleInfo').style.display     = 'none';
+        document.getElementById('cashCheckInfo').style.display = 'none';
+        if (this.value === 'square') {
+          document.getElementById('squarePayBtn').style.display = 'block';
+        } else if (this.value === 'zelle') {
+          document.getElementById('zelleInfo').style.display = 'block';
+        } else if (this.value === 'cash' || this.value === 'check') {
+          document.getElementById('cashCheckInfo').style.display = 'block';
+        }
+      });
+    });
+
     document.getElementById('regSubmit').addEventListener('click', function(){
       var email = document.getElementById('regEmail').value.trim();
       var name  = document.getElementById('regName').value.trim();
       var phone = document.getElementById('regPhone').value.trim();
+      var payMethod = document.querySelector('input[name="payMethod"]:checked');
+      var payValue  = payMethod ? payMethod.value : 'later';
       var errEl = document.getElementById('regError');
       errEl.textContent = '';
       document.getElementById('regSuccess').textContent = '';
 
       if (!email || !name) { errEl.textContent = 'Please enter your email and full name.'; return; }
+      if (!phone)          { errEl.textContent = 'Please enter your phone number.'; return; }
 
       var btn = this;
       btn.disabled = true; btn.textContent = 'Submitting…';
 
-      apiPost({ action:'register', instanceId: S.activeEv.instanceId, name:name, email:email, phone:phone })
+      apiPost({
+        action     : 'register',
+        instanceId : S.activeEv.instanceId,
+        name       : name,
+        email      : email,
+        phone      : phone,
+        payMethod  : payValue
+      })
         .then(function(r){
           btn.disabled = false; btn.textContent = 'Register';
           if (r && r.success) {

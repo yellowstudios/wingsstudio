@@ -121,8 +121,7 @@
     /* ── Sessions view ── */
     .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;padding:16px;}
     .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
-    .session-card-img{width:100%;height:160px;object-fit:cover;display:block;}
-    .session-card-img.placeholder{height:0;}
+    .session-card-img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#f5f5f5;display:block;}
     .session-card-body{padding:14px;flex:1;display:flex;flex-direction:column;}
     .session-card-category{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:4px;}
     .session-card-title{font-size:16px;font-weight:700;margin-bottom:6px;}
@@ -171,8 +170,7 @@
       <div class="view-toggle">
         <button id="viewWeek"     class="active">Week</button>
         <button id="viewMonth">Month</button>
-        <button id="viewSessions">Sessions</button>
-        <button id="viewUpcoming">Upcoming</button>
+        <button id="viewUpcoming">List</button>
       </div>
       <div class="divider"></div>
       <div class="tabs">
@@ -187,6 +185,12 @@
 
   <!-- Loading -->
   <div class="loading-overlay" id="loadingOverlay">Loading…</div>
+
+  <!-- Sessions section — always visible below the calendar widget -->
+  <div id="sessionsArea" style="margin-top:24px;"></div>
+  <div class="loading-overlay" id="sessionsLoadingOverlay" style="position:relative;height:60px;background:none;display:none;">
+    <span style="color:var(--muted);font-size:13px;">Loading sessions…</span>
+  </div>
 
   <!-- Day expand panel (month view) -->
   <div class="day-panel-overlay" id="dayPanelOverlay">
@@ -303,12 +307,13 @@
 
     // ── State ────────────────────────────────────────────────────────────────
     var S = {
-      view         : 'week',   // 'week' | 'month' | 'sessions' | 'upcoming'
+      view         : 'week',   // 'week' | 'month' | 'upcoming'
       showClasses  : true,
       showShows    : false,
       currentMonday: mondayOf(new Date()),
       currentMonth : monthKey(new Date()),
       data         : null,
+      sessionsData : null,
       activeEv     : null
     };
 
@@ -384,11 +389,10 @@
     // ── Master render ─────────────────────────────────────────────────────────
     function render() {
       var label = S.data.weekLabel || S.data.monthLabel || '';
-      if (S.view === 'sessions')  label = 'All Sessions';
-      if (S.view === 'upcoming')  label = 'Upcoming Events';
+      if (S.view === 'upcoming') label = 'All Upcoming Events';
       document.getElementById('periodLabel').textContent = label;
 
-      // Show/hide Prev/Next — not meaningful for sessions or upcoming
+      // Hide Prev/Next for list view — not meaningful there
       var showNav = (S.view === 'week' || S.view === 'month');
       document.getElementById('prevBtn').style.display = showNav ? '' : 'none';
       document.getElementById('nextBtn').style.display = showNav ? '' : 'none';
@@ -398,8 +402,6 @@
         renderWeek(events);
       } else if (S.view === 'month') {
         renderMonth(events);
-      } else if (S.view === 'sessions') {
-        renderSessions();
       } else if (S.view === 'upcoming') {
         renderUpcoming(events);
       }
@@ -567,64 +569,76 @@
       if (e.target === this) closeDayPanel();
     });
 
-    // ── Sessions view ─────────────────────────────────────────────────────────
+    // ── Sessions section (always-visible, below calendar) ────────────────────
     function renderSessions() {
-      var sessions = S.data.sessions || [];
+      var sessions = (S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : [];
 
-      // Filter by tab selection
+      // Filter by tab selection — match by category/type heuristic
       var filtered = sessions.filter(function(s) {
-        var isShow = (s.type === 'Event' || s.category === 'Performance' ||
-                     (s.instances[0] && (function(ct){
-                       return ct === 'show' || ct === 'shows' || ct === 'event';
-                     })(String(s.type||'').toLowerCase())));
-        if (S.showClasses && !S.showShows && isShow) return false;
+        var typeLC   = String(s.type     || '').toLowerCase();
+        var catLC    = String(s.category || '').toLowerCase();
+        var isShow   = (typeLC === 'event' || catLC === 'performance');
+        if (S.showClasses && !S.showShows && isShow)  return false;
         if (S.showShows  && !S.showClasses && !isShow) return false;
         return true;
       });
 
+      var html = '<div style="padding:16px 16px 4px;"><h2 style="font-size:18px;font-weight:700;margin:0 0 4px;">Our Sessions</h2>' +
+        '<p style="font-size:13px;color:var(--muted);margin:0 0 12px;">Browse our full program below and register for any upcoming date.</p></div>';
+
       if (!filtered.length) {
-        document.getElementById('calendarArea').innerHTML =
-          '<div style="text-align:center;padding:60px 16px;color:var(--muted);font-size:14px;">No sessions found.</div>';
-        return;
+        html += '<div style="text-align:center;padding:40px 16px;color:var(--muted);font-size:14px;">No sessions found.</div>';
+      } else {
+        html += '<div class="sessions-grid">';
+        filtered.forEach(function(s) {
+          var hasImg = s.imageUrl && s.imageUrl.trim();
+          html +=
+            '<div class="session-card">' +
+              (hasImg ? '<img class="session-card-img" src="' + esc(s.imageUrl) + '" alt="' + esc(s.title) + '" loading="lazy">' : '') +
+              '<div class="session-card-body">' +
+                '<div class="session-card-category">' + esc(s.category || s.type || '') + '</div>' +
+                '<div class="session-card-title">' + esc(s.title) + '</div>' +
+                (s.description ? '<div class="session-card-desc">' + esc(s.description) + '</div>' : '') +
+                (s.costText ? '<div class="session-card-cost">' + esc(s.costText) + ' per session</div>' : '') +
+                '<button class="session-card-toggle" data-sid="' + esc(s.sessionId) + '">' +
+                  s.instances.length + (s.instances.length === 1 ? ' upcoming date' : ' upcoming dates') + ' — view all' +
+                '</button>' +
+                '<div class="session-instances" id="si-' + esc(s.sessionId) + '">' +
+                  buildInstanceRows(s.instances) +
+                '</div>' +
+              '</div>' +
+            '</div>';
+        });
+        html += '</div>';
       }
 
-      var html = '<div class="sessions-grid">';
-      filtered.forEach(function(s) {
-        var hasImg = s.imageUrl && s.imageUrl.trim();
-        html +=
-          '<div class="session-card">' +
-            (hasImg ? '<img class="session-card-img" src="' + esc(s.imageUrl) + '" alt="' + esc(s.title) + '" loading="lazy">' : '') +
-            '<div class="session-card-body">' +
-              '<div class="session-card-category">' + esc(s.category || s.type || '') + '</div>' +
-              '<div class="session-card-title">' + esc(s.title) + '</div>' +
-              (s.description ? '<div class="session-card-desc">' + esc(s.description) + '</div>' : '') +
-              (s.costText ? '<div class="session-card-cost">' + esc(s.costText) + ' per session</div>' : '') +
-              '<button class="session-card-toggle" data-sid="' + esc(s.sessionId) + '">' +
-                s.instances.length + (s.instances.length === 1 ? ' upcoming date' : ' upcoming dates') + ' — view all' +
-              '</button>' +
-              '<div class="session-instances" id="si-' + esc(s.sessionId) + '">' +
-                buildInstanceRows(s.instances) +
-              '</div>' +
-            '</div>' +
-          '</div>';
-      });
-      html += '</div>';
-
-      document.getElementById('calendarArea').innerHTML = html;
+      var area = document.getElementById('sessionsArea');
+      area.innerHTML = html;
 
       // Wire expand/collapse toggles
-      document.querySelectorAll('.session-card-toggle').forEach(function(btn) {
+      area.querySelectorAll('.session-card-toggle').forEach(function(btn) {
         btn.addEventListener('click', function() {
-          var sid  = this.getAttribute('data-sid');
+          var sid   = this.getAttribute('data-sid');
           var panel = document.getElementById('si-' + sid);
           var open  = panel.classList.toggle('open');
-          this.textContent = open
-            ? 'Hide dates'
-            : panel.querySelectorAll('.session-instance-row').length + ' upcoming dates — view all';
+          var count = panel.querySelectorAll('.session-instance-row').length;
+          this.textContent = open ? 'Hide dates' : count + (count === 1 ? ' upcoming date' : ' upcoming dates') + ' — view all';
         });
       });
 
-      attachCardListeners();
+      attachCardListeners(area);
+    }
+
+    function loadSessions() {
+      var area = document.getElementById('sessionsArea');
+      area.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Loading sessions…</div>';
+      apiGet({ view: 'sessions' }).then(function(data) {
+        S.sessionsData = data;
+        renderSessions();
+      }).catch(function(err) {
+        area.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">Could not load sessions.</div>';
+        console.error(err);
+      });
     }
 
     function buildInstanceRows(instances) {
@@ -1001,8 +1015,9 @@
 
     function setActiveView(view) {
       S.view = view;
-      ['viewWeek','viewMonth','viewSessions','viewUpcoming'].forEach(function(id) {
-        document.getElementById(id).classList.toggle('active', id === 'view' + view.charAt(0).toUpperCase() + view.slice(1));
+      ['viewWeek','viewMonth','viewUpcoming'].forEach(function(id) {
+        var viewName = id.replace('view','').toLowerCase();
+        document.getElementById(id).classList.toggle('active', viewName === view);
       });
     }
 
@@ -1017,11 +1032,6 @@
       setActiveView('month');
       load();
     });
-    document.getElementById('viewSessions').addEventListener('click', function(){
-      if (S.view === 'sessions') return;
-      setActiveView('sessions');
-      load();
-    });
     document.getElementById('viewUpcoming').addEventListener('click', function(){
       if (S.view === 'upcoming') return;
       setActiveView('upcoming');
@@ -1032,16 +1042,19 @@
       this.classList.toggle('active');
       S.showClasses = this.classList.contains('active');
       if (S.data) render();
+      if (S.sessionsData) renderSessions();
     });
 
     document.getElementById('tabShows').addEventListener('click', function(){
       this.classList.toggle('active');
       S.showShows = this.classList.contains('active');
       if (S.data) render();
+      if (S.sessionsData) renderSessions();
     });
 
     // ── Boot ──────────────────────────────────────────────────────────────────
     load();
+    loadSessions();
   </script>
 </body>
 </html>

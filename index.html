@@ -8,6 +8,8 @@
     :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
     *{box-sizing:border-box;}
     html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+
+    /* ── Toolbar ── */
     .toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px;}
     .toolbar .nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
     .toolbar button.nav-btn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:14px;background:#fff;cursor:pointer;}
@@ -17,6 +19,8 @@
     .toolbar .tabs{display:flex;gap:8px;flex-wrap:wrap;}
     .toolbar .tabs button{font:inherit;color:var(--muted);font-size:14px;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:none;cursor:pointer;}
     .toolbar .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+    /* ── Week grid ── */
     .week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:12px;min-height:400px;}
     .day-column{background:#fff;border:1px solid var(--line);border-radius:8px;min-height:400px;display:flex;flex-direction:column;min-width:0;}
     .day-column.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
@@ -25,6 +29,8 @@
     .day-num{font-size:18px;font-weight:600;}
     .day-events{padding:8px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;min-height:350px;}
     .no-events{color:#bbb;text-align:center;font-size:13px;padding:14px 0;height:100%;}
+
+    /* ── Event cards ── */
     .event-card{border:1px solid var(--line);border-radius:6px;padding:8px;background:#fff;font-size:12px;min-width:0;}
     .event-time{color:var(--muted);font-size:11px;margin-bottom:2px;}
     .event-title{font-weight:600;font-size:13px;margin-bottom:2px;word-wrap:break-word;}
@@ -32,31 +38,52 @@
     .event-meta{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap;}
     .event-cost{font-weight:600;color:var(--ink);}
     .event-spots{font-style:italic;}
-    .event-register{display:block;text-align:center;background:var(--accent);color:#fff;text-decoration:none;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;}
+    .event-register{display:block;text-align:center;background:var(--accent);color:#fff;border:none;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;width:100%;margin-bottom:4px;}
     .event-register:hover{opacity:.9;}
-    .event-more-info{display:block;text-align:center;background:#fff;color:var(--ink);text-decoration:none;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;border:1px solid var(--line);margin-top:4px;cursor:pointer;}
+    .event-more-info{display:block;text-align:center;background:#fff;color:var(--ink);border:1px solid var(--line);font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;width:100%;}
     .event-more-info:hover{background:#f0f0f0;}
-    .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.5);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;}
+
+    /* ── Loading overlay ── */
+    .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;}
     .loading-overlay.active{display:flex;}
-    .top-note{padding:10px 16px 0 16px;font-size:12px;color:var(--muted);}
-    @media (max-width:900px){.week-grid{grid-template-columns:1fr;}}
-    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;}
+
+    /* ── Modal ── */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;}
     .modal-overlay.active{display:flex;}
-    .modal-content{background:#fff;border-radius:10px;padding:20px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto;position:relative;}
-    .modal-close{position:absolute;top:10px;right:12px;font-size:20px;cursor:pointer;color:var(--muted);}
-    .modal-title{font-weight:600;font-size:16px;margin-bottom:12px;}
-    .modal-row{margin-bottom:8px;font-size:13px;}
-    .modal-label{font-weight:600;color:var(--ink);}
+    .modal-content{background:#fff;border-radius:10px;padding:24px;max-width:420px;width:100%;max-height:85vh;overflow-y:auto;position:relative;}
+    .modal-close{position:absolute;top:12px;right:14px;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
+    .modal-title{font-weight:700;font-size:18px;margin-bottom:4px;padding-right:24px;}
+    .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:14px;}
+    .modal-image{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
+    .modal-image.show{display:block;}
+    .modal-row{margin-bottom:8px;font-size:13px;display:flex;gap:6px;}
+    .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;}
     .modal-value{color:var(--muted);}
+    .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
+
+    /* ── Registration form inside modal ── */
+    .reg-section{display:none;}
+    .reg-section.active{display:block;}
+    .reg-title{font-weight:600;font-size:14px;margin-bottom:10px;}
+    .reg-input{width:100%;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;}
+    .reg-input:focus{outline:none;border-color:var(--accent);}
+    .reg-input:disabled{background:#f5f5f5;color:var(--muted);}
+    .reg-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;}
+    .reg-submit:hover{opacity:.9;}
+    .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
+    .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
+    .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
+    .reg-note{font-size:12px;color:var(--muted);margin-bottom:10px;}
+
+    @media (max-width:900px){.week-grid{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
-  <div class="top-note">Calendar loads from your Google Sheet via Apps Script JSON.</div>
 
   <div class="toolbar">
     <div class="nav">
       <button class="nav-btn" id="prevBtn">‹ Prev</button>
-      <span class="week-label" id="weekLabel"></span>
+      <span class="week-label" id="weekLabel">Loading…</span>
       <button class="nav-btn" id="nextBtn">Next ›</button>
     </div>
     <div class="tabs">
@@ -68,36 +95,62 @@
   <div id="grid" class="week-grid"></div>
   <div class="loading-overlay" id="loadingOverlay">Loading…</div>
 
+  <!-- Event detail + registration modal -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content">
       <span class="modal-close" id="modalClose">×</span>
+      <img class="modal-image" id="modalImage" alt="">
       <div class="modal-title" id="modalTitle"></div>
-      <div class="modal-row"><span class="modal-label">Duration:</span> <span class="modal-value" id="modalDuration"></span></div>
-      <div class="modal-row"><span class="modal-label">Category:</span> <span class="modal-value" id="modalCategory"></span></div>
-      <div class="modal-row"><span class="modal-label">Type:</span> <span class="modal-value" id="modalType"></span></div>
-      <div class="modal-row"><span class="modal-label">Inclusion:</span> <span class="modal-value" id="modalInclusion"></span></div>
-      <div class="modal-row"><span class="modal-label">Participant Notes:</span> <span class="modal-value" id="modalNotes"></span></div>
+      <div class="modal-subtitle" id="modalSubtitle"></div>
+
+      <div class="modal-row"><span class="modal-label">Location:</span><span class="modal-value" id="modalLocation"></span></div>
+      <div class="modal-row" id="modalDurationRow"><span class="modal-label">Duration:</span><span class="modal-value" id="modalDuration"></span></div>
+      <div class="modal-row" id="modalCostRow"><span class="modal-label">Cost:</span><span class="modal-value" id="modalCost"></span></div>
+      <div class="modal-row" id="modalCategoryRow"><span class="modal-label">Category:</span><span class="modal-value" id="modalCategory"></span></div>
+      <div class="modal-row" id="modalTypeRow"><span class="modal-label">Type:</span><span class="modal-value" id="modalType"></span></div>
+      <div class="modal-row" id="modalSpotsRow"><span class="modal-label">Availability:</span><span class="modal-value" id="modalSpots"></span></div>
+      <div class="modal-row" id="modalNotesRow"><span class="modal-label">Notes:</span><span class="modal-value" id="modalNotes"></span></div>
+
+      <hr class="modal-divider" id="modalRegDivider" style="display:none;">
+
+      <!-- Registration form -->
+      <div class="reg-section" id="regSection">
+        <div class="reg-title">Register for this event</div>
+        <p class="reg-note">Enter your email — if you've registered before, we'll fill in your details automatically.</p>
+        <input type="email" class="reg-input" id="regEmail" placeholder="Email address *" autocomplete="email">
+        <input type="text" class="reg-input" id="regName" placeholder="Full name *" autocomplete="name">
+        <input type="tel" class="reg-input" id="regPhone" placeholder="Phone (optional)" autocomplete="tel">
+        <button class="reg-submit" id="regSubmit">Register</button>
+        <div class="reg-success" id="regSuccess"></div>
+        <div class="reg-error" id="regError"></div>
+      </div>
     </div>
   </div>
 
   <script>
-    const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
-    
-    var STATE = { 
-      showClasses: true, 
+    // ── Config ──────────────────────────────────────────────────────────────
+    var API_URL = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
+
+    // ── State ────────────────────────────────────────────────────────────────
+    var STATE = {
+      showClasses: true,
       showShows: false,
-      currentMonday: getMondayOfWeek(new Date()), 
-      data: null 
+      currentMonday: getMondayOfWeek(new Date()),
+      data: null,
+      currentInstanceId: null
     };
 
+    // ── Date helpers ─────────────────────────────────────────────────────────
     function formatDateKey(date) {
       var d = new Date(date);
-      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
     }
 
     function getMondayOfWeek(date) {
       var d = new Date(date);
-      d.setHours(0,0,0,0);
+      d.setHours(0, 0, 0, 0);
       var day = d.getDay();
       var diff = (day === 0) ? -6 : 1 - day;
       d.setDate(d.getDate() + diff);
@@ -110,113 +163,57 @@
       return d;
     }
 
+    // ── Utilities ────────────────────────────────────────────────────────────
     function escapeHtml(str) {
-      var div = document.createElement("div");
-      div.textContent = String(str == null ? "" : str);
+      var div = document.createElement('div');
+      div.textContent = String(str == null ? '' : str);
       return div.innerHTML;
     }
 
     function formatDuration(minutes) {
-      if(!minutes || minutes === '' || isNaN(minutes)) return '';
-      minutes = Number(minutes);
-      if(minutes < 60) {
-        return minutes + ' min';
-      } else if(minutes % 60 === 0) {
-        return (minutes / 60) + ' hours';
-      } else {
-        var hours = Math.floor(minutes / 60);
-        var mins = minutes % 60;
-        return hours + ' hours ' + mins + ' min';
-      }
+      if (!minutes || isNaN(Number(minutes))) return '';
+      var m = Number(minutes);
+      if (m < 60) return m + ' min';
+      if (m % 60 === 0) return (m / 60) + (m / 60 === 1 ? ' hour' : ' hours');
+      return Math.floor(m / 60) + ' hr ' + (m % 60) + ' min';
     }
 
-    function buildGridHtml(events) {
-      var byDay = {};
-      STATE.data.days.forEach(function(d){ byDay[d.key] = []; });
-      events.forEach(function(ev){ if(byDay[ev.dayKey]) byDay[ev.dayKey].push(ev); });
-      
-      var html = "";
-      STATE.data.days.forEach(function(d) {
-        var isToday = d.key === STATE.data.todayKey;
-        var dayEvents = byDay[d.key];
-        var evHtml = "";
-        
-        if(dayEvents.length === 0) {
-          evHtml = '<div class="no-events">—</div>';
-        } else {
-          dayEvents.forEach(function(ev) {
-            evHtml += '<div class="event-card">' +
-              '<div class="event-time">' + escapeHtml(ev.startTime) + ' – ' + escapeHtml(ev.endTime) + '</div>' +
-              '<div class="event-title">' + escapeHtml(ev.title) + '</div>' +
-              (ev.location ? '<div class="event-location">' + escapeHtml(ev.location) + '</div>' : "") +
-              '<div class="event-meta">' +
-                (ev.costText ? '<span class="event-cost">' + escapeHtml(ev.costText) + '</span>' : "") +
-                (ev.spotsText ? '<span class="event-spots">' + escapeHtml(ev.spotsText) + '</span>' : "") +
-              '</div>' +
-              (ev.registrationLink ? '<a class="event-register" href="' + escapeHtml(ev.registrationLink) + '" target="_top">Register</a>' : "") +
-              '<button class="event-more-info" data-title="' + escapeHtml(ev.title) + '" data-duration="' + escapeHtml(ev.duration) + '" data-category="' + escapeHtml(ev.category) + '" data-type="' + escapeHtml(ev.type) + '" data-inclusion="' + escapeHtml(ev.inclusion) + '" data-notes="' + escapeHtml(ev.participantNotes) + '">More Info</button>' +
-            '</div>';
-          });
-        }
-        
-        html += '<div class="day-column' + (isToday ? ' today' : '') + '">' +
-          '<div class="day-header"><span class="day-name">' + d.name + '</span><span class="day-num">' + d.num + '</span></div>' +
-          '<div class="day-events">' + evHtml + '</div>' +
-        '</div>';
-      });
-      return html;
+    function showRow(id, value) {
+      var row = document.getElementById(id + 'Row') || null;
+      var val = document.getElementById(id);
+      if (!val) return;
+      var show = value && String(value).trim();
+      val.textContent = show || '';
+      if (row) row.style.display = show ? '' : 'none';
     }
 
-    function render() {
-      document.getElementById("weekLabel").textContent = STATE.data.weekLabel;
-      
-      // Filter events based on toggles
-      var filteredEvents = [];
-      if(STATE.showClasses) {
-        filteredEvents = filteredEvents.concat(STATE.data.classes);
-      }
-      if(STATE.showShows) {
-        filteredEvents = filteredEvents.concat(STATE.data.shows);
-      }
-      
-      // Sort by time
-      filteredEvents.sort(function(a, b) { return a.start - b.start; });
-      
-      document.getElementById("grid").innerHTML = buildGridHtml(filteredEvents);
-      setupMoreInfo();
-    }
+    // ── API calls (all fetch-based, no google.script.run) ────────────────────
 
-    function setupMoreInfo() {
-      var btns = document.querySelectorAll('.event-more-info');
-      btns.forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          var durationRaw = btn.getAttribute('data-duration');
-          var duration = formatDuration(durationRaw);
-          
-          document.getElementById('modalTitle').textContent = btn.getAttribute('data-title');
-          document.getElementById('modalDuration').textContent = duration;
-          document.getElementById('modalCategory').textContent = btn.getAttribute('data-category');
-          document.getElementById('modalType').textContent = btn.getAttribute('data-type');
-          document.getElementById('modalInclusion').textContent = btn.getAttribute('data-inclusion');
-          document.getElementById('modalNotes').textContent = btn.getAttribute('data-notes');
-          document.getElementById('modalOverlay').classList.add('active');
-        });
+    function apiGet(params) {
+      var qs = Object.keys(params).map(function(k) {
+        return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+      }).join('&');
+      return fetch(API_URL + '?' + qs).then(function(r) {
+        if (!r.ok) throw new Error('Network error ' + r.status);
+        return r.json();
       });
     }
 
-    function setLoading(isLoading) {
-      document.getElementById("loadingOverlay").classList.toggle("active", isLoading);
-      document.getElementById("prevBtn").disabled = isLoading;
-      document.getElementById("nextBtn").disabled = isLoading;
+    function apiPost(body) {
+      return fetch(API_URL, {
+        method: 'POST',
+        body: JSON.stringify(body)
+      }).then(function(r) {
+        if (!r.ok) throw new Error('Network error ' + r.status);
+        return r.json();
+      });
     }
 
+    // ── Load week data ───────────────────────────────────────────────────────
     function loadWeek(mondayDate) {
       STATE.currentMonday = mondayDate;
-      var weekKey = formatDateKey(mondayDate);
       setLoading(true);
-      
-      fetch(APPS_SCRIPT_WEB_APP_URL + "?calType=all&week=" + weekKey)
-        .then(function(res) { if(!res.ok) throw new Error("Network error"); return res.json(); })
+      apiGet({ week: formatDateKey(mondayDate) })
         .then(function(data) {
           STATE.data = data;
           render();
@@ -224,44 +221,248 @@
         })
         .catch(function(err) {
           setLoading(false);
-          alert("Could not load that week.");
           console.error(err);
+          document.getElementById('weekLabel').textContent = 'Error loading — try again';
         });
     }
 
-    document.getElementById("prevBtn").onclick = function() {
-      var prevMonday = addDays(STATE.currentMonday, -7);
-      loadWeek(prevMonday);
-    };
+    // ── Render ───────────────────────────────────────────────────────────────
+    function render() {
+      document.getElementById('weekLabel').textContent = STATE.data.weekLabel;
 
-    document.getElementById("nextBtn").onclick = function() {
-      var nextMonday = addDays(STATE.currentMonday, 7);
-      loadWeek(nextMonday);
-    };
+      var events = [];
+      if (STATE.showClasses) events = events.concat(STATE.data.classes || []);
+      if (STATE.showShows)   events = events.concat(STATE.data.shows   || []);
 
-    document.getElementById("tab-classes").onclick = function() {
-      this.classList.toggle("active");
-      STATE.showClasses = this.classList.contains("active");
-      render();
-    };
+      // Sort by startTimestamp (ms) sent from server
+      events.sort(function(a, b) { return (a.startMs || 0) - (b.startMs || 0); });
 
-    document.getElementById("tab-shows").onclick = function() {
-      this.classList.toggle("active");
-      STATE.showShows = this.classList.contains("active");
-      render();
-    };
+      document.getElementById('grid').innerHTML = buildGridHtml(events);
+      attachCardListeners();
+    }
 
-    document.getElementById("modalClose").onclick = function() {
-      document.getElementById('modalOverlay').classList.remove('active');
-    };
+    function buildGridHtml(events) {
+      var byDay = {};
+      STATE.data.days.forEach(function(d) { byDay[d.key] = []; });
+      events.forEach(function(ev) { if (byDay[ev.dayKey]) byDay[ev.dayKey].push(ev); });
 
-    document.getElementById("modalOverlay").onclick = function(e) {
-      if(e.target === document.getElementById('modalOverlay')) {
-        document.getElementById('modalOverlay').classList.remove('active');
+      var html = '';
+      STATE.data.days.forEach(function(d) {
+        var isToday = d.key === STATE.data.todayKey;
+        var dayEvents = byDay[d.key];
+        var evHtml = '';
+
+        if (dayEvents.length === 0) {
+          evHtml = '<div class="no-events">—</div>';
+        } else {
+          dayEvents.forEach(function(ev) {
+            var dataAttr = "data-ev='" + escapeHtml(JSON.stringify(ev)) + "'";
+            evHtml +=
+              '<div class="event-card">' +
+                '<div class="event-time">' + escapeHtml(ev.startTime) + ' – ' + escapeHtml(ev.endTime) + '</div>' +
+                '<div class="event-title">' + escapeHtml(ev.title) + '</div>' +
+                (ev.location ? '<div class="event-location">' + escapeHtml(ev.location) + '</div>' : '') +
+                '<div class="event-meta">' +
+                  (ev.costText  ? '<span class="event-cost">'  + escapeHtml(ev.costText)  + '</span>' : '') +
+                  (ev.spotsText ? '<span class="event-spots">' + escapeHtml(ev.spotsText) + '</span>' : '') +
+                '</div>' +
+                '<button class="event-register" ' + dataAttr + '>Register</button>' +
+                '<button class="event-more-info" ' + dataAttr + '>More Info</button>' +
+              '</div>';
+          });
+        }
+
+        html +=
+          '<div class="day-column' + (isToday ? ' today' : '') + '">' +
+            '<div class="day-header"><span class="day-name">' + d.name + '</span><span class="day-num">' + d.num + '</span></div>' +
+            '<div class="day-events">' + evHtml + '</div>' +
+          '</div>';
+      });
+
+      return html;
+    }
+
+    // ── Card button listeners (event delegation) ─────────────────────────────
+    function attachCardListeners() {
+      var grid = document.getElementById('grid');
+
+      grid.onclick = function(e) {
+        var regBtn  = e.target.closest('.event-register');
+        var infoBtn = e.target.closest('.event-more-info');
+        if (!regBtn && !infoBtn) return;
+
+        var ev = JSON.parse((regBtn || infoBtn).getAttribute('data-ev'));
+        openModal(ev, !!regBtn);
+      };
+    }
+
+    // ── Modal ─────────────────────────────────────────────────────────────────
+    function openModal(ev, openRegForm) {
+      STATE.currentInstanceId = ev.instanceId;
+
+      // Image
+      var img = document.getElementById('modalImage');
+      if (ev.imageUrl) {
+        img.src = ev.imageUrl;
+        img.classList.add('show');
+      } else {
+        img.classList.remove('show');
+        img.removeAttribute('src');
       }
-    };
 
-    // Initial load
+      document.getElementById('modalTitle').textContent = ev.title;
+      document.getElementById('modalSubtitle').textContent = ev.startTime + ' – ' + ev.endTime;
+
+      showRow('modalLocation', ev.location);
+      showRow('modalDuration', formatDuration(ev.duration));
+      showRow('modalCost', ev.costText);
+      showRow('modalCategory', ev.category);
+      showRow('modalType', ev.type);
+      showRow('modalSpots', ev.spotsText);
+      showRow('modalNotes', ev.participantNotes);
+
+      // Registration form
+      var regSection  = document.getElementById('regSection');
+      var regDivider  = document.getElementById('modalRegDivider');
+      var hasRegLink  = ev.registrationLink && ev.spotsText !== 'Full';
+
+      if (hasRegLink) {
+        regSection.classList.add('active');
+        regDivider.style.display = '';
+        resetRegForm();
+      } else {
+        regSection.classList.remove('active');
+        regDivider.style.display = 'none';
+      }
+
+      document.getElementById('modalOverlay').classList.add('active');
+
+      // If Register button was clicked, scroll to form
+      if (openRegForm && hasRegLink) {
+        setTimeout(function() {
+          document.getElementById('regSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+      STATE.currentInstanceId = null;
+    }
+
+    function resetRegForm() {
+      document.getElementById('regEmail').value = '';
+      document.getElementById('regName').value = '';
+      document.getElementById('regPhone').value = '';
+      document.getElementById('regName').disabled = false;
+      document.getElementById('regPhone').disabled = false;
+      document.getElementById('regSuccess').textContent = '';
+      document.getElementById('regError').textContent = '';
+      document.getElementById('regSubmit').disabled = false;
+      document.getElementById('regSubmit').textContent = 'Register';
+    }
+
+    // ── Email lookup (auto-fill if returning participant) ────────────────────
+    var emailLookupTimer = null;
+    document.getElementById('regEmail').addEventListener('input', function() {
+      var email = this.value.trim();
+      clearTimeout(emailLookupTimer);
+      // Reset name/phone to editable while typing
+      document.getElementById('regName').disabled = false;
+      document.getElementById('regPhone').disabled = false;
+      if (email.length < 5 || email.indexOf('@') < 0) return;
+      emailLookupTimer = setTimeout(function() {
+        apiPost({ action: 'checkParticipant', email: email })
+          .then(function(result) {
+            if (result && result.exists) {
+              document.getElementById('regName').value  = result.name  || '';
+              document.getElementById('regPhone').value = result.phone || '';
+              document.getElementById('regName').disabled  = true;
+              document.getElementById('regPhone').disabled = true;
+            }
+          })
+          .catch(function() {}); // silent — non-critical
+      }, 600); // debounce 600ms
+    });
+
+    // ── Registration submit ──────────────────────────────────────────────────
+    document.getElementById('regSubmit').addEventListener('click', function() {
+      var email = document.getElementById('regEmail').value.trim();
+      var name  = document.getElementById('regName').value.trim();
+      var phone = document.getElementById('regPhone').value.trim();
+
+      document.getElementById('regError').textContent = '';
+      document.getElementById('regSuccess').textContent = '';
+
+      if (!email || !name) {
+        document.getElementById('regError').textContent = 'Please enter your email and full name.';
+        return;
+      }
+
+      var btn = document.getElementById('regSubmit');
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      apiPost({
+        action: 'register',
+        instanceId: STATE.currentInstanceId,
+        name: name,
+        email: email,
+        phone: phone
+      })
+      .then(function(result) {
+        btn.disabled = false;
+        btn.textContent = 'Register';
+        if (result && result.success) {
+          document.getElementById('regSuccess').textContent = result.message || 'You\'re registered!';
+          document.getElementById('regEmail').disabled = true;
+          document.getElementById('regName').disabled  = true;
+          document.getElementById('regPhone').disabled = true;
+          btn.style.display = 'none';
+        } else {
+          document.getElementById('regError').textContent = (result && result.message) ? result.message : 'Something went wrong. Please try again.';
+        }
+      })
+      .catch(function(err) {
+        btn.disabled = false;
+        btn.textContent = 'Register';
+        document.getElementById('regError').textContent = 'Connection error. Please try again.';
+        console.error(err);
+      });
+    });
+
+    // ── Modal close ──────────────────────────────────────────────────────────
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // ── Toolbar buttons ──────────────────────────────────────────────────────
+    function setLoading(on) {
+      document.getElementById('loadingOverlay').classList.toggle('active', on);
+      document.getElementById('prevBtn').disabled = on;
+      document.getElementById('nextBtn').disabled = on;
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', function() {
+      loadWeek(addDays(STATE.currentMonday, -7));
+    });
+    document.getElementById('nextBtn').addEventListener('click', function() {
+      loadWeek(addDays(STATE.currentMonday, 7));
+    });
+
+    document.getElementById('tab-classes').addEventListener('click', function() {
+      this.classList.toggle('active');
+      STATE.showClasses = this.classList.contains('active');
+      render();
+    });
+    document.getElementById('tab-shows').addEventListener('click', function() {
+      this.classList.toggle('active');
+      STATE.showShows = this.classList.contains('active');
+      render();
+    });
+
+    // ── Boot ─────────────────────────────────────────────────────────────────
     loadWeek(STATE.currentMonday);
   </script>
 </body>

@@ -41,14 +41,14 @@
     .loading-overlay.active{display:flex;}
     .top-note{padding:10px 16px 0 16px;font-size:12px;color:var(--muted);}
     @media (max-width:900px){.week-grid{grid-template-columns:1fr;}}
-    .modal-overlay {position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;}
-    .modal-overlay.active {display:flex;}
-    .modal-content {background:#fff;border-radius:10px;padding:20px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto;position:relative;}
-    .modal-close {position:absolute;top:10px;right:12px;font-size:20px;cursor:pointer;color:var(--muted);}
-    .modal-title {font-weight:600;font-size:16px;margin-bottom:12px;}
-    .modal-row {margin-bottom:8px;font-size:13px;}
-    .modal-label {font-weight:600;color:var(--ink);}
-    .modal-value {color:var(--muted);}
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:10000;}
+    .modal-overlay.active{display:flex;}
+    .modal-content{background:#fff;border-radius:10px;padding:20px;max-width:400px;width:90%;max-height:80vh;overflow-y:auto;position:relative;}
+    .modal-close{position:absolute;top:10px;right:12px;font-size:20px;cursor:pointer;color:var(--muted);}
+    .modal-title{font-weight:600;font-size:16px;margin-bottom:12px;}
+    .modal-row{margin-bottom:8px;font-size:13px;}
+    .modal-label{font-weight:600;color:var(--ink);}
+    .modal-value{color:var(--muted);}
   </style>
 </head>
 <body>
@@ -85,8 +85,7 @@
   <script>
     const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
     
-    var STATE = { tab: 'classes', weekKey: '', data: null };
-    STATE.weekKey = formatDateKey(new Date());
+    var STATE = { tab: 'classes', weekKey: formatDateKey(new Date()), data: null };
 
     function formatDateKey(date) {
       var d = new Date(date);
@@ -102,69 +101,90 @@
     function addDays(date,days) { var d=new Date(date); d.setDate(d.getDate()+days); return d; }
 
     function escapeHtml(str) {
-      var div=document.createElement("div"); div.textContent=String(str==null?"":str); return div.innerHTML;
+      var div = document.createElement("div");
+      div.textContent = String(str == null ? "" : str);
+      return div.innerHTML;
     }
 
     function buildGridHtml(events) {
-      var byDay={}; STATE.data.days.forEach(function(d){byDay[d.key]=[]});
-      events.forEach(function(ev){ if(byDay[ev.dayKey])byDay[ev.dayKey].push(ev); });
+      var byDay = {};
+      STATE.data.days.forEach(function(d){ byDay[d.key] = []; });
+      events.forEach(function(ev){ if(byDay[ev.dayKey]) byDay[ev.dayKey].push(ev); });
       
-      var html="";
+      var html = "";
       STATE.data.days.forEach(function(d) {
-        var isToday=d.key===STATE.data.todayKey;
-        var dayEvents=byDay[d.key];
-        var evHtml="";
-        if(dayEvents.length===0){ evHtml='<div class="no-events">—</div>'; }
-        else {
+        var isToday = d.key === STATE.data.todayKey;
+        var dayEvents = byDay[d.key];
+        var evHtml = "";
+        
+        if(dayEvents.length === 0) {
+          evHtml = '<div class="no-events">—</div>';
+        } else {
           dayEvents.forEach(function(ev) {
-            var evJson=escapeHtml(JSON.stringify(ev));
-            evHtml+='<div class="event-card">'+
-              '<div class="event-time">'+escapeHtml(ev.startTime)+' – '+escapeHtml(ev.endTime)+'</div>'+
-              '<div class="event-title">'+escapeHtml(ev.title)+'</div>'+
-              (ev.location?'<div class="event-location">'+escapeHtml(ev.location)+'</div>':"")+
-              '<div class="event-meta">'+
-                (ev.costText?'<span class="event-cost">'+escapeHtml(ev.costText)+'</span>':"")+
-                (ev.spotsText?'<span class="event-spots">'+escapeHtml(ev.spotsText)+'</span>':"")+
-              '</div>'+
-              (ev.registrationLink?'<a class="event-register" href="'+escapeHtml(ev.registrationLink)+'" target="_top">Register</a>':"")+
-              '<button class="event-more-info" onclick="openModal('+evJson+)">More Info</button>'+
+            evHtml += '<div class="event-card">' +
+              '<div class="event-time">' + escapeHtml(ev.startTime) + ' – ' + escapeHtml(ev.endTime) + '</div>' +
+              '<div class="event-title">' + escapeHtml(ev.title) + '</div>' +
+              (ev.location ? '<div class="event-location">' + escapeHtml(ev.location) + '</div>' : "") +
+              '<div class="event-meta">' +
+                (ev.costText ? '<span class="event-cost">' + escapeHtml(ev.costText) + '</span>' : "") +
+                (ev.spotsText ? '<span class="event-spots">' + escapeHtml(ev.spotsText) + '</span>' : "") +
+              '</div>' +
+              (ev.registrationLink ? '<a class="event-register" href="' + escapeHtml(ev.registrationLink) + '" target="_top">Register</a>' : "") +
+              '<button class="event-more-info" data-title="' + escapeHtml(ev.title) + '" data-duration="' + escapeHtml(ev.duration) + '" data-category="' + escapeHtml(ev.category) + '" data-type="' + escapeHtml(ev.type) + '" data-inclusion="' + escapeHtml(ev.inclusion) + '" data-notes="' + escapeHtml(ev.participantNotes) + '">More Info</button>' +
             '</div>';
           });
         }
-        html+='<div class="day-column'+(isToday?' today':'')+'">'+
-          '<div class="day-header"><span class="day-name">'+d.name+'</span><span class="day-num">'+d.num+'</span></div>'+
-          '<div class="day-events">'+evHtml+'</div>'+
+        
+        html += '<div class="day-column' + (isToday ? ' today' : '') + '">' +
+          '<div class="day-header"><span class="day-name">' + d.name + '</span><span class="day-num">' + d.num + '</span></div>' +
+          '<div class="day-events">' + evHtml + '</div>' +
         '</div>';
       });
       return html;
     }
 
     function render() {
-      document.getElementById("weekLabel").textContent=STATE.data.weekLabel;
-      document.getElementById("grid-classes").innerHTML=buildGridHtml(STATE.data.classes);
-      document.getElementById("grid-shows").innerHTML=buildGridHtml(STATE.data.shows);
+      document.getElementById("weekLabel").textContent = STATE.data.weekLabel;
+      document.getElementById("grid-classes").innerHTML = buildGridHtml(STATE.data.classes);
+      document.getElementById("grid-shows").innerHTML = buildGridHtml(STATE.data.shows);
       applyTab();
+      setupMoreInfo();
+    }
+
+    function setupMoreInfo() {
+      var btns = document.querySelectorAll('.event-more-info');
+      btns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.getElementById('modalTitle').textContent = btn.getAttribute('data-title');
+          document.getElementById('modalDuration').textContent = btn.getAttribute('data-duration');
+          document.getElementById('modalCategory').textContent = btn.getAttribute('data-category');
+          document.getElementById('modalType').textContent = btn.getAttribute('data-type');
+          document.getElementById('modalInclusion').textContent = btn.getAttribute('data-inclusion');
+          document.getElementById('modalNotes').textContent = btn.getAttribute('data-notes');
+          document.getElementById('modalOverlay').classList.add('active');
+        });
+      });
     }
 
     function applyTab() {
-      document.getElementById("grid-classes").classList.toggle("active",STATE.tab==="classes");
-      document.getElementById("grid-shows").classList.toggle("active",STATE.tab==="shows");
-      document.getElementById("tab-classes").classList.toggle("active",STATE.tab==="classes");
-      document.getElementById("tab-shows").classList.toggle("active",STATE.tab==="shows");
+      document.getElementById("grid-classes").classList.toggle("active", STATE.tab === "classes");
+      document.getElementById("grid-shows").classList.toggle("active", STATE.tab === "shows");
+      document.getElementById("tab-classes").classList.toggle("active", STATE.tab === "classes");
+      document.getElementById("tab-shows").classList.toggle("active", STATE.tab === "shows");
     }
 
     function setLoading(isLoading) {
-      document.getElementById("loadingOverlay").classList.toggle("active",isLoading);
-      document.getElementById("prevBtn").disabled=isLoading;
-      document.getElementById("nextBtn").disabled=isLoading;
+      document.getElementById("loadingOverlay").classList.toggle("active", isLoading);
+      document.getElementById("prevBtn").disabled = isLoading;
+      document.getElementById("nextBtn").disabled = isLoading;
     }
 
     function loadWeek(weekKey) {
       setLoading(true);
-      fetch(APPS_SCRIPT_WEB_APP_URL+"?calType="+STATE.tab+"&week="+weekKey)
-        .then(function(res){ if(!res.ok)throw new Error("Network error"); return res.json(); })
+      fetch(APPS_SCRIPT_WEB_APP_URL + "?calType=" + STATE.tab + "&week=" + weekKey)
+        .then(function(res) { if(!res.ok) throw new Error("Network error"); return res.json(); })
         .then(function(data) {
-          STATE.data=data; STATE.weekKey=weekKey;
+          STATE.data = data; STATE.weekKey = weekKey;
           render(); setLoading(false);
         })
         .catch(function(err) {
@@ -172,40 +192,34 @@
         });
     }
 
-    function openModal(ev) {
-      document.getElementById('modalTitle').textContent=ev.title||'';
-      document.getElementById('modalDuration').textContent=ev.duration||'';
-      document.getElementById('modalCategory').textContent=ev.category||'';
-      document.getElementById('modalType').textContent=ev.type||'';
-      document.getElementById('modalInclusion').textContent=ev.inclusion||'';
-      document.getElementById('modalNotes').textContent=ev.participantNotes||'';
-      document.getElementById('modalOverlay').classList.add('active');
-    }
-
-    document.getElementById("prevBtn").onclick=function() {
-      var prev=new Date(STATE.data?STATE.data.mondayKey:new Date()); prev.setDate(prev.getDate()-7);
+    document.getElementById("prevBtn").onclick = function() {
+      var prev = new Date(STATE.data ? STATE.data.mondayKey : new Date());
+      prev.setDate(prev.getDate() - 7);
       loadWeek(formatDateKey(prev));
     };
 
-    document.getElementById("nextBtn").onclick=function() {
-      var next=new Date(STATE.data?STATE.data.mondayKey:new Date()); next.setDate(next.getDate()+7);
+    document.getElementById("nextBtn").onclick = function() {
+      var next = new Date(STATE.data ? STATE.data.mondayKey : new Date());
+      next.setDate(next.getDate() + 7);
       loadWeek(formatDateKey(next));
     };
 
-    document.getElementById("tab-classes").onclick=function() {
-      STATE.tab="classes"; applyTab(); if(STATE.data)loadWeek(STATE.weekKey);
+    document.getElementById("tab-classes").onclick = function() {
+      STATE.tab = "classes"; applyTab(); if(STATE.data) loadWeek(STATE.weekKey);
     };
 
-    document.getElementById("tab-shows").onclick=function() {
-      STATE.tab="shows"; applyTab(); if(STATE.data)loadWeek(STATE.weekKey);
+    document.getElementById("tab-shows").onclick = function() {
+      STATE.tab = "shows"; applyTab(); if(STATE.data) loadWeek(STATE.weekKey);
     };
 
-    document.getElementById("modalClose").onclick=function() {
+    document.getElementById("modalClose").onclick = function() {
       document.getElementById('modalOverlay').classList.remove('active');
     };
 
-    document.getElementById("modalOverlay").onclick=function(e) {
-      if(e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('active');
+    document.getElementById("modalOverlay").onclick = function(e) {
+      if(e.target === document.getElementById('modalOverlay')) {
+        document.getElementById('modalOverlay').classList.remove('active');
+      }
     };
 
     loadWeek(STATE.weekKey);

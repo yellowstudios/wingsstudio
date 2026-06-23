@@ -336,20 +336,13 @@ function openMobilePanel(ev, openReg){
 
   setTimeout(function () {
     var body = document.getElementById('mobilePanelBody');
+    if (!body) return;
     body.scrollTop = 0;
     body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 50);
 
   document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
 }
-
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function () {
-      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  });
-}
-
     function closeMobilePanel(){
       var host=document.getElementById('mobilePanelHost');
       host.innerHTML='';

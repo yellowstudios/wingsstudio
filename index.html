@@ -593,10 +593,17 @@ wireMobileForm(ev);
       var regDivider=document.getElementById('regDivider');
       if(showReg){regSection.classList.add('active'); regDivider.style.display=''; resetRegFormDesktop();} else {regSection.classList.remove('active'); regDivider.style.display='none';}
       document.getElementById('modalOverlay').classList.add('active');
-      setTimeout(function(){document.getElementById('modalContentTop').scrollIntoView({behavior:'smooth', block:'start'});},50);
-      if(openReg && showReg){setTimeout(function(){document.getElementById('regSection').scrollIntoView({behavior:'smooth', block:'start'});},120);}
-      broadcastHeight();
-    }
+setTimeout(function () {
+  var topEl = document.getElementById('modalContentTop');
+  if (topEl) topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}, 50);
+
+if (openReg && showReg) {
+  setTimeout(function () {
+    var regEl = document.getElementById('regSection');
+    if (regEl) regEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
+}
 
     function closeDesktopModal(){
       document.getElementById('modalOverlay').classList.remove('active');

@@ -8,7 +8,7 @@
     :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
     *{box-sizing:border-box;}
     html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-    body.modal-open{position:static !important;overflow:auto !important;}
+    body{overflow:auto;}
 
     .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
     .toolbar .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -53,27 +53,26 @@
     .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
 
-    .day-panel-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:9500;pointer-events:none;}
-    .day-panel-overlay.active{display:flex;}
-    .day-panel{pointer-events:auto;background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:80vh;overflow-y:auto;padding:20px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
-    @media(min-width:600px){.day-panel-overlay{align-items:center;padding:16px;}.day-panel{border-radius:12px;}}
-    .day-panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
-    .day-panel-title{font-weight:700;font-size:16px;}
-    .day-panel-close{font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
-    .day-panel-event{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;}
-    .day-panel-event-time{font-size:12px;color:var(--muted);margin-bottom:2px;}
-    .day-panel-event-title{font-weight:600;font-size:14px;margin-bottom:6px;}
-    .day-panel-btns{display:flex;gap:6px;}
-    .day-panel-btns button{flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);}
-    .day-panel-btns button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-    .day-panel-empty{color:var(--muted);text-align:center;padding:20px 0;font-size:14px;}
+    .panel{display:none;border:1px solid var(--line);border-radius:10px;background:#fff;margin:10px 12px 0;padding:14px;}
+    .panel.active{display:block;}
+    .panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+    .panel-title{font-size:16px;font-weight:700;}
+    .panel-close{font-size:22px;line-height:1;cursor:pointer;color:var(--muted);}
+    .panel-body{max-height:none;overflow:visible;}
+    .panel-event{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;}
+    .panel-event-time{font-size:12px;color:var(--muted);margin-bottom:2px;}
+    .panel-event-title{font-weight:600;font-size:14px;margin-bottom:6px;}
+    .panel-btns{display:flex;gap:6px;flex-wrap:wrap;}
+    .panel-btns button{flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);min-width:120px;}
+    .panel-btns button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .panel-empty{color:var(--muted);text-align:center;padding:14px 0;font-size:14px;}
 
     .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;pointer-events:none;}
     .loading-overlay.active{display:flex;}
 
-    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;pointer-events:none;}
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;}
     .modal-overlay.active{display:flex;}
-    .modal-content{pointer-events:auto;background:#fff;border-radius:12px;padding:24px;max-width:440px;width:100%;max-height:calc(100vh - 32px);overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+    .modal-content{background:#fff;border-radius:12px;padding:24px;max-width:440px;width:100%;max-height:calc(100vh - 32px);overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
     .modal-close{position:absolute;top:12px;right:14px;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
     .modal-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
     .modal-img.show{display:block;}
@@ -127,7 +126,11 @@
     .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
     .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
 
-    @media(max-width:900px){.week-grid{grid-template-columns:1fr;}}
+    @media(max-width:900px){
+      .week-grid{grid-template-columns:1fr;}
+      .modal-overlay{display:none !important;}
+      .mobile-hidden{display:none !important;}
+    }
   </style>
 </head>
 <body>
@@ -153,20 +156,12 @@
   <div id="calendarArea"></div>
   <div class="loading-overlay" id="loadingOverlay">Loading…</div>
 
+  <div id="mobilePanelHost"></div>
+
   <div class="sessions-section">
     <h2 class="sessions-section-heading">Our Sessions</h2>
     <p class="sessions-section-sub">Browse our full program and register for any upcoming date.</p>
     <div id="sessionsArea"></div>
-  </div>
-
-  <div class="day-panel-overlay" id="dayPanelOverlay">
-    <div class="day-panel">
-      <div class="day-panel-header">
-        <div class="day-panel-title" id="dayPanelTitle"></div>
-        <span class="day-panel-close" id="dayPanelClose">×</span>
-      </div>
-      <div id="dayPanelContent"></div>
-    </div>
   </div>
 
   <div class="modal-overlay" id="modalOverlay">
@@ -243,7 +238,7 @@
   <script>
     var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
     var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null};
-    var monthByDay = {}, eventMap = {};
+    var monthByDay = {}, eventMap = {}, mobilePanelEl = null;
 
     function mondayOf(date){var d=new Date(date); d.setHours(0,0,0,0); var day=d.getDay(), diff=day===0?-6:1-day; d.setDate(d.getDate()+diff); return d;}
     function addDays(date,n){var d=new Date(date); d.setDate(d.getDate()+n); return d;}
@@ -256,7 +251,7 @@
     function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
     function apiGet(params){var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); return fetch(API+'?'+qs).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
     function apiPost(body){return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
-    function isMobile(){return window.matchMedia && window.matchMedia('(max-width: 767px)').matches;}
+    function isMobile(){return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;}
 
     function load(){setLoading(true); var params=S.view==='month'?{month:S.currentMonth}:{week:dateKey(S.currentMonday)}; apiGet(params).then(function(data){S.data=data; render(); setLoading(false);}).catch(function(err){setLoading(false); document.getElementById('periodLabel').textContent='Error — try again'; console.error(err);});}
     function loadSessions(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading sessions…</div>'; apiGet({view:'sessions'}).then(function(data){S.sessionsData=data; renderSessions();}).catch(function(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Could not load sessions.</div>';});}
@@ -264,18 +259,234 @@
     function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight();}
     function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
 
-    function renderWeek(events){var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];}); events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } }); var html='<div class="week-grid">'; S.data.days.forEach(function(d){var isToday=d.key===S.data.todayKey; var dayEvs=byDay[d.key]; var evHtml=''; if(!dayEvs.length){evHtml='<div class="no-events">—</div>';} else {dayEvs.forEach(function(ev){var k=registerEvent(ev); evHtml += '<div class="event-card"><div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div><div class="event-title">'+esc(ev.title)+'</div>'+(ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')+'<div class="event-meta">'+(ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')+(ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')+'</div>'+(ev.isPublic && !ev.isFull ? '<button class="btn-register" data-id="'+esc(k)+'">Register</button>' : '')+'<button class="btn-info" data-id="'+esc(k)+'">More Info</button></div>';});} html += '<div class="day-column'+(isToday?' today':'')+'"><div class="day-header"><span class="day-name">'+d.name+'</span><span class="day-num">'+d.num+'</span></div><div class="day-events">'+evHtml+'</div></div>';}); html += '</div>'; document.getElementById('calendarArea').innerHTML = html; attachCalendarListeners();}
-    function renderMonth(events){var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];}); events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } }); monthByDay=byDay; var currentMonthNum=parseInt(S.currentMonth.split('-')[1],10); var DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; var html='<div class="month-grid">'; DOW.forEach(function(n){html += '<div class="month-day-header">'+n+'</div>';}); S.data.days.forEach(function(d){var isToday=d.key===S.data.todayKey; var otherMonth=parseInt(d.monthNum,10)!==currentMonthNum; var dayEvs=byDay[d.key]||[]; var pillsHtml=''; var MAX=3; dayEvs.slice(0,MAX).forEach(function(ev){pillsHtml += '<div class="month-event-pill">'+esc(ev.startTime+' '+ev.title)+'</div>';}); if(dayEvs.length>MAX) pillsHtml += '<div class="month-more">+'+(dayEvs.length-MAX)+' more</div>'; html += '<div class="month-cell'+(isToday?' today':'')+(otherMonth?' other-month':'')+'" data-key="'+esc(d.key)+'"><div class="month-cell-num">'+d.num+'</div>'+pillsHtml+'</div>';}); html += '</div>'; document.getElementById('calendarArea').innerHTML = html; attachCalendarListeners();}
+    function renderWeek(events){
+      var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];});
+      events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } });
+      var html='<div class="week-grid">';
+      S.data.days.forEach(function(d){
+        var isToday=d.key===S.data.todayKey;
+        var dayEvs=byDay[d.key];
+        var evHtml='';
+        if(!dayEvs.length){evHtml='<div class="no-events">—</div>';}
+        else{
+          dayEvs.forEach(function(ev){
+            var k=registerEvent(ev);
+            evHtml += '<div class="event-card" data-evcard="1">'
+              + '<div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
+              + '<div class="event-title">'+esc(ev.title)+'</div>'
+              + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
+              + '<div class="event-meta">'
+              + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
+              + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
+              + '</div>'
+              + (ev.isPublic && !ev.isFull ? '<button class="btn-register" data-id="'+esc(k)+'">Register</button>' : '')
+              + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
+              + '<div class="mobile-panel-slot"></div>'
+              + '</div>';
+          });
+        }
+        html += '<div class="day-column'+(isToday?' today':'')+'"><div class="day-header"><span class="day-name">'+d.name+'</span><span class="day-num">'+d.num+'</span></div><div class="day-events">'+evHtml+'</div></div>';
+      });
+      html += '</div>';
+      document.getElementById('calendarArea').innerHTML = html;
+      attachCalendarListeners();
+    }
 
-    function openDayPanel(dayKey, events){var parts=dayKey.split('-'); var d=new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])); document.getElementById('dayPanelTitle').textContent = d.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric'}); var html=''; if(!events.length){html='<div class="day-panel-empty">No events this day.</div>';} else {events.forEach(function(ev){var k=registerEvent(ev); html += '<div class="day-panel-event"><div class="day-panel-event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div><div class="day-panel-event-title">'+esc(ev.title)+'</div><div class="day-panel-btns">'+(ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+'<button class="btn-info" data-id="'+esc(k)+'">More Info</button></div></div>';});} document.getElementById('dayPanelContent').innerHTML = html; attachCardListeners(document.getElementById('dayPanelContent')); document.getElementById('dayPanelOverlay').classList.add('active');}
+    function renderMonth(events){
+      var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];});
+      events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } });
+      monthByDay=byDay;
+      var currentMonthNum=parseInt(S.currentMonth.split('-')[1],10);
+      var DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      var html='<div class="month-grid">';
+      DOW.forEach(function(n){html += '<div class="month-day-header">'+n+'</div>';});
+      S.data.days.forEach(function(d){
+        var isToday=d.key===S.data.todayKey;
+        var otherMonth=parseInt(d.monthNum,10)!==currentMonthNum;
+        var dayEvs=byDay[d.key] || [];
+        var pillsHtml='';
+        var MAX=3;
+        dayEvs.slice(0,MAX).forEach(function(ev){pillsHtml += '<div class="month-event-pill">'+esc(ev.startTime+' '+ev.title)+'</div>';});
+        if(dayEvs.length>MAX) pillsHtml += '<div class="month-more">+'+(dayEvs.length-MAX)+' more</div>';
+        html += '<div class="month-cell'+(isToday?' today':'')+(otherMonth?' other-month':'')+'" data-key="'+esc(d.key)+'"><div class="month-cell-num">'+d.num+'</div>'+pillsHtml+'</div>';
+      });
+      html += '</div>';
+      document.getElementById('calendarArea').innerHTML = html;
+      attachCalendarListeners();
+    }
 
-    function attachCalendarListeners(){var area=document.getElementById('calendarArea'); if(!area || area.dataset.listenersAttached) return; area.dataset.listenersAttached='1'; area.addEventListener('click', function(e){var btn = e.target.closest('.btn-register, .btn-info'); if(btn){var ev = eventMap[btn.getAttribute('data-id')]; if(ev){openModal(ev, btn.classList.contains('btn-register'), btn);} return;} var cell=e.target.closest('.month-cell'); if(!cell) return; openDayPanel(cell.getAttribute('data-key'), monthByDay[cell.getAttribute('data-key')] || []);});}
-    function attachSessionListeners(){var area=document.getElementById('sessionsArea'); if(!area || area.dataset.listenersAttached) return; area.dataset.listenersAttached='1'; area.addEventListener('click', function(e){var toggle=e.target.closest('.session-card-toggle'); if(toggle){var sid=toggle.getAttribute('data-sid'); var panel=document.getElementById('si-'+sid); if(!panel) return; var open=panel.classList.toggle('open'); var count=panel.querySelectorAll('.session-instance-row').length; toggle.textContent=open?'Hide dates':count+(count===1?' upcoming date':' upcoming dates')+' — view all'; broadcastHeight(); return;} var btn=e.target.closest('.btn-register, .btn-info'); if(!btn) return; var ev=eventMap[btn.getAttribute('data-id')]; if(ev){openModal(ev, btn.classList.contains('btn-register'), btn);}});}
-    function setModalRow(rowId,valId,value){var row=document.getElementById(rowId); var val=document.getElementById(valId); if(value && String(value).trim()){if(val) val.textContent=value; if(row) row.style.display='';} else {if(row) row.style.display='none';}}
+    function openMobilePanel(ev, openReg){
+      closeMobilePanel();
+      var host=document.getElementById('mobilePanelHost');
+      var panel=document.createElement('div');
+      panel.className='panel active';
+      panel.id='mobilePanel';
+      panel.innerHTML=
+        '<div class="panel-header">'
+        + '<div class="panel-title" id="mobilePanelTitle"></div>'
+        + '<span class="panel-close" id="mobilePanelClose">×</span>'
+        + '</div>'
+        + '<div class="panel-body" id="mobilePanelBody"></div>';
+      host.appendChild(panel);
+      mobilePanelEl=panel;
+      fillPanelContent('mobilePanelBody','mobilePanelTitle',ev,openReg,true);
+      document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
+      setTimeout(function(){panel.scrollIntoView({behavior:'smooth', block:'start'});},50);
+    }
 
-    function openModal(ev, openReg, triggerEl){
-      S.activeEv = ev;
-      if(triggerEl && triggerEl.scrollIntoView){triggerEl.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});}
+    function closeMobilePanel(){
+      var host=document.getElementById('mobilePanelHost');
+      host.innerHTML='';
+      mobilePanelEl=null;
+    }
+
+    function fillPanelContent(bodyId,titleId,ev,openReg,isMobilePanel){
+      S.activeEv=ev;
+      document.getElementById(titleId).textContent=ev.title;
+      var body=document.getElementById(bodyId);
+      var html='';
+      html += '<div class="modal-subtitle">'+esc(ev.startTime+' – '+ev.endTime)+'</div>';
+      if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
+      html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
+      if(ev.duration) html += '<div class="modal-row"><span class="modal-label">Duration</span><span class="modal-value">'+esc(formatDuration(ev.duration))+'</span></div>';
+      if(ev.costText) html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
+      if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
+      if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
+      if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>';
+      if(ev.spotsText) html += '<div class="modal-row"><span class="modal-label">Availability</span><span class="modal-value">'+esc(ev.spotsText)+'</span></div>';
+      html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
+      if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
+      if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;">This event is currently full. Check back for future sessions!</span></div>';
+      if(ev.isPublic && !ev.isFull){
+        html += '<hr class="modal-divider">';
+        html += '<div class="reg-section active" id="regSectionMobile">'
+          + '<div class="reg-title">Register for this event</div>'
+          + '<p class="reg-note">Enter your email — if you\'ve registered before, we\'ll fill in your details.</p>'
+          + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
+          + '<input type="text" class="reg-input" id="regNameMobile" placeholder="Full name *" autocomplete="name">'
+          + '<input type="tel" class="reg-input" id="regPhoneMobile" placeholder="Phone number *" autocomplete="tel">'
+          + '<div class="pay-section">'
+          + '<div class="pay-title">Payment method</div>'
+          + '<div class="pay-options">'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="square"> Credit / Debit Card</label>'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="zelle"> Zelle</label>'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="cash"> Cash</label>'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="check"> Check</label>'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="later" checked> Pay later / Decide later</label>'
+          + '</div>'
+          + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:none;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>'
+          + '<div id="zelleInfoMobile" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Include your name and event in the memo.</div>'
+          + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event. Make checks payable to <strong>Wings to Fly Dance Company</strong>.</div>'
+          + '</div>'
+          + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
+          + '<div class="pay-title">A few more details</div>'
+          + '<p class="reg-note">This session has inclusive programming. Share only what you\'re comfortable with.</p>'
+          + '<label class="reg-label" for="regDobMobile">Date of Birth</label>'
+          + '<input type="date" class="reg-input" id="regDobMobile">'
+          + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver?</div>'
+          + '<div class="pay-options" style="margin-bottom:8px;">'
+          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="yes" id="careYesMobile"> Yes, a support person will attend</label>'
+          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No support person needed</label>'
+          + '</div>'
+          + '<div id="caregiverFieldsMobile" style="display:none;">'
+          + '<input type="text" class="reg-input" id="regCaregiverNameMobile" placeholder="Support person\'s name">'
+          + '<input type="tel" class="reg-input" id="regCaregiverPhoneMobile" placeholder="Support person\'s phone number">'
+          + '</div>'
+          + '<div class="reg-label" style="margin-top:12px;">Are there any accommodations that would help this participant fully enjoy the session?</div>'
+          + '<div class="pay-options" style="margin-bottom:8px;">'
+          + '<label class="pay-option"><input type="radio" name="accommodationsRequestedMobile" value="yes" id="accYesMobile"> Yes, I\'d like to share some details</label>'
+          + '<label class="pay-option"><input type="radio" name="accommodationsRequestedMobile" value="no" id="accNoMobile" checked> No accommodations needed at this time</label>'
+          + '</div>'
+          + '<div id="accommodationsFieldMobile" style="display:none;">'
+          + '<textarea class="reg-input" id="regAccommodationsMobile" rows="3" placeholder="Please share anything that would help us support you." style="resize:vertical;"></textarea>'
+          + '</div>'
+          + '</div>'
+          + '<button class="reg-submit" id="regSubmitMobile">Register</button>'
+          + '<div class="reg-success" id="regSuccessMobile"></div>'
+          + '<div class="reg-error" id="regErrorMobile"></div>'
+          + '</div>';
+      }
+      body.innerHTML=html;
+      wireMobileForm(ev);
+    }
+
+    function attachCalendarListeners(){
+      var area=document.getElementById('calendarArea');
+      if(!area || area.dataset.listenersAttached) return;
+      area.dataset.listenersAttached='1';
+      area.addEventListener('click', function(e){
+        var btn = e.target.closest('.btn-register, .btn-info');
+        if(btn){
+          var ev = eventMap[btn.getAttribute('data-id')];
+          if(!ev) return;
+          if(isMobile()) openMobilePanel(ev, btn.classList.contains('btn-register'));
+          else openDesktopModal(ev, btn.classList.contains('btn-register'), btn);
+          return;
+        }
+        var cell=e.target.closest('.month-cell');
+        if(!cell) return;
+        openDayPanel(cell.getAttribute('data-key'), monthByDay[cell.getAttribute('data-key')] || []);
+      });
+    }
+
+    function attachSessionListeners(){
+      var area=document.getElementById('sessionsArea');
+      if(!area || area.dataset.listenersAttached) return;
+      area.dataset.listenersAttached='1';
+      area.addEventListener('click', function(e){
+        var toggle=e.target.closest('.session-card-toggle');
+        if(toggle){
+          var sid=toggle.getAttribute('data-sid');
+          var panel=document.getElementById('si-'+sid);
+          if(!panel) return;
+          var open=panel.classList.toggle('open');
+          var count=panel.querySelectorAll('.session-instance-row').length;
+          toggle.textContent=open?'Hide dates':count+(count===1?' upcoming date':' upcoming dates')+' — view all';
+          broadcastHeight();
+          return;
+        }
+        var btn=e.target.closest('.btn-register, .btn-info');
+        if(!btn) return;
+        var ev=eventMap[btn.getAttribute('data-id')];
+        if(!ev) return;
+        if(isMobile()) openMobilePanel(ev, btn.classList.contains('btn-register'));
+        else openDesktopModal(ev, btn.classList.contains('btn-register'), btn);
+      });
+    }
+
+    function openDayPanel(dayKey, events){
+      var panelHost=document.getElementById('mobilePanelHost');
+      var parts=dayKey.split('-');
+      var d=new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+      var html='<div class="panel active"><div class="panel-header"><div class="panel-title">'+d.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric'})+'</div><span class="panel-close" id="dayPanelClose">×</span></div><div class="panel-body">';
+      if(!events.length){html += '<div class="panel-empty">No events this day.</div>';}
+      else{
+        events.forEach(function(ev){
+          var k=registerEvent(ev);
+          html += '<div class="panel-event"><div class="panel-event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div><div class="panel-event-title">'+esc(ev.title)+'</div><div class="panel-btns">'+(ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+'<button class="btn-info" data-id="'+esc(k)+'">More Info</button></div></div>';
+        });
+      }
+      html += '</div></div>';
+      panelHost.innerHTML=html;
+      document.getElementById('dayPanelClose').addEventListener('click', function(){panelHost.innerHTML='';});
+      attachMobilePanelDelegates(panelHost);
+      panelHost.firstElementChild.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function attachMobilePanelDelegates(root){
+      root.addEventListener('click', function(e){
+        var btn=e.target.closest('.btn-register, .btn-info');
+        if(!btn) return;
+        var ev=eventMap[btn.getAttribute('data-id')];
+        if(!ev) return;
+        if(isMobile()) openMobilePanel(ev, btn.classList.contains('btn-register'));
+        else openDesktopModal(ev, btn.classList.contains('btn-register'), btn);
+      });
+    }
+
+    function openDesktopModal(ev, openReg, triggerEl){
+      S.activeEv=ev;
+      if(triggerEl && triggerEl.scrollIntoView) triggerEl.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});
       var img=document.getElementById('modalImg');
       if(ev.imageUrl && ev.imageUrl.trim()){img.src=ev.imageUrl; img.classList.add('show');} else {img.classList.remove('show'); img.removeAttribute('src');}
       document.getElementById('modalTitle').textContent=ev.title;
@@ -295,59 +506,71 @@
       var showReg = ev.isPublic && !ev.isFull;
       var regSection=document.getElementById('regSection');
       var regDivider=document.getElementById('regDivider');
-      if(showReg){regSection.classList.add('active'); regDivider.style.display=''; resetRegForm();} else {regSection.classList.remove('active'); regDivider.style.display='none';}
-      document.getElementById('inclusionFields').style.display = ev.inclusion ? '' : 'none';
-      if(!ev.inclusion) resetInclusionFields();
-
+      if(showReg){regSection.classList.add('active'); regDivider.style.display=''; resetRegFormDesktop();} else {regSection.classList.remove('active'); regDivider.style.display='none';}
       document.getElementById('modalOverlay').classList.add('active');
-      document.body.classList.add('modal-open');
-
-      setTimeout(function(){document.getElementById('modalContentTop').scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});}, 50);
-      if(openReg && showReg){setTimeout(function(){document.getElementById('regSection').scrollIntoView({behavior:'smooth', block:'start'});}, 120);}
+      setTimeout(function(){document.getElementById('modalContentTop').scrollIntoView({behavior:'smooth', block:'start'});},50);
+      if(openReg && showReg){setTimeout(function(){document.getElementById('regSection').scrollIntoView({behavior:'smooth', block:'start'});},120);}
       broadcastHeight();
     }
 
-    function closeModal(){
+    function closeDesktopModal(){
       document.getElementById('modalOverlay').classList.remove('active');
-      S.activeEv = null;
-      document.body.classList.remove('modal-open');
+      S.activeEv=null;
       broadcastHeight();
     }
 
-    function resetRegForm(){['regEmail','regName','regPhone'].forEach(function(id){var el=document.getElementById(id); el.value=''; el.disabled=false;}); var lr=document.querySelector('input[name="payMethod"][value="later"]'); if(lr) lr.checked=true; document.getElementById('squarePayBtn').style.display='none'; document.getElementById('zelleInfo').style.display='none'; document.getElementById('cashCheckInfo').style.display='none'; resetInclusionFields(); document.getElementById('regSuccess').textContent=''; document.getElementById('regError').textContent=''; document.getElementById('regSubmit').disabled=false; document.getElementById('regSubmit').textContent='Register'; document.getElementById('regSubmit').style.display=''; document.getElementById('regCloseBtn').style.display='none';}
-    function resetInclusionFields(){var dob=document.getElementById('regDob'); if(dob) dob.value=''; var cn=document.getElementById('careNo'); if(cn) cn.checked=true; document.getElementById('caregiverFields').style.display='none'; document.getElementById('regCaregiverName').value=''; document.getElementById('regCaregiverPhone').value=''; var an=document.getElementById('accNo'); if(an) an.checked=true; document.getElementById('accommodationsField').style.display='none'; document.getElementById('regAccommodations').value='';}
+    function resetRegFormDesktop(){['regEmail','regName','regPhone'].forEach(function(id){var el=document.getElementById(id); if(el){el.value=''; el.disabled=false;}}); var lr=document.querySelector('input[name="payMethod"][value="later"]'); if(lr) lr.checked=true; document.getElementById('squarePayBtn').style.display='none'; document.getElementById('zelleInfo').style.display='none'; document.getElementById('cashCheckInfo').style.display='none'; resetInclusionFieldsDesktop(); document.getElementById('regSuccess').textContent=''; document.getElementById('regError').textContent=''; document.getElementById('regSubmit').disabled=false; document.getElementById('regSubmit').textContent='Register'; document.getElementById('regSubmit').style.display=''; document.getElementById('regCloseBtn').style.display='none';}
+    function resetInclusionFieldsDesktop(){var dob=document.getElementById('regDob'); if(dob) dob.value=''; var cn=document.getElementById('careNo'); if(cn) cn.checked=true; document.getElementById('caregiverFields').style.display='none'; document.getElementById('regCaregiverName').value=''; document.getElementById('regCaregiverPhone').value=''; var an=document.getElementById('accNo'); if(an) an.checked=true; document.getElementById('accommodationsField').style.display='none'; document.getElementById('regAccommodations').value='';}
+    function setModalRow(rowId,valId,value){var row=document.getElementById(rowId); var val=document.getElementById(valId); if(value && String(value).trim()){if(val) val.textContent=value; if(row) row.style.display='';} else {if(row) row.style.display='none';}}
 
-    var emailTimer=null;
-    document.getElementById('regEmail').addEventListener('input', function(){var email=this.value.trim(); clearTimeout(emailTimer); document.getElementById('regName').disabled=false; document.getElementById('regPhone').disabled=false; if(email.length<5 || !email.includes('@')) return; emailTimer=setTimeout(function(){apiPost({action:'checkParticipant', email:email}).then(function(r){if(r && r.exists){document.getElementById('regName').value=r.name || ''; document.getElementById('regPhone').value=r.phone || ''; document.getElementById('regName').disabled=true; document.getElementById('regPhone').disabled=true;}}).catch(function(){});}, 600);});
+    function wireMobileForm(ev){
+      if(!isMobile()) return;
+      var set=document.getElementById('mobilePanelBody');
+      var email=document.getElementById('regEmailMobile');
+      var name=document.getElementById('regNameMobile');
+      var phone=document.getElementById('regPhoneMobile');
+      var emailTimer=null;
+      if(email){
+        email.addEventListener('input', function(){var v=this.value.trim(); clearTimeout(emailTimer); name.disabled=false; phone.disabled=false; if(v.length<5 || !v.includes('@')) return; emailTimer=setTimeout(function(){apiPost({action:'checkParticipant', email:v}).then(function(r){if(r && r.exists){name.value=r.name||''; phone.value=r.phone||''; name.disabled=true; phone.disabled=true;}}).catch(function(){});},600);});
+      }
+      document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('squarePayBtnMobile').style.display='none'; document.getElementById('zelleInfoMobile').style.display='none'; document.getElementById('cashCheckInfoMobile').style.display='none'; if(this.value==='square') document.getElementById('squarePayBtnMobile').style.display='block'; else if(this.value==='zelle') document.getElementById('zelleInfoMobile').style.display='block'; else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfoMobile').style.display='block';});});
+      document.querySelectorAll('input[name="careOfCaregiverMobile"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('caregiverFieldsMobile').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no'){document.getElementById('regCaregiverNameMobile').value=''; document.getElementById('regCaregiverPhoneMobile').value='';}});});
+      document.querySelectorAll('input[name="accommodationsRequestedMobile"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('accommodationsFieldMobile').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no') document.getElementById('regAccommodationsMobile').value='';});});
+      var submit=document.getElementById('regSubmitMobile');
+      submit.addEventListener('click', function(){
+        var emailV=email.value.trim(), nameV=name.value.trim(), phoneV=phone.value.trim(), payEl=document.querySelector('input[name="payMethodMobile"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regErrorMobile');
+        errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
+        if(!emailV || !nameV){errEl.textContent='Please enter your email and full name.'; return;}
+        if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
+        var inclusionData=null;
+        if(ev.inclusion){
+          var careEl=document.querySelector('input[name="careOfCaregiverMobile"]:checked');
+          var accEl=document.querySelector('input[name="accommodationsRequestedMobile"]:checked');
+          inclusionData={dob:document.getElementById('regDobMobile').value.trim(), careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
+        }
+        var btn=this; btn.disabled=true; btn.textContent='Submitting…';
+        apiPost({action:'register', instanceId:ev.instanceId, name:nameV, email:emailV, phone:phoneV, payMethod:payValue, inclusionData:inclusionData}).then(function(r){
+          btn.disabled=false; btn.textContent='Register';
+          if(r && r.success){document.getElementById('regSuccessMobile').textContent=r.message || 'You\'re registered!'; btn.style.display='none';}
+          else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
+        }).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});
+      });
+    }
 
+    var emailTimer = null;
+    document.getElementById('regEmail') && document.getElementById('regEmail').addEventListener('input', function(){var email=this.value.trim(); clearTimeout(emailTimer); document.getElementById('regName').disabled=false; document.getElementById('regPhone').disabled=false; if(email.length<5 || !email.includes('@')) return; emailTimer=setTimeout(function(){apiPost({action:'checkParticipant', email:email}).then(function(r){if(r && r.exists){document.getElementById('regName').value=r.name || ''; document.getElementById('regPhone').value=r.phone || ''; document.getElementById('regName').disabled=true; document.getElementById('regPhone').disabled=true;}}).catch(function(){});}, 600);});
     document.querySelectorAll('input[name="payMethod"]').forEach(function(radio){radio.addEventListener('change', function(){document.getElementById('squarePayBtn').style.display='none'; document.getElementById('zelleInfo').style.display='none'; document.getElementById('cashCheckInfo').style.display='none'; if(this.value==='square') document.getElementById('squarePayBtn').style.display='block'; else if(this.value==='zelle') document.getElementById('zelleInfo').style.display='block'; else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfo').style.display='block';});});
     document.querySelectorAll('input[name="careOfCaregiver"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('caregiverFields').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no'){document.getElementById('regCaregiverName').value=''; document.getElementById('regCaregiverPhone').value='';}});});
     document.querySelectorAll('input[name="accommodationsRequested"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('accommodationsField').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no') document.getElementById('regAccommodations').value='';});});
+    document.getElementById('regSubmit').addEventListener('click', function(){var email=document.getElementById('regEmail').value.trim(), name=document.getElementById('regName').value.trim(), phone=document.getElementById('regPhone').value.trim(), payEl=document.querySelector('input[name="payMethod"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regError'); errEl.textContent=''; document.getElementById('regSuccess').textContent=''; if(!email || !name){errEl.textContent='Please enter your email and full name.'; return;} if(!phone){errEl.textContent='Please enter your phone number.'; return;} var inclusionData=null; if(S.activeEv && S.activeEv.inclusion){var careEl=document.querySelector('input[name="careOfCaregiver"]:checked'); var accEl=document.querySelector('input[name="accommodationsRequested"]:checked'); inclusionData={dob:document.getElementById('regDob').value.trim(), careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverName').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhone').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodations').value.trim()};} var btn=this; btn.disabled=true; btn.textContent='Submitting…'; apiPost({action:'register', instanceId:S.activeEv.instanceId, name:name, email:email, phone:phone, payMethod:payValue, inclusionData:inclusionData}).then(function(r){btn.disabled=false; btn.textContent='Register'; if(r && r.success){document.getElementById('regSuccess').textContent=r.message || 'You\'re registered!'; ['regEmail','regName','regPhone'].forEach(function(id){document.getElementById(id).disabled=true;}); btn.style.display='none'; document.getElementById('regCloseBtn').style.display='block'; load(); loadSessions();} else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}}).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});});
 
-    document.getElementById('regSubmit').addEventListener('click', function(){
-      var email=document.getElementById('regEmail').value.trim(), name=document.getElementById('regName').value.trim(), phone=document.getElementById('regPhone').value.trim(), payEl=document.querySelector('input[name="payMethod"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regError');
-      errEl.textContent=''; document.getElementById('regSuccess').textContent='';
-      if(!email || !name){errEl.textContent='Please enter your email and full name.'; return;}
-      if(!phone){errEl.textContent='Please enter your phone number.'; return;}
-      var inclusionData=null;
-      if(S.activeEv && S.activeEv.inclusion){
-        var careEl=document.querySelector('input[name="careOfCaregiver"]:checked');
-        var accEl=document.querySelector('input[name="accommodationsRequested"]:checked');
-        inclusionData={dob:document.getElementById('regDob').value.trim(), careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverName').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhone').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodations').value.trim()};
-      }
-      var btn=this; btn.disabled=true; btn.textContent='Submitting…';
-      apiPost({action:'register', instanceId:S.activeEv.instanceId, name:name, email:email, phone:phone, payMethod:payValue, inclusionData:inclusionData}).then(function(r){
-        btn.disabled=false; btn.textContent='Register';
-        if(r && r.success){document.getElementById('regSuccess').textContent=r.message || 'You\'re registered!'; ['regEmail','regName','regPhone'].forEach(function(id){document.getElementById(id).disabled=true;}); btn.style.display='none'; document.getElementById('regCloseBtn').style.display='block'; load(); loadSessions();}
-        else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
-      }).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});
+    document.getElementById('modalClose').addEventListener('click', closeDesktopModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e){if(e.target===this) closeDesktopModal();});
+    document.getElementById('regCloseBtn').addEventListener('click', closeDesktopModal);
+    document.getElementById('mobilePanelHost').addEventListener('click', function(e){
+      var close=e.target.closest('.panel-close');
+      if(close) closeMobilePanel();
     });
-
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    document.getElementById('modalOverlay').addEventListener('click', function(e){if(e.target===this) closeModal();});
-    document.getElementById('regCloseBtn').addEventListener('click', closeModal);
-    document.getElementById('dayPanelClose').addEventListener('click', function(){document.getElementById('dayPanelOverlay').classList.remove('active');});
-    document.getElementById('dayPanelOverlay').addEventListener('click', function(e){if(e.target===this) document.getElementById('dayPanelOverlay').classList.remove('active');});
 
     document.getElementById('prevBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, -7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1)); load();}});
     document.getElementById('nextBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, 7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10), 1)); load();}});
@@ -356,13 +579,70 @@
     document.getElementById('tabClasses').addEventListener('click', function(){S.showClasses=!S.showClasses; this.classList.toggle('active',S.showClasses); if(S.data) render(); if(S.sessionsData) renderSessions();});
     document.getElementById('tabShows').addEventListener('click', function(){S.showShows=!S.showShows; this.classList.toggle('active',S.showShows); if(S.data) render(); if(S.sessionsData) renderSessions();});
 
-    function renderSessions(){var sessions=(S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : []; var filtered=sessions.filter(function(s){var typeLC=String(s.type || '').toLowerCase(); var catLC=String(s.category || '').toLowerCase(); var isShow=(typeLC==='event' || catLC==='performance'); if(S.showClasses && !S.showShows && isShow) return false; if(S.showShows && !S.showClasses && !isShow) return false; return true;}); var html=''; if(!filtered.length){html='<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:14px;">No sessions found.</div>';} else {html='<div class="sessions-grid">'; filtered.forEach(function(s){var hasImg=s.imageUrl && s.imageUrl.trim(); var sid=esc(s.sessionId); html += '<div class="session-card">'+(hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy">' : '')+'<div class="session-card-body"><div class="session-card-category">'+esc(s.category||s.type||'')+'</div><div class="session-card-title">'+esc(s.title)+'</div>'+(s.description ? '<div class="session-card-desc">'+esc(s.description)+'</div>' : '')+(s.costText ? '<div class="session-card-cost">'+esc(s.costText)+' per session</div>' : '')+'<button class="session-card-toggle" data-sid="'+sid+'">'+s.instances.length+(s.instances.length===1?' upcoming date':' upcoming dates')+' — view all</button><div class="session-instances" id="si-'+sid+'">'+buildInstanceRows(s.instances)+'</div></div></div>';}); html += '</div>';} var area=document.getElementById('sessionsArea'); area.innerHTML=html; attachSessionListeners(); broadcastHeight();}
-    function buildInstanceRows(instances){if(!instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>'; return instances.map(function(ev){var k=registerEvent(ev); var canReg=ev.isPublic && !ev.isFull; return '<div class="session-instance-row"><div><div class="session-instance-date">'+esc(ev.dateLabel)+'</div><div class="session-instance-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'+(ev.location ? '<div class="session-instance-spots">'+esc(ev.location)+'</div>' : '')+(ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '')+'</div><div style="display:flex;gap:6px;flex-wrap:wrap;">'+(canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+'<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button></div></div>';}).join('');}
-    function attachCardListeners(root){if(!root || root.dataset.listenersAttached) return; root.dataset.listenersAttached='1'; root.addEventListener('click', function(e){var btn=e.target.closest('.btn-register, .btn-info'); if(!btn) return; var ev=eventMap[btn.getAttribute('data-id')]; if(ev){openModal(ev, btn.classList.contains('btn-register'), btn);}});}
-    function broadcastHeight(){try{var h=Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight); window.parent.postMessage({type:'wingsHeight', height:h}, '*');}catch(e){}}
-    function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on); document.getElementById('prevBtn').disabled=!!on; document.getElementById('nextBtn').disabled=!!on;}
+    function renderSessions(){
+      var sessions=(S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : [];
+      var filtered=sessions.filter(function(s){
+        var typeLC=String(s.type || '').toLowerCase();
+        var catLC=String(s.category || '').toLowerCase();
+        var isShow=(typeLC==='event' || catLC==='performance');
+        if(S.showClasses && !S.showShows && isShow) return false;
+        if(S.showShows && !S.showClasses && !isShow) return false;
+        return true;
+      });
+      var html='';
+      if(!filtered.length){html='<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:14px;">No sessions found.</div>';}
+      else{
+        html='<div class="sessions-grid">';
+        filtered.forEach(function(s){
+          var hasImg=s.imageUrl && s.imageUrl.trim();
+          var sid=esc(s.sessionId);
+          html += '<div class="session-card">'
+            + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy">' : '')
+            + '<div class="session-card-body">'
+            + '<div class="session-card-category">'+esc(s.category||s.type||'')+'</div>'
+            + '<div class="session-card-title">'+esc(s.title)+'</div>'
+            + (s.description ? '<div class="session-card-desc">'+esc(s.description)+'</div>' : '')
+            + (s.costText ? '<div class="session-card-cost">'+esc(s.costText)+' per session</div>' : '')
+            + '<button class="session-card-toggle" data-sid="'+sid+'">'+s.instances.length+(s.instances.length===1?' upcoming date':' upcoming dates')+' — view all</button>'
+            + '<div class="session-instances" id="si-'+sid+'">'+buildInstanceRows(s.instances)+'</div>'
+            + '</div></div>';
+        });
+        html += '</div>';
+      }
+      var area=document.getElementById('sessionsArea');
+      area.innerHTML=html;
+      attachSessionListeners();
+      broadcastHeight();
+    }
 
-    attachCardListeners(document.getElementById('dayPanelContent'));
+    function buildInstanceRows(instances){
+      if(!instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
+      return instances.map(function(ev){
+        var k=registerEvent(ev);
+        var canReg=ev.isPublic && !ev.isFull;
+        return '<div class="session-instance-row"><div><div class="session-instance-date">'+esc(ev.dateLabel)+'</div><div class="session-instance-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>' +
+          (ev.location ? '<div class="session-instance-spots">'+esc(ev.location)+'</div>' : '') +
+          (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '') +
+          '</div><div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+          (canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">Register</button>' : '') +
+          '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>' +
+          '</div></div>';
+      }).join('');
+    }
+
+    function broadcastHeight(){
+      try{
+        var h=Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        window.parent.postMessage({type:'wingsHeight', height:h}, '*');
+      }catch(e){}
+    }
+
+    function setLoading(on){
+      document.getElementById('loadingOverlay').classList.toggle('active', !!on);
+      document.getElementById('prevBtn').disabled=!!on;
+      document.getElementById('nextBtn').disabled=!!on;
+    }
+
     attachCalendarListeners();
     load();
     loadSessions();

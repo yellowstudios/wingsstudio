@@ -315,24 +315,40 @@
       attachCalendarListeners();
     }
 
-    function openMobilePanel(ev, openReg){
-      closeMobilePanel();
-      var host=document.getElementById('mobilePanelHost');
-      var panel=document.createElement('div');
-      panel.className='panel active';
-      panel.id='mobilePanel';
-      panel.innerHTML=
-        '<div class="panel-header">'
-        + '<div class="panel-title" id="mobilePanelTitle"></div>'
-        + '<span class="panel-close" id="mobilePanelClose">×</span>'
-        + '</div>'
-        + '<div class="panel-body" id="mobilePanelBody"></div>';
-      host.appendChild(panel);
-      mobilePanelEl=panel;
-      fillPanelContent('mobilePanelBody','mobilePanelTitle',ev,openReg,true);
-      document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
-      setTimeout(function(){panel.scrollIntoView({behavior:'smooth', block:'start'});},50);
-    }
+function openMobilePanel(ev, openReg){
+  closeMobilePanel();
+
+  var host = document.getElementById('mobilePanelHost');
+  var panel = document.createElement('div');
+  panel.className = 'panel active';
+  panel.id = 'mobilePanel';
+  panel.innerHTML =
+    '<div class="panel-header">'
+    + '<div class="panel-title" id="mobilePanelTitle"></div>'
+    + '<span class="panel-close" id="mobilePanelClose">×</span>'
+    + '</div>'
+    + '<div class="panel-body" id="mobilePanelBody"></div>';
+
+  host.appendChild(panel);
+  mobilePanelEl = panel;
+
+  fillPanelContent('mobilePanelBody', 'mobilePanelTitle', ev, openReg, true);
+
+  setTimeout(function () {
+    var body = document.getElementById('mobilePanelBody');
+    body.scrollTop = 0;
+    body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+
+  document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
+}
+
+  requestAnimationFrame(function () {
+    requestAnimationFrame(function () {
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
 
     function closeMobilePanel(){
       var host=document.getElementById('mobilePanelHost');

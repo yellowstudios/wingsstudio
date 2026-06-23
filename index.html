@@ -416,6 +416,19 @@ function openMobilePanel(ev, openReg){
           + '</div>';
       }
       body.innerHTML=html;
+
+body.innerHTML = html;
+
+if (isMobilePanel) {
+  setTimeout(function () {
+    var form = document.getElementById('regSectionMobile');
+    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    else body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+}
+
+wireMobileForm(ev);
+
       wireMobileForm(ev);
     }
 

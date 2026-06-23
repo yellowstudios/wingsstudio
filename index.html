@@ -103,6 +103,62 @@
     .pay-option:hover{background:#fdf9f0;}
     .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
 
+.page-section{
+  padding: 16px 16px 0;
+}
+
+.section-title{
+  font-size: 26px;
+  line-height: 1.15;
+  font-weight: 800;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.section-subtitle{
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.calendar-sessions-spacer{
+  height: 24px;
+}
+
+.sessions-block{
+  padding-top: 8px;
+}
+
+.sessions-title{
+  margin-top: 6px;
+}
+
+@media(max-width:900px){
+  .page-section{
+    padding: 14px 12px 0;
+  }
+
+  .section-title{
+    font-size: 22px;
+  }
+
+  .calendar-sessions-spacer{
+    height: 30px;
+  }
+}
+
+.section-divider{
+  border: none;
+  border-top: 2px solid var(--line);
+  margin: 24px 16px 18px;
+}
+@media(max-width:900px){
+  .section-divider{
+    margin: 18px 12px 14px;
+  }
+}
+
     .sessions-section{padding:16px;max-height:none;overflow:visible;}
     .sessions-section-heading{font-size:18px;font-weight:700;margin:0 0 4px;}
     .sessions-section-sub{font-size:13px;color:var(--muted);margin:0 0 14px;}
@@ -153,16 +209,23 @@
     </div>
   </div>
 
+<div class="page-section">
+  <h2 class="section-title">Our Calendar</h2>
+  <p class="section-subtitle">Browse our calendar and register for any upcoming date.</p>
   <div id="calendarArea"></div>
-  <div class="loading-overlay" id="loadingOverlay">Loading…</div>
+</div>
 
-  <div id="mobilePanelHost"></div>
+<div class="loading-overlay" id="loadingOverlay">Loading…</div>
 
-  <div class="sessions-section">
-    <h2 class="sessions-section-heading">Our Sessions</h2>
-    <p class="sessions-section-sub">Browse our full program and register for any upcoming date.</p>
-    <div id="sessionsArea"></div>
-  </div>
+<div id="mobilePanelHost"></div>
+
+<div class="calendar-sessions-spacer"></div>
+
+<div class="page-section sessions-block">
+  <h2 class="section-title sessions-title">Our Sessions</h2>
+  <p class="section-subtitle">Browse our full program and register for any upcoming date.</p>
+  <div id="sessionsArea"></div>
+</div>
 
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content" id="modalContent">

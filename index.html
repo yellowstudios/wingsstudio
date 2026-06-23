@@ -378,34 +378,35 @@
       attachCalendarListeners();
     }
 
-function openMobilePanel(ev, openReg){
-  closeMobilePanel();
+    function openMobilePanel(ev, openReg){
+      closeMobilePanel();
 
-  var host = document.getElementById('mobilePanelHost');
-  var panel = document.createElement('div');
-  panel.className = 'panel active';
-  panel.id = 'mobilePanel';
-  panel.innerHTML =
-    '<div class="panel-header">'
-    + '<div class="panel-title" id="mobilePanelTitle"></div>'
-    + '<span class="panel-close" id="mobilePanelClose">×</span>'
-    + '</div>'
-    + '<div class="panel-body" id="mobilePanelBody"></div>';
+      var host = document.getElementById('mobilePanelHost');
+      var panel = document.createElement('div');
+      panel.className = 'panel active';
+      panel.id = 'mobilePanel';
+      panel.innerHTML =
+        '<div class="panel-header">'
+        + '<div class="panel-title" id="mobilePanelTitle"></div>'
+        + '<span class="panel-close" id="mobilePanelClose">×</span>'
+        + '</div>'
+        + '<div class="panel-body" id="mobilePanelBody"></div>';
 
-  host.appendChild(panel);
-  mobilePanelEl = panel;
+      host.appendChild(panel);
+      mobilePanelEl = panel;
 
-  fillPanelContent('mobilePanelBody', 'mobilePanelTitle', ev, openReg, true);
+      fillPanelContent('mobilePanelBody', 'mobilePanelTitle', ev, openReg, true);
 
-  setTimeout(function () {
-    var body = document.getElementById('mobilePanelBody');
-    if (!body) return;
-    body.scrollTop = 0;
-    body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
+      setTimeout(function () {
+        var body = document.getElementById('mobilePanelBody');
+        if (!body) return;
+        body.scrollTop = 0;
+        body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
 
-  document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
-}
+      document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
+    }
+
     function closeMobilePanel(){
       var host=document.getElementById('mobilePanelHost');
       host.innerHTML='';
@@ -478,19 +479,15 @@ function openMobilePanel(ev, openReg){
           + '<div class="reg-error" id="regErrorMobile"></div>'
           + '</div>';
       }
-      body.innerHTML=html;
+      body.innerHTML = html;
 
-body.innerHTML = html;
-
-if (isMobilePanel) {
-  setTimeout(function () {
-    var form = document.getElementById('regSectionMobile');
-    if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    else body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
-}
-
-wireMobileForm(ev);
+      if (isMobilePanel) {
+        setTimeout(function () {
+          var form = document.getElementById('regSectionMobile');
+          if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          else body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
 
       wireMobileForm(ev);
     }
@@ -593,17 +590,18 @@ wireMobileForm(ev);
       var regDivider=document.getElementById('regDivider');
       if(showReg){regSection.classList.add('active'); regDivider.style.display=''; resetRegFormDesktop();} else {regSection.classList.remove('active'); regDivider.style.display='none';}
       document.getElementById('modalOverlay').classList.add('active');
-setTimeout(function () {
-  var topEl = document.getElementById('modalContentTop');
-  if (topEl) topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}, 50);
+      setTimeout(function () {
+        var topEl = document.getElementById('modalContentTop');
+        if (topEl) topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
 
-if (openReg && showReg) {
-  setTimeout(function () {
-    var regEl = document.getElementById('regSection');
-    if (regEl) regEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 120);
-}
+      if (openReg && showReg) {
+        setTimeout(function () {
+          var regEl = document.getElementById('regSection');
+          if (regEl) regEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 120);
+      }
+    }
 
     function closeDesktopModal(){
       document.getElementById('modalOverlay').classList.remove('active');

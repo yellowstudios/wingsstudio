@@ -255,7 +255,6 @@
     };
     var monthByDay = {};
     var eventMap = {};
-    var scrollYBeforeModal = 0;
 
     function mondayOf(date){var d=new Date(date); d.setHours(0,0,0,0); var day=d.getDay(), diff=day===0?-6:1-day; d.setDate(d.getDate()+diff); return d;}
     function addDays(date,n){var d=new Date(date); d.setDate(d.getDate()+n); return d;}
@@ -395,18 +394,6 @@
       document.getElementById('dayPanelOverlay').classList.add('active');
     }
 
-    function lockBodyScroll(){
-      scrollYBeforeModal = window.scrollY || document.documentElement.scrollTop || 0;
-      document.body.classList.add('modal-open');
-      document.body.style.top = '-' + scrollYBeforeModal + 'px';
-    }
-
-    function unlockBodyScroll(){
-      document.body.classList.remove('modal-open');
-      document.body.style.top = '';
-      window.scrollTo(0, scrollYBeforeModal || 0);
-    }
-
     function attachCalendarListeners(){
       var area=document.getElementById('calendarArea');
       if(!area || area.dataset.listenersAttached) return;
@@ -464,6 +451,10 @@
       }
     }
 
+    function isMobile(){
+      return window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+    }
+
     function openModal(ev, openReg, triggerEl){
       S.activeEv = ev;
       if(triggerEl && triggerEl.scrollIntoView){
@@ -509,11 +500,17 @@
       }
       document.getElementById('inclusionFields').style.display = ev.inclusion ? '' : 'none';
       if(!ev.inclusion) resetInclusionFields();
-      lockBodyScroll();
+
       document.getElementById('modalOverlay').classList.add('active');
+
+      if(!isMobile()){
+        lockBodyScroll();
+      }
+
       setTimeout(function(){
         document.getElementById('modalContentTop').scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});
       }, 50);
+
       if(openReg && showReg){
         setTimeout(function(){
           document.getElementById('regSection').scrollIntoView({behavior:'smooth', block:'start'});
@@ -525,8 +522,18 @@
     function closeModal(){
       document.getElementById('modalOverlay').classList.remove('active');
       S.activeEv = null;
-      unlockBodyScroll();
+      if(!isMobile()){
+        unlockBodyScroll();
+      }
       broadcastHeight();
+    }
+
+    function lockBodyScroll(){
+      document.body.classList.add('modal-open');
+    }
+
+    function unlockBodyScroll(){
+      document.body.classList.remove('modal-open');
     }
 
     function resetRegForm(){

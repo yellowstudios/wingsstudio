@@ -9,7 +9,6 @@
     *{box-sizing:border-box;}
     html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
     body{overflow:auto;}
-
     .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
     .toolbar .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
     .toolbar button.nav-btn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:14px;background:#fff;cursor:pointer;}
@@ -103,61 +102,24 @@
     .pay-option:hover{background:#fdf9f0;}
     .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
 
-.page-section{
-  padding: 16px 16px 0;
-}
+    .page-section{padding:16px 16px 0;}
+    .section-title{font-size:26px;line-height:1.15;font-weight:800;margin:0 0 6px;letter-spacing:-0.02em;}
+    .section-subtitle{font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.5;}
+    .calendar-sessions-spacer{height:24px;}
+    .sessions-block{padding-top:8px;}
+    .sessions-title{margin-top:6px;}
 
-.section-title{
-  font-size: 26px;
-  line-height: 1.15;
-  font-weight: 800;
-  margin: 0 0 6px;
-  letter-spacing: -0.02em;
-}
+    @media(max-width:900px){
+      .page-section{padding:14px 12px 0;}
+      .section-title{font-size:22px;}
+      .calendar-sessions-spacer{height:30px;}
+      .week-grid{grid-template-columns:1fr;}
+      .modal-overlay{display:none !important;}
+      .mobile-hidden{display:none !important;}
+      .section-divider{margin:18px 12px 14px;}
+    }
 
-.section-subtitle{
-  font-size: 14px;
-  color: var(--muted);
-  margin: 0 0 14px;
-  line-height: 1.5;
-}
-
-.calendar-sessions-spacer{
-  height: 24px;
-}
-
-.sessions-block{
-  padding-top: 8px;
-}
-
-.sessions-title{
-  margin-top: 6px;
-}
-
-@media(max-width:900px){
-  .page-section{
-    padding: 14px 12px 0;
-  }
-
-  .section-title{
-    font-size: 22px;
-  }
-
-  .calendar-sessions-spacer{
-    height: 30px;
-  }
-}
-
-.section-divider{
-  border: none;
-  border-top: 2px solid var(--line);
-  margin: 24px 16px 18px;
-}
-@media(max-width:900px){
-  .section-divider{
-    margin: 18px 12px 14px;
-  }
-}
+    .section-divider{border:none;border-top:2px solid var(--line);margin:24px 16px 18px;}
 
     .sessions-section{padding:16px;max-height:none;overflow:visible;}
     .sessions-section-heading{font-size:18px;font-weight:700;margin:0 0 4px;}
@@ -181,12 +143,6 @@
     .session-instance-spots{font-size:12px;font-style:italic;color:var(--muted);}
     .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
     .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-
-    @media(max-width:900px){
-      .week-grid{grid-template-columns:1fr;}
-      .modal-overlay{display:none !important;}
-      .mobile-hidden{display:none !important;}
-    }
   </style>
 </head>
 <body>
@@ -209,23 +165,22 @@
     </div>
   </div>
 
-<div class="page-section">
-  <h2 class="section-title">Our Calendar</h2>
-  <p class="section-subtitle">Browse our calendar and register for any upcoming date.</p>
-  <div id="calendarArea"></div>
-</div>
+  <div class="page-section">
+    <h2 class="section-title">Our Calendar</h2>
+    <p class="section-subtitle">Browse our calendar and register for any upcoming date.</p>
+    <div id="calendarArea"></div>
+  </div>
 
-<div class="loading-overlay" id="loadingOverlay">Loading…</div>
+  <div class="loading-overlay" id="loadingOverlay">Loading…</div>
+  <div id="mobilePanelHost"></div>
 
-<div id="mobilePanelHost"></div>
+  <div class="calendar-sessions-spacer"></div>
 
-<div class="calendar-sessions-spacer"></div>
-
-<div class="page-section sessions-block">
-  <h2 class="section-title sessions-title">Our Sessions</h2>
-  <p class="section-subtitle">Browse our full program and register for any upcoming date.</p>
-  <div id="sessionsArea"></div>
-</div>
+  <div class="page-section sessions-block">
+    <h2 class="section-title sessions-title">Our Sessions</h2>
+    <p class="section-subtitle">Browse our full program and register for any upcoming date.</p>
+    <div id="sessionsArea"></div>
+  </div>
 
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-content" id="modalContent">
@@ -315,11 +270,11 @@
     function apiGet(params){var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); return fetch(API+'?'+qs).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
     function apiPost(body){return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
     function isMobile(){return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;}
-
-    function load(){setLoading(true); var params=S.view==='month'?{month:S.currentMonth}:{week:dateKey(S.currentMonday)}; apiGet(params).then(function(data){S.data=data; render(); setLoading(false);}).catch(function(err){setLoading(false); document.getElementById('periodLabel').textContent='Error — try again'; console.error(err);});}
+    function focusTodayOnMobile(){if(!isMobile()) return; setTimeout(function(){var target=document.querySelector('.day-column.today, .month-cell.today'); if(target && target.scrollIntoView) target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});},100);}
+    function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
+    function load(){setLoading(true); var params=S.view==='month'?{month:S.currentMonth}:{week:dateKey(S.currentMonday)}; apiGet(params).then(function(data){S.data=data; render(); setLoading(false); setTimeout(focusTodayOnMobile,150);}).catch(function(err){setLoading(false); document.getElementById('periodLabel').textContent='Error — try again'; console.error(err);});}
     function loadSessions(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading sessions…</div>'; apiGet({view:'sessions'}).then(function(data){S.sessionsData=data; renderSessions();}).catch(function(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Could not load sessions.</div>';});}
-
-    function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight();}
+    function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight(); focusTodayOnMobile();}
     function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
 
     function renderWeek(events){
@@ -380,7 +335,6 @@
 
     function openMobilePanel(ev, openReg){
       closeMobilePanel();
-
       var host = document.getElementById('mobilePanelHost');
       var panel = document.createElement('div');
       panel.className = 'panel active';
@@ -391,19 +345,15 @@
         + '<span class="panel-close" id="mobilePanelClose">×</span>'
         + '</div>'
         + '<div class="panel-body" id="mobilePanelBody"></div>';
-
       host.appendChild(panel);
       mobilePanelEl = panel;
-
       fillPanelContent('mobilePanelBody', 'mobilePanelTitle', ev, openReg, true);
-
       setTimeout(function () {
         var body = document.getElementById('mobilePanelBody');
         if (!body) return;
         body.scrollTop = 0;
         body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 50);
-
       document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
     }
 
@@ -479,7 +429,7 @@
           + '<div class="reg-error" id="regErrorMobile"></div>'
           + '</div>';
       }
-      body.innerHTML = html;
+      body.innerHTML=html;
 
       if (isMobilePanel) {
         setTimeout(function () {
@@ -540,7 +490,7 @@
       var panelHost=document.getElementById('mobilePanelHost');
       var parts=dayKey.split('-');
       var d=new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-      var html='<div class="panel active"><div class="panel-header"><div class="panel-title">'+d.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric'})+'</div><span class="panel-close" id="dayPanelClose">×</span></div><div class="panel-body">';
+      var html='<div class="panel active"><div class="panel-header"><div class="panel-title">'+d.toLocaleDateString("en-US",{weekday:"long", month:"long", day:"numeric"})+'</div><span class="panel-close" id="dayPanelClose">×</span></div><div class="panel-body">';
       if(!events.length){html += '<div class="panel-empty">No events this day.</div>';}
       else{
         events.forEach(function(ev){
@@ -590,16 +540,9 @@
       var regDivider=document.getElementById('regDivider');
       if(showReg){regSection.classList.add('active'); regDivider.style.display=''; resetRegFormDesktop();} else {regSection.classList.remove('active'); regDivider.style.display='none';}
       document.getElementById('modalOverlay').classList.add('active');
-      setTimeout(function () {
-        var topEl = document.getElementById('modalContentTop');
-        if (topEl) topEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
-
-      if (openReg && showReg) {
-        setTimeout(function () {
-          var regEl = document.getElementById('regSection');
-          if (regEl) regEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 120);
+      setTimeout(function(){var topEl=document.getElementById('modalContentTop'); if(topEl) topEl.scrollIntoView({behavior:'smooth', block:'start'});},50);
+      if(openReg && showReg){
+        setTimeout(function(){var regEl=document.getElementById('regSection'); if(regEl) regEl.scrollIntoView({behavior:'smooth', block:'start'});},120);
       }
     }
 
@@ -609,23 +552,79 @@
       broadcastHeight();
     }
 
-    function resetRegFormDesktop(){['regEmail','regName','regPhone'].forEach(function(id){var el=document.getElementById(id); if(el){el.value=''; el.disabled=false;}}); var lr=document.querySelector('input[name="payMethod"][value="later"]'); if(lr) lr.checked=true; document.getElementById('squarePayBtn').style.display='none'; document.getElementById('zelleInfo').style.display='none'; document.getElementById('cashCheckInfo').style.display='none'; resetInclusionFieldsDesktop(); document.getElementById('regSuccess').textContent=''; document.getElementById('regError').textContent=''; document.getElementById('regSubmit').disabled=false; document.getElementById('regSubmit').textContent='Register'; document.getElementById('regSubmit').style.display=''; document.getElementById('regCloseBtn').style.display='none';}
-    function resetInclusionFieldsDesktop(){var dob=document.getElementById('regDob'); if(dob) dob.value=''; var cn=document.getElementById('careNo'); if(cn) cn.checked=true; document.getElementById('caregiverFields').style.display='none'; document.getElementById('regCaregiverName').value=''; document.getElementById('regCaregiverPhone').value=''; var an=document.getElementById('accNo'); if(an) an.checked=true; document.getElementById('accommodationsField').style.display='none'; document.getElementById('regAccommodations').value='';}
-    function setModalRow(rowId,valId,value){var row=document.getElementById(rowId); var val=document.getElementById(valId); if(value && String(value).trim()){if(val) val.textContent=value; if(row) row.style.display='';} else {if(row) row.style.display='none';}}
+    function resetRegFormDesktop(){
+      ['regEmail','regName','regPhone'].forEach(function(id){var el=document.getElementById(id); if(el){el.value=''; el.disabled=false;}});
+      var lr=document.querySelector('input[name="payMethod"][value="later"]'); if(lr) lr.checked=true;
+      document.getElementById('squarePayBtn').style.display='none';
+      document.getElementById('zelleInfo').style.display='none';
+      document.getElementById('cashCheckInfo').style.display='none';
+      resetInclusionFieldsDesktop();
+      document.getElementById('regSuccess').textContent='';
+      document.getElementById('regError').textContent='';
+      document.getElementById('regSubmit').disabled=false;
+      document.getElementById('regSubmit').textContent='Register';
+      document.getElementById('regSubmit').style.display='';
+      document.getElementById('regCloseBtn').style.display='none';
+    }
+
+    function resetInclusionFieldsDesktop(){
+      var dob=document.getElementById('regDob'); if(dob) dob.value='';
+      var cn=document.getElementById('careNo'); if(cn) cn.checked=true;
+      document.getElementById('caregiverFields').style.display='none';
+      document.getElementById('regCaregiverName').value='';
+      document.getElementById('regCaregiverPhone').value='';
+      var an=document.getElementById('accNo'); if(an) an.checked=true;
+      document.getElementById('accommodationsField').style.display='none';
+      document.getElementById('regAccommodations').value='';
+    }
+
+    function setModalRow(rowId,valId,value){
+      var row=document.getElementById(rowId); var val=document.getElementById(valId);
+      if(value && String(value).trim()){if(val) val.textContent=value; if(row) row.style.display='';}
+      else {if(row) row.style.display='none';}
+    }
 
     function wireMobileForm(ev){
       if(!isMobile()) return;
-      var set=document.getElementById('mobilePanelBody');
       var email=document.getElementById('regEmailMobile');
       var name=document.getElementById('regNameMobile');
       var phone=document.getElementById('regPhoneMobile');
       var emailTimer=null;
       if(email){
-        email.addEventListener('input', function(){var v=this.value.trim(); clearTimeout(emailTimer); name.disabled=false; phone.disabled=false; if(v.length<5 || !v.includes('@')) return; emailTimer=setTimeout(function(){apiPost({action:'checkParticipant', email:v}).then(function(r){if(r && r.exists){name.value=r.name||''; phone.value=r.phone||''; name.disabled=true; phone.disabled=true;}}).catch(function(){});},600);});
+        email.addEventListener('input', function(){
+          var v=this.value.trim();
+          clearTimeout(emailTimer);
+          name.disabled=false; phone.disabled=false;
+          if(v.length<5 || !v.includes('@')) return;
+          emailTimer=setTimeout(function(){
+            apiPost({action:'checkParticipant', email:v}).then(function(r){
+              if(r && r.exists){name.value=r.name||''; phone.value=r.phone||''; name.disabled=true; phone.disabled=true;}
+            }).catch(function(){});
+          },600);
+        });
       }
-      document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('squarePayBtnMobile').style.display='none'; document.getElementById('zelleInfoMobile').style.display='none'; document.getElementById('cashCheckInfoMobile').style.display='none'; if(this.value==='square') document.getElementById('squarePayBtnMobile').style.display='block'; else if(this.value==='zelle') document.getElementById('zelleInfoMobile').style.display='block'; else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfoMobile').style.display='block';});});
-      document.querySelectorAll('input[name="careOfCaregiverMobile"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('caregiverFieldsMobile').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no'){document.getElementById('regCaregiverNameMobile').value=''; document.getElementById('regCaregiverPhoneMobile').value='';}});});
-      document.querySelectorAll('input[name="accommodationsRequestedMobile"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('accommodationsFieldMobile').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no') document.getElementById('regAccommodationsMobile').value='';});});
+      document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){
+        r.addEventListener('change', function(){
+          document.getElementById('squarePayBtnMobile').style.display='none';
+          document.getElementById('zelleInfoMobile').style.display='none';
+          document.getElementById('cashCheckInfoMobile').style.display='none';
+          if(this.value==='square') document.getElementById('squarePayBtnMobile').style.display='block';
+          else if(this.value==='zelle') document.getElementById('zelleInfoMobile').style.display='block';
+          else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfoMobile').style.display='block';
+        });
+      });
+      document.querySelectorAll('input[name="careOfCaregiverMobile"]').forEach(function(r){
+        r.addEventListener('change', function(){
+          document.getElementById('caregiverFieldsMobile').style.display = this.value==='yes' ? 'block' : 'none';
+          if(this.value==='no'){document.getElementById('regCaregiverNameMobile').value=''; document.getElementById('regCaregiverPhoneMobile').value='';}
+        });
+      });
+      document.querySelectorAll('input[name="accommodationsRequestedMobile"]').forEach(function(r){
+        r.addEventListener('change', function(){
+          document.getElementById('accommodationsFieldMobile').style.display = this.value==='yes' ? 'block' : 'none';
+          if(this.value==='no') document.getElementById('regAccommodationsMobile').value='';
+        });
+      });
       var submit=document.getElementById('regSubmitMobile');
       submit.addEventListener('click', function(){
         var emailV=email.value.trim(), nameV=name.value.trim(), phoneV=phone.value.trim(), payEl=document.querySelector('input[name="payMethodMobile"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regErrorMobile');
@@ -648,26 +647,74 @@
     }
 
     var emailTimer = null;
-    document.getElementById('regEmail') && document.getElementById('regEmail').addEventListener('input', function(){var email=this.value.trim(); clearTimeout(emailTimer); document.getElementById('regName').disabled=false; document.getElementById('regPhone').disabled=false; if(email.length<5 || !email.includes('@')) return; emailTimer=setTimeout(function(){apiPost({action:'checkParticipant', email:email}).then(function(r){if(r && r.exists){document.getElementById('regName').value=r.name || ''; document.getElementById('regPhone').value=r.phone || ''; document.getElementById('regName').disabled=true; document.getElementById('regPhone').disabled=true;}}).catch(function(){});}, 600);});
-    document.querySelectorAll('input[name="payMethod"]').forEach(function(radio){radio.addEventListener('change', function(){document.getElementById('squarePayBtn').style.display='none'; document.getElementById('zelleInfo').style.display='none'; document.getElementById('cashCheckInfo').style.display='none'; if(this.value==='square') document.getElementById('squarePayBtn').style.display='block'; else if(this.value==='zelle') document.getElementById('zelleInfo').style.display='block'; else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfo').style.display='block';});});
-    document.querySelectorAll('input[name="careOfCaregiver"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('caregiverFields').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no'){document.getElementById('regCaregiverName').value=''; document.getElementById('regCaregiverPhone').value='';}});});
-    document.querySelectorAll('input[name="accommodationsRequested"]').forEach(function(r){r.addEventListener('change', function(){document.getElementById('accommodationsField').style.display = this.value==='yes' ? 'block' : 'none'; if(this.value==='no') document.getElementById('regAccommodations').value='';});});
-    document.getElementById('regSubmit').addEventListener('click', function(){var email=document.getElementById('regEmail').value.trim(), name=document.getElementById('regName').value.trim(), phone=document.getElementById('regPhone').value.trim(), payEl=document.querySelector('input[name="payMethod"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regError'); errEl.textContent=''; document.getElementById('regSuccess').textContent=''; if(!email || !name){errEl.textContent='Please enter your email and full name.'; return;} if(!phone){errEl.textContent='Please enter your phone number.'; return;} var inclusionData=null; if(S.activeEv && S.activeEv.inclusion){var careEl=document.querySelector('input[name="careOfCaregiver"]:checked'); var accEl=document.querySelector('input[name="accommodationsRequested"]:checked'); inclusionData={dob:document.getElementById('regDob').value.trim(), careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverName').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhone').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodations').value.trim()};} var btn=this; btn.disabled=true; btn.textContent='Submitting…'; apiPost({action:'register', instanceId:S.activeEv.instanceId, name:name, email:email, phone:phone, payMethod:payValue, inclusionData:inclusionData}).then(function(r){btn.disabled=false; btn.textContent='Register'; if(r && r.success){document.getElementById('regSuccess').textContent=r.message || 'You\'re registered!'; ['regEmail','regName','regPhone'].forEach(function(id){document.getElementById(id).disabled=true;}); btn.style.display='none'; document.getElementById('regCloseBtn').style.display='block'; load(); loadSessions();} else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}}).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});});
-
-    document.getElementById('modalClose').addEventListener('click', closeDesktopModal);
-    document.getElementById('modalOverlay').addEventListener('click', function(e){if(e.target===this) closeDesktopModal();});
-    document.getElementById('regCloseBtn').addEventListener('click', closeDesktopModal);
-    document.getElementById('mobilePanelHost').addEventListener('click', function(e){
-      var close=e.target.closest('.panel-close');
-      if(close) closeMobilePanel();
+    document.getElementById('regEmail') && document.getElementById('regEmail').addEventListener('input', function(){
+      var email=this.value.trim();
+      clearTimeout(emailTimer);
+      document.getElementById('regName').disabled=false;
+      document.getElementById('regPhone').disabled=false;
+      if(email.length<5 || !email.includes('@')) return;
+      emailTimer=setTimeout(function(){
+        apiPost({action:'checkParticipant', email:email}).then(function(r){
+          if(r && r.exists){
+            document.getElementById('regName').value=r.name || '';
+            document.getElementById('regPhone').value=r.phone || '';
+            document.getElementById('regName').disabled=true;
+            document.getElementById('regPhone').disabled=true;
+          }
+        }).catch(function(){});
+      }, 600);
     });
 
-    document.getElementById('prevBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, -7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1)); load();}});
-    document.getElementById('nextBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, 7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10), 1)); load();}});
-    document.getElementById('viewWeek').addEventListener('click', function(){if(S.view==='week') return; S.view='week'; document.getElementById('viewWeek').classList.add('active'); document.getElementById('viewMonth').classList.remove('active'); load();});
-    document.getElementById('viewMonth').addEventListener('click', function(){if(S.view==='month') return; S.view='month'; S.currentMonth=monthKey(S.currentMonday); document.getElementById('viewMonth').classList.add('active'); document.getElementById('viewWeek').classList.remove('active'); load();});
-    document.getElementById('tabClasses').addEventListener('click', function(){S.showClasses=!S.showClasses; this.classList.toggle('active',S.showClasses); if(S.data) render(); if(S.sessionsData) renderSessions();});
-    document.getElementById('tabShows').addEventListener('click', function(){S.showShows=!S.showShows; this.classList.toggle('active',S.showShows); if(S.data) render(); if(S.sessionsData) renderSessions();});
+    document.querySelectorAll('input[name="payMethod"]').forEach(function(radio){
+      radio.addEventListener('change', function(){
+        document.getElementById('squarePayBtn').style.display='none';
+        document.getElementById('zelleInfo').style.display='none';
+        document.getElementById('cashCheckInfo').style.display='none';
+        if(this.value==='square') document.getElementById('squarePayBtn').style.display='block';
+        else if(this.value==='zelle') document.getElementById('zelleInfo').style.display='block';
+        else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfo').style.display='block';
+      });
+    });
+
+    document.querySelectorAll('input[name="careOfCaregiver"]').forEach(function(r){
+      r.addEventListener('change', function(){
+        document.getElementById('caregiverFields').style.display = this.value==='yes' ? 'block' : 'none';
+        if(this.value==='no'){document.getElementById('regCaregiverName').value=''; document.getElementById('regCaregiverPhone').value='';}
+      });
+    });
+
+    document.querySelectorAll('input[name="accommodationsRequested"]').forEach(function(r){
+      r.addEventListener('change', function(){
+        document.getElementById('accommodationsField').style.display = this.value==='yes' ? 'block' : 'none';
+        if(this.value==='no') document.getElementById('regAccommodations').value='';
+      });
+    });
+
+    document.getElementById('regSubmit').addEventListener('click', function(){
+      var email=document.getElementById('regEmail').value.trim(), name=document.getElementById('regName').value.trim(), phone=document.getElementById('regPhone').value.trim(), payEl=document.querySelector('input[name="payMethod"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regError');
+      errEl.textContent=''; document.getElementById('regSuccess').textContent='';
+      if(!email || !name){errEl.textContent='Please enter your email and full name.'; return;}
+      if(!phone){errEl.textContent='Please enter your phone number.'; return;}
+      var inclusionData=null;
+      if(S.activeEv && S.activeEv.inclusion){
+        var careEl=document.querySelector('input[name="careOfCaregiver"]:checked');
+        var accEl=document.querySelector('input[name="accommodationsRequested"]:checked');
+        inclusionData={dob:document.getElementById('regDob').value.trim(), careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverName').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhone').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodations').value.trim()};
+      }
+      var btn=this; btn.disabled=true; btn.textContent='Submitting…';
+      apiPost({action:'register', instanceId:S.activeEv.instanceId, name:name, email:email, phone:phone, payMethod:payValue, inclusionData:inclusionData}).then(function(r){
+        btn.disabled=false; btn.textContent='Register';
+        if(r && r.success){
+          document.getElementById('regSuccess').textContent=r.message || 'You\'re registered!';
+          ['regEmail','regName','regPhone'].forEach(function(id){document.getElementById(id).disabled=true;});
+          btn.style.display='none';
+          document.getElementById('regCloseBtn').style.display='block';
+          load(); loadSessions();
+        } else {
+          errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';
+        }
+      }).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});
+    });
 
     function renderSessions(){
       var sessions=(S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : [];
@@ -732,6 +779,21 @@
       document.getElementById('prevBtn').disabled=!!on;
       document.getElementById('nextBtn').disabled=!!on;
     }
+
+    document.getElementById('modalClose').addEventListener('click', closeDesktopModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e){if(e.target===this) closeDesktopModal();});
+    document.getElementById('regCloseBtn').addEventListener('click', closeDesktopModal);
+    document.getElementById('mobilePanelHost').addEventListener('click', function(e){
+      var close=e.target.closest('.panel-close');
+      if(close) closeMobilePanel();
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, -7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1)); load();}});
+    document.getElementById('nextBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, 7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10), 1)); load();}});
+    document.getElementById('viewWeek').addEventListener('click', function(){if(S.view==='week') return; S.view='week'; document.getElementById('viewWeek').classList.add('active'); document.getElementById('viewMonth').classList.remove('active'); load();});
+    document.getElementById('viewMonth').addEventListener('click', function(){if(S.view==='month') return; S.view='month'; S.currentMonth=monthKey(S.currentMonday); document.getElementById('viewMonth').classList.add('active'); document.getElementById('viewWeek').classList.remove('active'); load();});
+    document.getElementById('tabClasses').addEventListener('click', function(){S.showClasses=!S.showClasses; this.classList.toggle('active',S.showClasses); if(S.data) render(); if(S.sessionsData) renderSessions();});
+    document.getElementById('tabShows').addEventListener('click', function(){S.showShows=!S.showShows; this.classList.toggle('active',S.showShows); if(S.data) render(); if(S.sessionsData) renderSessions();});
 
     attachCalendarListeners();
     load();

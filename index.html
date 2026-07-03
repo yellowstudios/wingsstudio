@@ -229,7 +229,7 @@
           <p class="reg-note">This may apply to participants of any age who benefit from having someone present.</p>
           <div class="pay-options" style="margin-bottom:8px;">
             <label class="pay-option"><input type="radio" name="careOfCaregiver" value="yes" id="careYes"> Yes, a support person will attend</label>
-            <label class="pay-option"><input type="radio" name="careOfCaregiver" value="no" id="careNo" checked> No support person needed</label>
+            <label class="pay-option"><input type="radio" name="careOfCaregiver" value="no" id="careNo" checked> No, a support person will not attend</label>
           </div>
           <div id="caregiverFields" style="display:none;">
             <input type="text" class="reg-input" id="regCaregiverName" placeholder="Support person's name">
@@ -409,7 +409,7 @@
           + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver?</div>'
           + '<div class="pay-options" style="margin-bottom:8px;">'
           + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="yes" id="careYesMobile"> Yes, a support person will attend</label>'
-          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No support person needed</label>'
+          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No, a support person will not attend</label>'
           + '</div>'
           + '<div id="caregiverFieldsMobile" style="display:none;">'
           + '<input type="text" class="reg-input" id="regCaregiverNameMobile" placeholder="Support person\'s name">'
@@ -430,6 +430,12 @@
           + '</div>';
       }
       body.innerHTML=html;
+
+      // Show mobile inclusion fields if this event has inclusive programming
+      if(ev.isPublic && !ev.isFull && ev.inclusion){
+        var incMobile = document.getElementById('inclusionFieldsMobile');
+        if(incMobile) incMobile.style.display = '';
+      }
 
       if (isMobilePanel) {
         setTimeout(function () {
@@ -539,6 +545,8 @@
       var regSection=document.getElementById('regSection');
       var regDivider=document.getElementById('regDivider');
       if(showReg){regSection.classList.add('active'); regDivider.style.display=''; resetRegFormDesktop();} else {regSection.classList.remove('active'); regDivider.style.display='none';}
+      // Show inclusion fields if this event has inclusive programming
+      document.getElementById('inclusionFields').style.display = (showReg && ev.inclusion) ? '' : 'none';
       document.getElementById('modalOverlay').classList.add('active');
       setTimeout(function(){var topEl=document.getElementById('modalContentTop'); if(topEl) topEl.scrollIntoView({behavior:'smooth', block:'start'});},50);
       if(openReg && showReg){
@@ -568,6 +576,7 @@
     }
 
     function resetInclusionFieldsDesktop(){
+      document.getElementById('inclusionFields').style.display='none';
       var dob=document.getElementById('regDob'); if(dob) dob.value='';
       var cn=document.getElementById('careNo'); if(cn) cn.checked=true;
       document.getElementById('caregiverFields').style.display='none';

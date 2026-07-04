@@ -518,7 +518,7 @@
           var accEl=document.querySelector('input[name="accommodationsRequestedMobile"]:checked');
           var dobM=document.getElementById('regDobMonthMobile'), dobD=document.getElementById('regDobDayMobile'), dobY=document.getElementById('regDobYearMobile');
           var dob = (dobY && dobY.value && dobM && dobM.value && dobD && dobD.value)
-  ? pad(dobM.value) + '/' + pad(dobD.value) + '/' + dobY.value : '';
+            ? (String(dobM.value).length<2?'0':'')+dobM.value + '/' + (String(dobD.value).length<2?'0':'')+dobD.value + '/' + dobY.value : '';
           inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
         }
         var btn=this; btn.disabled=true; btn.textContent='Submitting…';

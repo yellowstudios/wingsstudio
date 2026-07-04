@@ -335,9 +335,13 @@
           + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
           + '<div class="pay-title">A few more details</div>'
           + '<p class="reg-note">This session has inclusive programming. Share only what you\'re comfortable with.</p>'
-          + '<label class="reg-label" for="regDobMobile">Date of Birth</label>'
-          + '<input type="date" class="reg-input" id="regDobMobile">'
-          + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver?</div>'
+          + '<label class="reg-label">Date of Birth</label>'
+          + '<div style="display:flex;gap:6px;margin-bottom:8px;">'
+          + '<select class="reg-input" id="regDobMonthMobile" style="flex:2;margin-bottom:0;"><option value="">Month</option>'+ dobMonthOptions() +'</select>'
+          + '<select class="reg-input" id="regDobDayMobile"   style="flex:1;margin-bottom:0;"><option value="">Day</option>'  + dobDayOptions()   +'</select>'
+          + '<select class="reg-input" id="regDobYearMobile"  style="flex:1.5;margin-bottom:0;"><option value="">Year</option>'+ dobYearOptions() +'</select>'
+          + '</div>'
+          + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver during the session?</div>'
           + '<div class="pay-options" style="margin-bottom:8px;">'
           + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="yes" id="careYesMobile"> Yes, a support person will attend</label>'
           + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No, a support person will not attend</label>'
@@ -450,6 +454,18 @@
       });
     }
 
+    function dobMonthOptions(){
+      var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return months.map(function(m,i){return '<option value="'+(i+1)+'">'+m+'</option>';}).join('');
+    }
+    function dobDayOptions(){
+      var o=''; for(var d=1;d<=31;d++) o+='<option value="'+d+'">'+d+'</option>'; return o;
+    }
+    function dobYearOptions(){
+      var o=''; var cur=new Date().getFullYear();
+      for(var y=cur;y>=1920;y--) o+='<option value="'+y+'">'+y+'</option>'; return o;
+    }
+
     function wireMobileForm(ev){
       var email=document.getElementById('regEmailMobile');
       var name=document.getElementById('regNameMobile');
@@ -500,7 +516,10 @@
         if(ev.inclusion){
           var careEl=document.querySelector('input[name="careOfCaregiverMobile"]:checked');
           var accEl=document.querySelector('input[name="accommodationsRequestedMobile"]:checked');
-          inclusionData={dob:document.getElementById('regDobMobile').value.trim(), careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
+          var dobM=document.getElementById('regDobMonthMobile'), dobD=document.getElementById('regDobDayMobile'), dobY=document.getElementById('regDobYearMobile');
+          var dob = (dobY && dobY.value && dobM && dobM.value && dobD && dobD.value)
+  ? pad(dobM.value) + '/' + pad(dobD.value) + '/' + dobY.value : '';
+          inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
         }
         var btn=this; btn.disabled=true; btn.textContent='Submitting…';
         apiPost({action:'register', instanceId:ev.instanceId, name:nameV, email:emailV, phone:phoneV, payMethod:payValue, inclusionData:inclusionData}).then(function(r){

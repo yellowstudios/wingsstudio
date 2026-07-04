@@ -52,7 +52,14 @@
     .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
 
-    .panel{display:none;border:1px solid var(--line);border-radius:10px;background:#fff;margin:10px 12px 0;padding:14px;}
+    .modal-overlay{display:none !important;}
+
+    #mobilePanelHost{padding:0 12px;}
+    @media(min-width:901px){
+      #mobilePanelHost{display:flex;justify-content:center;padding:0 16px;}
+      #mobilePanelHost .panel{max-width:480px;width:100%;margin:10px 0 0;}
+    }
+    .panel{border:1px solid var(--line);border-radius:10px;background:#fff;margin:10px 0 0;padding:20px;display:none;}
     .panel.active{display:block;}
     .panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
     .panel-title{font-size:16px;font-weight:700;}
@@ -68,21 +75,16 @@
 
     .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;pointer-events:none;}
     .loading-overlay.active{display:flex;}
+    .modal-overlay{display:none !important;}
 
-    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;}
-    .modal-overlay.active{display:flex;}
-    .modal-content{background:#fff;border-radius:12px;padding:24px;max-width:440px;width:100%;max-height:calc(100vh - 32px);overflow-y:auto;position:relative;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
-    .modal-close{position:absolute;top:12px;right:14px;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
     .modal-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
     .modal-img.show{display:block;}
-    .modal-title{font-weight:700;font-size:18px;margin-bottom:4px;padding-right:24px;}
-    .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:14px;}
     .modal-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
     .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;min-width:80px;}
     .modal-value{color:var(--muted);}
     .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
-
-    .reg-section{display:none;}
+    .modal-title{font-weight:700;font-size:18px;margin-bottom:4px;}
+    .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:14px;}
     .reg-section.active{display:block;}
     .reg-title{font-weight:600;font-size:14px;margin-bottom:6px;}
     .reg-note{font-size:12px;color:var(--muted);margin-bottom:10px;}
@@ -180,77 +182,6 @@
     <h2 class="section-title sessions-title">Our Sessions</h2>
     <p class="section-subtitle">Browse our full program and register for any upcoming date.</p>
     <div id="sessionsArea"></div>
-  </div>
-
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-content" id="modalContent">
-      <span class="modal-close" id="modalClose">×</span>
-      <div id="modalContentTop"></div>
-      <img class="modal-img" id="modalImg" alt="">
-      <div class="modal-title" id="modalTitle"></div>
-      <div class="modal-subtitle" id="modalSubtitle"></div>
-      <div class="modal-row" id="rowLocation" style="display:none"><span class="modal-label">Location</span><span class="modal-value" id="modalLocation"></span></div>
-      <div class="modal-row" id="rowDuration" style="display:none"><span class="modal-label">Duration</span><span class="modal-value" id="modalDuration"></span></div>
-      <div class="modal-row" id="rowCost" style="display:none"><span class="modal-label">Cost</span><span class="modal-value" id="modalCost"></span></div>
-      <div class="modal-row" id="rowCategory" style="display:none"><span class="modal-label">Category</span><span class="modal-value" id="modalCategory"></span></div>
-      <div class="modal-row" id="rowType" style="display:none"><span class="modal-label">Type</span><span class="modal-value" id="modalType"></span></div>
-      <div class="modal-row" id="rowInclusion" style="display:none"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>
-      <div class="modal-row" id="rowSpots" style="display:none"><span class="modal-label">Availability</span><span class="modal-value" id="modalSpots"></span></div>
-      <div class="modal-row" id="rowFull" style="display:none"><span class="modal-value" id="modalFull" style="color:#c0392b;font-style:italic;"></span></div>
-      <div class="modal-row" id="rowPublic"><span class="modal-label">Open to Public</span><span class="modal-value" id="modalPublic"></span></div>
-      <div class="modal-row" id="rowNotes" style="display:none"><span class="modal-label">Notes</span><span class="modal-value" id="modalNotes"></span></div>
-      <hr class="modal-divider" id="regDivider" style="display:none">
-      <div class="reg-section" id="regSection">
-        <div class="reg-title">Register for this event</div>
-        <p class="reg-note">Enter your email — if you've registered before, we'll fill in your details.</p>
-        <input type="email" class="reg-input" id="regEmail" placeholder="Email address *" autocomplete="email">
-        <input type="text" class="reg-input" id="regName" placeholder="Full name *" autocomplete="name">
-        <input type="tel" class="reg-input" id="regPhone" placeholder="Phone number *" autocomplete="tel">
-        <div class="pay-section">
-          <div class="pay-title">Payment method</div>
-          <p class="reg-note" style="margin-bottom:8px;">Choose how you plan to pay. Payment is not required to complete registration.</p>
-          <div class="pay-options">
-            <label class="pay-option"><input type="radio" name="payMethod" value="square"> Credit / Debit Card</label>
-            <label class="pay-option"><input type="radio" name="payMethod" value="zelle"> Zelle</label>
-            <label class="pay-option"><input type="radio" name="payMethod" value="cash"> Cash</label>
-            <label class="pay-option"><input type="radio" name="payMethod" value="check"> Check</label>
-            <label class="pay-option"><input type="radio" name="payMethod" value="later" checked> Pay later / Decide later</label>
-          </div>
-          <a id="squarePayBtn" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:none;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>
-          <div id="zelleInfo" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Include your name and event in the memo.</div>
-          <div id="cashCheckInfo" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event. Make checks payable to <strong>Wings to Fly Dance Company</strong>.</div>
-        </div>
-        <div id="inclusionFields" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">
-          <div class="pay-title">A few more details</div>
-          <p class="reg-note">This session has inclusive programming. The following helps us ensure every participant has a welcoming experience — share only what you're comfortable with.</p>
-          <label class="reg-label" for="regDob">Date of Birth</label>
-          <input type="date" class="reg-input" id="regDob">
-          <div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver?</div>
-          <p class="reg-note">This may apply to participants of any age who benefit from having someone present.</p>
-          <div class="pay-options" style="margin-bottom:8px;">
-            <label class="pay-option"><input type="radio" name="careOfCaregiver" value="yes" id="careYes"> Yes, a support person will attend</label>
-            <label class="pay-option"><input type="radio" name="careOfCaregiver" value="no" id="careNo" checked> No, a support person will not attend</label>
-          </div>
-          <div id="caregiverFields" style="display:none;">
-            <input type="text" class="reg-input" id="regCaregiverName" placeholder="Support person's name">
-            <input type="tel" class="reg-input" id="regCaregiverPhone" placeholder="Support person's phone number">
-          </div>
-          <div class="reg-label" style="margin-top:12px;">Are there any accommodations that would help this participant fully enjoy the session?</div>
-          <p class="reg-note">We are committed to creating an accessible, inclusive space.</p>
-          <div class="pay-options" style="margin-bottom:8px;">
-            <label class="pay-option"><input type="radio" name="accommodationsRequested" value="yes" id="accYes"> Yes, I'd like to share some details</label>
-            <label class="pay-option"><input type="radio" name="accommodationsRequested" value="no" id="accNo" checked> No accommodations needed at this time</label>
-          </div>
-          <div id="accommodationsField" style="display:none;">
-            <textarea class="reg-input" id="regAccommodations" rows="3" placeholder="Please share anything that would help us support you." style="resize:vertical;"></textarea>
-          </div>
-        </div>
-        <button class="reg-submit" id="regSubmit">Register</button>
-        <div class="reg-success" id="regSuccess"></div>
-        <button id="regCloseBtn" style="display:none;width:100%;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:6px;background:#fff;font:inherit;font-size:14px;cursor:pointer;">Close</button>
-        <div class="reg-error" id="regError"></div>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -457,8 +388,7 @@
         if(btn){
           var ev = eventMap[btn.getAttribute('data-id')];
           if(!ev) return;
-          if(isMobile()) openMobilePanel(ev, btn.classList.contains('btn-register'));
-          else openDesktopModal(ev, btn.classList.contains('btn-register'), btn);
+          openMobilePanel(ev, btn.classList.contains('btn-register'));
           return;
         }
         var cell=e.target.closest('.month-cell');
@@ -487,8 +417,7 @@
         if(!btn) return;
         var ev=eventMap[btn.getAttribute('data-id')];
         if(!ev) return;
-        if(isMobile()) openMobilePanel(ev, btn.classList.contains('btn-register'));
-        else openDesktopModal(ev, btn.classList.contains('btn-register'), btn);
+        openMobilePanel(ev, btn.classList.contains('btn-register'));
       });
     }
 
@@ -517,84 +446,11 @@
         if(!btn) return;
         var ev=eventMap[btn.getAttribute('data-id')];
         if(!ev) return;
-        if(isMobile()) openMobilePanel(ev, btn.classList.contains('btn-register'));
-        else openDesktopModal(ev, btn.classList.contains('btn-register'), btn);
+        openMobilePanel(ev, btn.classList.contains('btn-register'));
       });
     }
 
-    function openDesktopModal(ev, openReg, triggerEl){
-      S.activeEv=ev;
-      if(triggerEl && triggerEl.scrollIntoView) triggerEl.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});
-      var img=document.getElementById('modalImg');
-      if(ev.imageUrl && ev.imageUrl.trim()){img.src=ev.imageUrl; img.classList.add('show');} else {img.classList.remove('show'); img.removeAttribute('src');}
-      document.getElementById('modalTitle').textContent=ev.title;
-      document.getElementById('modalSubtitle').textContent=ev.startTime+' – '+ev.endTime;
-      setModalRow('rowLocation','modalLocation',ev.location);
-      setModalRow('rowDuration','modalDuration',formatDuration(ev.duration));
-      setModalRow('rowCost','modalCost',ev.costText);
-      setModalRow('rowCategory','modalCategory',ev.category);
-      setModalRow('rowType','modalType',ev.type);
-      setModalRow('rowSpots','modalSpots',ev.spotsText);
-      setModalRow('rowNotes','modalNotes',ev.participantNotes);
-      document.getElementById('rowInclusion').style.display = ev.inclusion ? '' : 'none';
-      var fullRow=document.getElementById('rowFull');
-      if(ev.isFull){document.getElementById('modalFull').textContent='This event is currently full. Check back for future sessions!'; fullRow.style.display='';} else {fullRow.style.display='none';}
-      document.getElementById('rowPublic').style.display='';
-      document.getElementById('modalPublic').textContent = ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event';
-      var showReg = ev.isPublic && !ev.isFull;
-      var regSection=document.getElementById('regSection');
-      var regDivider=document.getElementById('regDivider');
-      if(showReg){regSection.classList.add('active'); regDivider.style.display=''; resetRegFormDesktop();} else {regSection.classList.remove('active'); regDivider.style.display='none';}
-      // Show inclusion fields if this event has inclusive programming
-      document.getElementById('inclusionFields').style.display = (showReg && ev.inclusion) ? '' : 'none';
-      document.getElementById('modalOverlay').classList.add('active');
-      setTimeout(function(){var topEl=document.getElementById('modalContentTop'); if(topEl) topEl.scrollIntoView({behavior:'smooth', block:'start'});},50);
-      if(openReg && showReg){
-        setTimeout(function(){var regEl=document.getElementById('regSection'); if(regEl) regEl.scrollIntoView({behavior:'smooth', block:'start'});},120);
-      }
-    }
-
-    function closeDesktopModal(){
-      document.getElementById('modalOverlay').classList.remove('active');
-      S.activeEv=null;
-      broadcastHeight();
-    }
-
-    function resetRegFormDesktop(){
-      ['regEmail','regName','regPhone'].forEach(function(id){var el=document.getElementById(id); if(el){el.value=''; el.disabled=false;}});
-      var lr=document.querySelector('input[name="payMethod"][value="later"]'); if(lr) lr.checked=true;
-      document.getElementById('squarePayBtn').style.display='none';
-      document.getElementById('zelleInfo').style.display='none';
-      document.getElementById('cashCheckInfo').style.display='none';
-      resetInclusionFieldsDesktop();
-      document.getElementById('regSuccess').textContent='';
-      document.getElementById('regError').textContent='';
-      document.getElementById('regSubmit').disabled=false;
-      document.getElementById('regSubmit').textContent='Register';
-      document.getElementById('regSubmit').style.display='';
-      document.getElementById('regCloseBtn').style.display='none';
-    }
-
-    function resetInclusionFieldsDesktop(){
-      document.getElementById('inclusionFields').style.display='none';
-      var dob=document.getElementById('regDob'); if(dob) dob.value='';
-      var cn=document.getElementById('careNo'); if(cn) cn.checked=true;
-      document.getElementById('caregiverFields').style.display='none';
-      document.getElementById('regCaregiverName').value='';
-      document.getElementById('regCaregiverPhone').value='';
-      var an=document.getElementById('accNo'); if(an) an.checked=true;
-      document.getElementById('accommodationsField').style.display='none';
-      document.getElementById('regAccommodations').value='';
-    }
-
-    function setModalRow(rowId,valId,value){
-      var row=document.getElementById(rowId); var val=document.getElementById(valId);
-      if(value && String(value).trim()){if(val) val.textContent=value; if(row) row.style.display='';}
-      else {if(row) row.style.display='none';}
-    }
-
     function wireMobileForm(ev){
-      if(!isMobile()) return;
       var email=document.getElementById('regEmailMobile');
       var name=document.getElementById('regNameMobile');
       var phone=document.getElementById('regPhoneMobile');
@@ -649,81 +505,11 @@
         var btn=this; btn.disabled=true; btn.textContent='Submitting…';
         apiPost({action:'register', instanceId:ev.instanceId, name:nameV, email:emailV, phone:phoneV, payMethod:payValue, inclusionData:inclusionData}).then(function(r){
           btn.disabled=false; btn.textContent='Register';
-          if(r && r.success){document.getElementById('regSuccessMobile').textContent=r.message || 'You\'re registered!'; btn.style.display='none';}
+          if(r && r.success){document.getElementById('regSuccessMobile').textContent=r.message || 'You\'re registered!'; btn.style.display='none'; load(); loadSessions();}
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
         }).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});
       });
     }
-
-    var emailTimer = null;
-    document.getElementById('regEmail') && document.getElementById('regEmail').addEventListener('input', function(){
-      var email=this.value.trim();
-      clearTimeout(emailTimer);
-      document.getElementById('regName').disabled=false;
-      document.getElementById('regPhone').disabled=false;
-      if(email.length<5 || !email.includes('@')) return;
-      emailTimer=setTimeout(function(){
-        apiPost({action:'checkParticipant', email:email}).then(function(r){
-          if(r && r.exists){
-            document.getElementById('regName').value=r.name || '';
-            document.getElementById('regPhone').value=r.phone || '';
-            document.getElementById('regName').disabled=true;
-            document.getElementById('regPhone').disabled=true;
-          }
-        }).catch(function(){});
-      }, 600);
-    });
-
-    document.querySelectorAll('input[name="payMethod"]').forEach(function(radio){
-      radio.addEventListener('change', function(){
-        document.getElementById('squarePayBtn').style.display='none';
-        document.getElementById('zelleInfo').style.display='none';
-        document.getElementById('cashCheckInfo').style.display='none';
-        if(this.value==='square') document.getElementById('squarePayBtn').style.display='block';
-        else if(this.value==='zelle') document.getElementById('zelleInfo').style.display='block';
-        else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfo').style.display='block';
-      });
-    });
-
-    document.querySelectorAll('input[name="careOfCaregiver"]').forEach(function(r){
-      r.addEventListener('change', function(){
-        document.getElementById('caregiverFields').style.display = this.value==='yes' ? 'block' : 'none';
-        if(this.value==='no'){document.getElementById('regCaregiverName').value=''; document.getElementById('regCaregiverPhone').value='';}
-      });
-    });
-
-    document.querySelectorAll('input[name="accommodationsRequested"]').forEach(function(r){
-      r.addEventListener('change', function(){
-        document.getElementById('accommodationsField').style.display = this.value==='yes' ? 'block' : 'none';
-        if(this.value==='no') document.getElementById('regAccommodations').value='';
-      });
-    });
-
-    document.getElementById('regSubmit').addEventListener('click', function(){
-      var email=document.getElementById('regEmail').value.trim(), name=document.getElementById('regName').value.trim(), phone=document.getElementById('regPhone').value.trim(), payEl=document.querySelector('input[name="payMethod"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regError');
-      errEl.textContent=''; document.getElementById('regSuccess').textContent='';
-      if(!email || !name){errEl.textContent='Please enter your email and full name.'; return;}
-      if(!phone){errEl.textContent='Please enter your phone number.'; return;}
-      var inclusionData=null;
-      if(S.activeEv && S.activeEv.inclusion){
-        var careEl=document.querySelector('input[name="careOfCaregiver"]:checked');
-        var accEl=document.querySelector('input[name="accommodationsRequested"]:checked');
-        inclusionData={dob:document.getElementById('regDob').value.trim(), careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverName').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhone').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodations').value.trim()};
-      }
-      var btn=this; btn.disabled=true; btn.textContent='Submitting…';
-      apiPost({action:'register', instanceId:S.activeEv.instanceId, name:name, email:email, phone:phone, payMethod:payValue, inclusionData:inclusionData}).then(function(r){
-        btn.disabled=false; btn.textContent='Register';
-        if(r && r.success){
-          document.getElementById('regSuccess').textContent=r.message || 'You\'re registered!';
-          ['regEmail','regName','regPhone'].forEach(function(id){document.getElementById(id).disabled=true;});
-          btn.style.display='none';
-          document.getElementById('regCloseBtn').style.display='block';
-          load(); loadSessions();
-        } else {
-          errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';
-        }
-      }).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});
-    });
 
     function renderSessions(){
       var sessions=(S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : [];
@@ -789,9 +575,6 @@
       document.getElementById('nextBtn').disabled=!!on;
     }
 
-    document.getElementById('modalClose').addEventListener('click', closeDesktopModal);
-    document.getElementById('modalOverlay').addEventListener('click', function(e){if(e.target===this) closeDesktopModal();});
-    document.getElementById('regCloseBtn').addEventListener('click', closeDesktopModal);
     document.getElementById('mobilePanelHost').addEventListener('click', function(e){
       var close=e.target.closest('.panel-close');
       if(close) closeMobilePanel();

@@ -220,7 +220,12 @@
         else{
           dayEvs.forEach(function(ev){
             var k=registerEvent(ev);
-            evHtml += '<div class="event-card" data-evcard="1">'
+            var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
+            var statusBadge = ev.statusLabel
+              ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
+              : '';
+            evHtml += '<div class="event-card" data-evcard="1" style="'+cardStyle+'">'
+              + statusBadge
               + '<div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
               + '<div class="event-title">'+esc(ev.title)+'</div>'
               + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
@@ -228,7 +233,7 @@
               + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
               + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
               + '</div>'
-              + (ev.isPublic && !ev.isFull ? '<button class="btn-register" data-id="'+esc(k)+'">Register</button>' : '')
+              + (ev.isPublic && !ev.isFull && !ev.isCancelled ? '<button class="btn-register" data-id="'+esc(k)+'">Register</button>' : '')
               + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
               + '<div class="mobile-panel-slot"></div>'
               + '</div>';
@@ -300,6 +305,7 @@
       var body=document.getElementById(bodyId);
       var html='';
       html += '<div class="modal-subtitle">'+esc(ev.startTime+' – '+ev.endTime)+'</div>';
+      if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       if(ev.duration) html += '<div class="modal-row"><span class="modal-label">Duration</span><span class="modal-value">'+esc(formatDuration(ev.duration))+'</span></div>';
@@ -570,14 +576,22 @@
       if(!instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
       return instances.map(function(ev){
         var k=registerEvent(ev);
-        var canReg=ev.isPublic && !ev.isFull;
-        return '<div class="session-instance-row"><div><div class="session-instance-date">'+esc(ev.dateLabel)+'</div><div class="session-instance-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>' +
-          (ev.location ? '<div class="session-instance-spots">'+esc(ev.location)+'</div>' : '') +
-          (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '') +
-          '</div><div style="display:flex;gap:6px;flex-wrap:wrap;">' +
-          (canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">Register</button>' : '') +
-          '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>' +
-          '</div></div>';
+        var canReg=ev.isPublic && !ev.isFull && !ev.isCancelled;
+        var statusBadge = ev.statusLabel
+          ? '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-left:6px;">'+esc(ev.statusLabel)+'</span>'
+          : '';
+        return '<div class="session-instance-row"'+(ev.isCancelled?' style="opacity:0.6;"':'')+'>'+
+          '<div>'+
+            '<div class="session-instance-date">'+esc(ev.dateLabel)+statusBadge+'</div>'+
+            '<div class="session-instance-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'+
+            (ev.location ? '<div class="session-instance-spots">'+esc(ev.location)+'</div>' : '')+
+            (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '')+
+          '</div>'+
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
+            (canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+
+            '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>'+
+          '</div>'+
+        '</div>';
       }).join('');
     }
 

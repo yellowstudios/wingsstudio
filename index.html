@@ -284,12 +284,6 @@
       host.appendChild(panel);
       mobilePanelEl = panel;
       fillPanelContent('mobilePanelBody', 'mobilePanelTitle', ev, openReg, true);
-      setTimeout(function () {
-        var body = document.getElementById('mobilePanelBody');
-        if (!body) return;
-        body.scrollTop = 0;
-        body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 50);
       document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
     }
 
@@ -378,13 +372,20 @@
         if(incMobile) incMobile.style.display = '';
       }
 
-      if (isMobilePanel) {
-        setTimeout(function () {
-          var form = document.getElementById('regSectionMobile');
-          if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          else body.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 50);
-      }
+      // Scroll to the right place after content renders:
+      // Register → scroll to the registration form
+      // More Info → scroll to the top of the panel
+      setTimeout(function(){
+        var panel = document.getElementById('mobilePanel');
+        if(!panel) return;
+        if(openReg){
+          var regForm = document.getElementById('regSectionMobile');
+          if(regForm) regForm.scrollIntoView({ behavior:'smooth', block:'start' });
+          else panel.scrollIntoView({ behavior:'smooth', block:'start' });
+        } else {
+          panel.scrollIntoView({ behavior:'smooth', block:'start' });
+        }
+      }, 80);
 
       wireMobileForm(ev);
     }

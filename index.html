@@ -1,635 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Wings to Fly — Schedule</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <style>
-    :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
-    *{box-sizing:border-box;}
-    html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-    body{overflow:auto;}
-    .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
-    .toolbar .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-    .toolbar button.nav-btn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:14px;background:#fff;cursor:pointer;}
-    .toolbar button.nav-btn:hover{background:#f0f0f0;}
-    .toolbar button.nav-btn:disabled{opacity:.5;cursor:default;}
-    .toolbar .week-label{font-weight:600;font-size:15px;}
-    .toolbar .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-    .toolbar .view-toggle button,.toolbar .tabs button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:none;cursor:pointer;color:var(--muted);}
-    .toolbar .view-toggle button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-    .toolbar .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-    .toolbar .divider{width:1px;height:24px;background:var(--line);}
+<!-- UPDATED REGISTRATION FORM HTML -->
+<div class="reg-section active" id="regSectionMobile">
+  <div class="reg-title">Register for this event</div>
+  <p class="reg-note">Enter your email to verify active plans or complete registration.</p>
+  
+  <input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">
+  <input type="text" class="reg-input" id="regNameMobile" placeholder="Full name *" autocomplete="name">
+  <input type="tel" class="reg-input" id="regPhoneMobile" placeholder="Phone number *" autocomplete="tel">
 
-    .week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:12px;}
-    .day-column{background:#fff;border:1px solid var(--line);border-radius:8px;min-height:380px;display:flex;flex-direction:column;min-width:0;}
-    .day-column.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
-    .day-header{padding:8px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;background:#fcfaf5;border-radius:8px 8px 0 0;}
-    .day-name{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
-    .day-num{font-size:18px;font-weight:600;}
-    .day-events{padding:8px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
-    .no-events{color:#bbb;text-align:center;font-size:13px;padding:14px 0;}
-
-    .event-card{border:1px solid var(--line);border-radius:6px;padding:8px;background:#fff;font-size:12px;min-width:0;}
-    .event-time{color:var(--muted);font-size:11px;margin-bottom:2px;}
-    .event-title{font-weight:600;font-size:13px;margin-bottom:2px;word-wrap:break-word;}
-    .event-location{color:var(--muted);font-size:11px;margin-bottom:4px;word-wrap:break-word;}
-    .event-meta{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap;}
-    .event-cost{font-weight:600;color:var(--ink);}
-    .event-spots{font-style:italic;}
-    .btn-register{display:block;width:100%;text-align:center;background:var(--accent);color:#fff;border:none;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;margin-bottom:4px;}
-    .btn-register:hover{opacity:.9;}
-    .btn-info{display:block;width:100%;text-align:center;background:#fff;color:var(--ink);border:1px solid var(--line);font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;}
-    .btn-info:hover{background:#f0f0f0;}
-
-    .month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:12px;}
-    .month-day-header{background:#fcfaf5;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:6px 0;}
-    .month-cell{background:#fff;min-height:90px;padding:4px;display:flex;flex-direction:column;cursor:pointer;}
-    .month-cell:hover{background:#fdf9f0;}
-    .month-cell.today .month-cell-num{background:var(--accent);color:#fff;border-radius:50%;}
-    .month-cell.other-month .month-cell-num{color:#ccc;}
-    .month-cell-num{font-size:13px;font-weight:600;width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;flex-shrink:0;}
-    .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
-
-    .modal-overlay{display:none !important;}
-
-    #mobilePanelHost{padding:0 12px;}
-    @media(min-width:901px){
-      #mobilePanelHost{display:flex;justify-content:center;padding:0 16px;}
-      #mobilePanelHost .panel{max-width:480px;width:100%;margin:10px 0 0;}
-    }
-    .panel{border:1px solid var(--line);border-radius:10px;background:#fff;margin:10px 0 0;padding:20px;display:none;}
-    .panel.active{display:block;}
-    .panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
-    .panel-title{font-size:16px;font-weight:700;}
-    .panel-close{font-size:22px;line-height:1;cursor:pointer;color:var(--muted);}
-    .panel-body{max-height:none;overflow:visible;}
-    .panel-event{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;}
-    .panel-event-time{font-size:12px;color:var(--muted);margin-bottom:2px;}
-    .panel-event-title{font-weight:600;font-size:14px;margin-bottom:6px;}
-    .panel-btns{display:flex;gap:6px;flex-wrap:wrap;}
-    .panel-btns button{flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);min-width:120px;}
-    .panel-btns button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-    .panel-empty{color:var(--muted);text-align:center;padding:14px 0;font-size:14px;}
-
-    .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;pointer-events:none;}
-    .loading-overlay.active{display:flex;}
-    .modal-overlay{display:none !important;}
-
-    .modal-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
-    .modal-img.show{display:block;}
-    .modal-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
-    .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;min-width:80px;}
-    .modal-value{color:var(--muted);}
-    .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
-    .modal-title{font-weight:700;font-size:18px;margin-bottom:4px;}
-    .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:14px;}
-    .reg-section.active{display:block;}
-    .reg-title{font-weight:600;font-size:14px;margin-bottom:6px;}
-    .reg-note{font-size:12px;color:var(--muted);margin-bottom:10px;}
-    .reg-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;display:block;}
-    .reg-input{width:100%;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;}
-    .reg-input:focus{outline:none;border-color:var(--accent);}
-    .reg-input:disabled{background:#f5f5f5;color:var(--muted);}
-    .reg-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:2px;}
-    .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
-    .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
-    .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
-
-    .pay-section{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
-    .pay-title{font-weight:600;font-size:14px;margin-bottom:6px;}
-    .pay-options{display:flex;flex-direction:column;gap:8px;}
-    .pay-option{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;padding:8px 10px;border:1px solid var(--line);border-radius:6px;}
-    .pay-option:hover{background:#fdf9f0;}
-    .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
-
-    .page-section{padding:16px 16px 0;}
-    .section-title{font-size:26px;line-height:1.15;font-weight:800;margin:0 0 6px;letter-spacing:-0.02em;}
-    .section-subtitle{font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.5;}
-    .calendar-sessions-spacer{height:24px;}
-    .sessions-block{padding-top:8px;}
-    .sessions-title{margin-top:6px;}
-
-    @media(max-width:900px){
-      .page-section{padding:14px 12px 0;}
-      .section-title{font-size:22px;}
-      .calendar-sessions-spacer{height:30px;}
-      .week-grid{grid-template-columns:1fr;}
-      .modal-overlay{display:none !important;}
-      .mobile-hidden{display:none !important;}
-      .section-divider{margin:18px 12px 14px;}
-    }
-
-    .section-divider{border:none;border-top:2px solid var(--line);margin:24px 16px 18px;}
-
-    .sessions-section{padding:16px;max-height:none;overflow:visible;}
-    .sessions-section-heading{font-size:18px;font-weight:700;margin:0 0 4px;}
-    .sessions-section-sub{font-size:13px;color:var(--muted);margin:0 0 14px;}
-    .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
-    .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
-    .session-card-img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#f5f5f5;display:block;}
-    .session-card-body{padding:14px;flex:1;display:flex;flex-direction:column;}
-    .session-card-category{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:4px;}
-    .session-card-title{font-size:16px;font-weight:700;margin-bottom:6px;}
-    .session-card-desc{font-size:13px;color:var(--muted);margin-bottom:10px;flex:1;line-height:1.5;}
-    .session-card-cost{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;}
-    .session-card-toggle{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:7px 12px;cursor:pointer;width:100%;}
-    .session-card-toggle:hover{background:#fdf9f0;}
-    .session-instances{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-    .session-instances.open{display:block;}
-    .session-instance-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);gap:8px;flex-wrap:wrap;}
-    .session-instance-row:last-child{border-bottom:none;}
-    .session-instance-date{font-size:13px;font-weight:600;}
-    .session-instance-time{font-size:12px;color:var(--muted);}
-    .session-instance-spots{font-size:12px;font-style:italic;color:var(--muted);}
-    .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
-    .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-  </style>
-</head>
-<body>
-  <div class="toolbar">
-    <div class="nav">
-      <button class="nav-btn" id="prevBtn">‹ Prev</button>
-      <span class="week-label" id="periodLabel">Loading…</span>
-      <button class="nav-btn" id="nextBtn">Next ›</button>
-    </div>
-    <div class="controls">
-      <div class="view-toggle">
-        <button id="viewWeek" class="active">Week</button>
-        <button id="viewMonth">Month</button>
-      </div>
-      <div class="divider"></div>
-      <div class="tabs">
-        <button id="tabClasses" class="active">Classes &amp; Rehearsals</button>
-        <button id="tabShows" class="active">Shows &amp; Events</button>
-      </div>
+  <!-- PAYMENT TYPE SELECTOR -->
+  <div class="pay-section">
+    <div class="pay-title">Payment Type</div>
+    <div class="pay-options">
+      <label class="pay-option">
+        <input type="radio" name="payTypeMobile" value="single" checked> Single Class (Drop-In)
+      </label>
+      <label class="pay-option">
+        <input type="radio" name="payTypeMobile" value="monthly"> Monthly Class Plan
+      </label>
+      <label class="pay-option">
+        <input type="radio" name="payTypeMobile" value="current"> Already Paid / Current Plan
+      </label>
     </div>
   </div>
 
-  <div class="page-section">
-    <h2 class="section-title">Our Calendar</h2>
-    <p class="section-subtitle">Browse our calendar and register for any upcoming date.</p>
-    <div id="calendarArea"></div>
+  <!-- SINGLE CLASS AMOUNT -->
+  <div id="singlePayBlock" style="margin-top:10px;">
+    <label class="reg-label">Payment Amount ($)</label>
+    <input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1">
+    <div class="reg-note">Defaulted to minimum class rate. You may add an optional contribution.</div>
   </div>
 
-  <div class="loading-overlay" id="loadingOverlay">Loading…</div>
-  <div id="mobilePanelHost"></div>
-
-  <div class="calendar-sessions-spacer"></div>
-
-  <div class="page-section sessions-block">
-    <h2 class="section-title sessions-title">Our Sessions</h2>
-    <p class="section-subtitle">Browse our full program and register for any upcoming date.</p>
-    <div id="sessionsArea"></div>
+  <!-- MONTHLY TIER SELECTOR -->
+  <div id="monthlyPayBlock" style="display:none; margin-top:10px;">
+    <label class="reg-label">Monthly Plan Tier</label>
+    <select class="reg-input" id="planTierMobile">
+      <option value="1 hour/week">1 hour/week – $65/month</option>
+      <option value="1.5 hours/week">1.5 hours/week – $85/month</option>
+      <option value="2 hours/week">2 hours/week – $100/month</option>
+      <option value="2.5 hours/week">2.5 hours/week – $120/month</option>
+      <option value="3 hours/week">3 hours/week – $135/month</option>
+      <option value="3.5 hours/week">3.5 hours/week – $150/month</option>
+      <option value="4 hours/week">4 hours/week – $160/month</option>
+      <option value="4.5 hours/week">4.5 hours/week – $170/month</option>
+      <option value="5 hours/week">5 hours/week – $185/month</option>
+      <option value="5.5 hours/week">5.5 hours/week – $200/month</option>
+      <option value="6 hours/week">6 hours/week – $215/month</option>
+    </select>
+    <div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>
   </div>
 
-  <script>
-    var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
-    var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null};
-    var monthByDay = {}, eventMap = {}, mobilePanelEl = null;
+  <!-- PLAN STATUS BANNER -->
+  <div id="planStatusBanner" style="display:none; margin-top:10px; padding:10px; border-radius:6px; font-size:13px;"></div>
 
-    function mondayOf(date){var d=new Date(date); d.setHours(0,0,0,0); var day=d.getDay(), diff=day===0?-6:1-day; d.setDate(d.getDate()+diff); return d;}
-    function addDays(date,n){var d=new Date(date); d.setDate(d.getDate()+n); return d;}
-    function dateKey(date){var d=new Date(date); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
-    function monthKey(date){var d=new Date(date); return d.getFullYear()+'-'+pad(d.getMonth()+1);}
-    function pad(n){return String(n).padStart(2,'0');}
-    function formatDuration(min){if(!min||isNaN(Number(min))) return ''; var m=Number(min); if(m<60) return m+' min'; if(m%60===0) return (m/60)+(m/60===1?' hour':' hours'); return Math.floor(m/60)+' hr '+(m%60)+' min';}
-    function esc(str){var d=document.createElement('div'); d.textContent=String(str==null?'':str); return d.innerHTML;}
-    function evKey(ev){return String(ev.instanceId||ev.id||'');}
-    function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
-    function apiGet(params){var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); return fetch(API+'?'+qs).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
-    function apiPost(body){return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
-    function isMobile(){return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;}
-    function focusTodayOnMobile(){if(!isMobile()) return; setTimeout(function(){var target=document.querySelector('.day-column.today, .month-cell.today'); if(target && target.scrollIntoView) target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});},100);}
-    function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
-    function load(){setLoading(true); var params=S.view==='month'?{month:S.currentMonth}:{week:dateKey(S.currentMonday)}; apiGet(params).then(function(data){S.data=data; render(); setLoading(false); setTimeout(focusTodayOnMobile,150);}).catch(function(err){setLoading(false); document.getElementById('periodLabel').textContent='Error — try again'; console.error(err);});}
-    function loadSessions(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading sessions…</div>'; apiGet({view:'sessions'}).then(function(data){S.sessionsData=data; renderSessions();}).catch(function(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Could not load sessions.</div>';});}
-    function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight(); focusTodayOnMobile();}
-    function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
+  <!-- PAYMENT METHOD SELECTOR -->
+  <div class="pay-section" id="methodSection">
+    <div class="pay-title">Payment Method</div>
+    <div class="pay-options">
+      <label class="pay-option"><input type="radio" name="payMethodMobile" value="square" checked> Card via Square</label>
+      <label class="pay-option"><input type="radio" name="payMethodMobile" value="zelle"> Zelle</label>
+      <label class="pay-option"><input type="radio" name="payMethodMobile" value="cash"> Cash</label>
+      <label class="pay-option"><input type="radio" name="payMethodMobile" value="check"> Check</label>
+    </div>
+  </div>
 
-    function renderWeek(events){
-      var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];});
-      events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } });
-      var html='<div class="week-grid">';
-      S.data.days.forEach(function(d){
-        var isToday=d.key===S.data.todayKey;
-        var dayEvs=byDay[d.key];
-        var evHtml='';
-        if(!dayEvs.length){evHtml='<div class="no-events">—</div>';}
-        else{
-          dayEvs.forEach(function(ev){
-            var k=registerEvent(ev);
-            var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
-            var statusBadge = ev.statusLabel
-              ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
-              : '';
-            evHtml += '<div class="event-card" data-evcard="1" style="'+cardStyle+'">'
-              + statusBadge
-              + '<div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
-              + '<div class="event-title">'+esc(ev.title)+'</div>'
-              + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
-              + '<div class="event-meta">'
-              + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
-              + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
-              + '</div>'
-              + (ev.isPublic && !ev.isFull && !ev.isCancelled ? '<button class="btn-register" data-id="'+esc(k)+'">Register</button>' : '')
-              + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
-              + '<div class="mobile-panel-slot"></div>'
-              + '</div>';
-          });
-        }
-        html += '<div class="day-column'+(isToday?' today':'')+'"><div class="day-header"><span class="day-name">'+d.name+'</span><span class="day-num">'+d.num+'</span></div><div class="day-events">'+evHtml+'</div></div>';
-      });
-      html += '</div>';
-      document.getElementById('calendarArea').innerHTML = html;
-      attachCalendarListeners();
-    }
+  <button class="reg-submit" id="regSubmitMobile">Register</button>
+  <div class="reg-success" id="regSuccessMobile"></div>
+  <div class="reg-error" id="regErrorMobile"></div>
+</div>
 
-    function renderMonth(events){
-      var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];});
-      events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } });
-      monthByDay=byDay;
-      var currentMonthNum=parseInt(S.currentMonth.split('-')[1],10);
-      var DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-      var html='<div class="month-grid">';
-      DOW.forEach(function(n){html += '<div class="month-day-header">'+n+'</div>';});
-      S.data.days.forEach(function(d){
-        var isToday=d.key===S.data.todayKey;
-        var otherMonth=parseInt(d.monthNum,10)!==currentMonthNum;
-        var dayEvs=byDay[d.key] || [];
-        var pillsHtml='';
-        var MAX=3;
-        dayEvs.slice(0,MAX).forEach(function(ev){pillsHtml += '<div class="month-event-pill">'+esc(ev.startTime+' '+ev.title)+'</div>';});
-        if(dayEvs.length>MAX) pillsHtml += '<div class="month-more">+'+(dayEvs.length-MAX)+' more</div>';
-        html += '<div class="month-cell'+(isToday?' today':'')+(otherMonth?' other-month':'')+'" data-key="'+esc(d.key)+'"><div class="month-cell-num">'+d.num+'</div>'+pillsHtml+'</div>';
-      });
-      html += '</div>';
-      document.getElementById('calendarArea').innerHTML = html;
-      attachCalendarListeners();
-    }
+<script>
+// --- FRONTEND JAVASCRIPT LOGIC ---
+function wireMobileForm(ev) {
+  var email = document.getElementById('regEmailMobile');
+  var basePrice = validCost(ev.cost) || 0;
+  var singleInput = document.getElementById('singleAmountMobile');
+  
+  singleInput.value = basePrice;
+  singleInput.min = basePrice;
 
-    function openMobilePanel(ev, openReg){
-      closeMobilePanel();
-      var host = document.getElementById('mobilePanelHost');
-      var panel = document.createElement('div');
-      panel.className = 'panel active';
-      panel.id = 'mobilePanel';
-      panel.innerHTML =
-        '<div class="panel-header">'
-        + '<div class="panel-title" id="mobilePanelTitle"></div>'
-        + '<span class="panel-close" id="mobilePanelClose">×</span>'
-        + '</div>'
-        + '<div class="panel-body" id="mobilePanelBody"></div>';
-      host.appendChild(panel);
-      mobilePanelEl = panel;
-      fillPanelContent('mobilePanelBody', 'mobilePanelTitle', ev, openReg, true);
-      document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
-    }
+  // Handle Dynamic Payment Type Block Visibility
+  document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r) {
+    r.addEventListener('change', function() {
+      var val = this.value;
+      document.getElementById('singlePayBlock').style.display = (val === 'single') ? 'block' : 'none';
+      document.getElementById('monthlyPayBlock').style.display = (val === 'monthly') ? 'block' : 'none';
+      document.getElementById('methodSection').style.display = (val === 'current') ? 'none' : 'block';
+      document.getElementById('planStatusBanner').style.display = 'none';
 
-    function closeMobilePanel(){
-      var host=document.getElementById('mobilePanelHost');
-      host.innerHTML='';
-      mobilePanelEl=null;
-    }
-
-    function fillPanelContent(bodyId,titleId,ev,openReg,isMobilePanel){
-      S.activeEv=ev;
-      document.getElementById(titleId).textContent=ev.title;
-      var body=document.getElementById(bodyId);
-      var html='';
-      html += '<div class="modal-subtitle">'+esc(ev.startTime+' – '+ev.endTime)+'</div>';
-      if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
-      if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
-      html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
-      if(ev.duration) html += '<div class="modal-row"><span class="modal-label">Duration</span><span class="modal-value">'+esc(formatDuration(ev.duration))+'</span></div>';
-      if(ev.costText) html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
-      if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
-      if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
-      if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>';
-      if(ev.spotsText) html += '<div class="modal-row"><span class="modal-label">Availability</span><span class="modal-value">'+esc(ev.spotsText)+'</span></div>';
-      html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
-      if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
-      if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;">This event is currently full. Check back for future sessions!</span></div>';
-      if(ev.isPublic && !ev.isFull){
-        html += '<hr class="modal-divider">';
-        html += '<div class="reg-section active" id="regSectionMobile">'
-          + '<div class="reg-title">Register for this event</div>'
-          + '<p class="reg-note">Enter your email — if you\'ve registered before, we\'ll fill in your details.</p>'
-          + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
-          + '<input type="text" class="reg-input" id="regNameMobile" placeholder="Full name *" autocomplete="name">'
-          + '<input type="tel" class="reg-input" id="regPhoneMobile" placeholder="Phone number *" autocomplete="tel">'
-          + '<div class="pay-section">'
-          + '<div class="pay-title">Payment method</div>'
-          + '<div class="pay-options">'
-          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="square"> Credit / Debit Card</label>'
-          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="zelle"> Zelle</label>'
-          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="cash"> Cash</label>'
-          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="check"> Check</label>'
-          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="later" checked> Pay later / Decide later</label>'
-          + '</div>'
-          + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:none;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>'
-          + '<div id="zelleInfoMobile" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Include your name and event in the memo.</div>'
-          + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event. Make checks payable to <strong>Wings to Fly Dance Company</strong>.</div>'
-          + '</div>'
-          + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
-          + '<div class="pay-title">A few more details</div>'
-          + '<p class="reg-note">This session has inclusive programming. Share only what you\'re comfortable with.</p>'
-          + '<label class="reg-label">Date of Birth</label>'
-          + '<div style="display:flex;gap:6px;margin-bottom:8px;">'
-          + '<select class="reg-input" id="regDobMonthMobile" style="flex:2;margin-bottom:0;"><option value="">Month</option>'+ dobMonthOptions() +'</select>'
-          + '<select class="reg-input" id="regDobDayMobile"   style="flex:1;margin-bottom:0;"><option value="">Day</option>'  + dobDayOptions()   +'</select>'
-          + '<select class="reg-input" id="regDobYearMobile"  style="flex:1.5;margin-bottom:0;"><option value="">Year</option>'+ dobYearOptions() +'</select>'
-          + '</div>'
-          + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver during the session?</div>'
-          + '<div class="pay-options" style="margin-bottom:8px;">'
-          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="yes" id="careYesMobile"> Yes, a support person will attend</label>'
-          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No, a support person will not attend</label>'
-          + '</div>'
-          + '<div id="caregiverFieldsMobile" style="display:none;">'
-          + '<input type="text" class="reg-input" id="regCaregiverNameMobile" placeholder="Support person\'s name">'
-          + '<input type="tel" class="reg-input" id="regCaregiverPhoneMobile" placeholder="Support person\'s phone number">'
-          + '</div>'
-          + '<div class="reg-label" style="margin-top:12px;">Are there any accommodations that would help this participant fully enjoy the session?</div>'
-          + '<div class="pay-options" style="margin-bottom:8px;">'
-          + '<label class="pay-option"><input type="radio" name="accommodationsRequestedMobile" value="yes" id="accYesMobile"> Yes, I\'d like to share some details</label>'
-          + '<label class="pay-option"><input type="radio" name="accommodationsRequestedMobile" value="no" id="accNoMobile" checked> No accommodations needed at this time</label>'
-          + '</div>'
-          + '<div id="accommodationsFieldMobile" style="display:none;">'
-          + '<textarea class="reg-input" id="regAccommodationsMobile" rows="3" placeholder="Please share anything that would help us support you." style="resize:vertical;"></textarea>'
-          + '</div>'
-          + '</div>'
-          + '<button class="reg-submit" id="regSubmitMobile">Register</button>'
-          + '<div class="reg-success" id="regSuccessMobile"></div>'
-          + '<div class="reg-error" id="regErrorMobile"></div>'
-          + '</div>';
+      if (val === 'current') {
+        validateCurrentPlan();
+      } else if (val === 'monthly') {
+        calculateFees();
       }
-      body.innerHTML=html;
-
-      // Show mobile inclusion fields if this event has inclusive programming
-      if(ev.isPublic && !ev.isFull && ev.inclusion){
-        var incMobile = document.getElementById('inclusionFieldsMobile');
-        if(incMobile) incMobile.style.display = '';
-      }
-
-      // Scroll to the right place after content renders:
-      // Register → scroll to the registration form
-      // More Info → scroll to the top of the panel
-      setTimeout(function(){
-        var panel = document.getElementById('mobilePanel');
-        if(!panel) return;
-        if(openReg){
-          var regForm = document.getElementById('regSectionMobile');
-          if(regForm) regForm.scrollIntoView({ behavior:'smooth', block:'start' });
-          else panel.scrollIntoView({ behavior:'smooth', block:'start' });
-        } else {
-          panel.scrollIntoView({ behavior:'smooth', block:'start' });
-        }
-      }, 80);
-
-      wireMobileForm(ev);
-    }
-
-    function attachCalendarListeners(){
-      var area=document.getElementById('calendarArea');
-      if(!area || area.dataset.listenersAttached) return;
-      area.dataset.listenersAttached='1';
-      area.addEventListener('click', function(e){
-        var btn = e.target.closest('.btn-register, .btn-info');
-        if(btn){
-          var ev = eventMap[btn.getAttribute('data-id')];
-          if(!ev) return;
-          openMobilePanel(ev, btn.classList.contains('btn-register'));
-          return;
-        }
-        var cell=e.target.closest('.month-cell');
-        if(!cell) return;
-        openDayPanel(cell.getAttribute('data-key'), monthByDay[cell.getAttribute('data-key')] || []);
-      });
-    }
-
-    function attachSessionListeners(){
-      var area=document.getElementById('sessionsArea');
-      if(!area || area.dataset.listenersAttached) return;
-      area.dataset.listenersAttached='1';
-      area.addEventListener('click', function(e){
-        var toggle=e.target.closest('.session-card-toggle');
-        if(toggle){
-          var sid=toggle.getAttribute('data-sid');
-          var panel=document.getElementById('si-'+sid);
-          if(!panel) return;
-          var open=panel.classList.toggle('open');
-          var count=panel.querySelectorAll('.session-instance-row').length;
-          toggle.textContent=open?'Hide dates':count+(count===1?' upcoming date':' upcoming dates')+' — view all';
-          broadcastHeight();
-          return;
-        }
-        var btn=e.target.closest('.btn-register, .btn-info');
-        if(!btn) return;
-        var ev=eventMap[btn.getAttribute('data-id')];
-        if(!ev) return;
-        openMobilePanel(ev, btn.classList.contains('btn-register'));
-      });
-    }
-
-    function openDayPanel(dayKey, events){
-      var panelHost=document.getElementById('mobilePanelHost');
-      var parts=dayKey.split('-');
-      var d=new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-      var html='<div class="panel active"><div class="panel-header"><div class="panel-title">'+d.toLocaleDateString("en-US",{weekday:"long", month:"long", day:"numeric"})+'</div><span class="panel-close" id="dayPanelClose">×</span></div><div class="panel-body">';
-      if(!events.length){html += '<div class="panel-empty">No events this day.</div>';}
-      else{
-        events.forEach(function(ev){
-          var k=registerEvent(ev);
-          html += '<div class="panel-event"><div class="panel-event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div><div class="panel-event-title">'+esc(ev.title)+'</div><div class="panel-btns">'+(ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+'<button class="btn-info" data-id="'+esc(k)+'">More Info</button></div></div>';
-        });
-      }
-      html += '</div></div>';
-      panelHost.innerHTML=html;
-      document.getElementById('dayPanelClose').addEventListener('click', function(){panelHost.innerHTML='';});
-      attachMobilePanelDelegates(panelHost);
-      panelHost.firstElementChild.scrollIntoView({behavior:'smooth', block:'start'});
-    }
-
-    function attachMobilePanelDelegates(root){
-      root.addEventListener('click', function(e){
-        var btn=e.target.closest('.btn-register, .btn-info');
-        if(!btn) return;
-        var ev=eventMap[btn.getAttribute('data-id')];
-        if(!ev) return;
-        openMobilePanel(ev, btn.classList.contains('btn-register'));
-      });
-    }
-
-    function dobMonthOptions(){
-      var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-      return months.map(function(m,i){return '<option value="'+(i+1)+'">'+m+'</option>';}).join('');
-    }
-    function dobDayOptions(){
-      var o=''; for(var d=1;d<=31;d++) o+='<option value="'+d+'">'+d+'</option>'; return o;
-    }
-    function dobYearOptions(){
-      var o=''; var cur=new Date().getFullYear();
-      for(var y=cur;y>=1920;y--) o+='<option value="'+y+'">'+y+'</option>'; return o;
-    }
-
-    function wireMobileForm(ev){
-      var email=document.getElementById('regEmailMobile');
-      var name=document.getElementById('regNameMobile');
-      var phone=document.getElementById('regPhoneMobile');
-      var emailTimer=null;
-      if(email){
-        email.addEventListener('input', function(){
-          var v=this.value.trim();
-          clearTimeout(emailTimer);
-          name.disabled=false; phone.disabled=false;
-          if(v.length<5 || !v.includes('@')) return;
-          emailTimer=setTimeout(function(){
-            apiPost({action:'checkParticipant', email:v}).then(function(r){
-              if(r && r.exists){name.value=r.name||''; phone.value=r.phone||''; name.disabled=true; phone.disabled=true;}
-            }).catch(function(){});
-          },600);
-        });
-      }
-      document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){
-        r.addEventListener('change', function(){
-          document.getElementById('squarePayBtnMobile').style.display='none';
-          document.getElementById('zelleInfoMobile').style.display='none';
-          document.getElementById('cashCheckInfoMobile').style.display='none';
-          if(this.value==='square') document.getElementById('squarePayBtnMobile').style.display='block';
-          else if(this.value==='zelle') document.getElementById('zelleInfoMobile').style.display='block';
-          else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfoMobile').style.display='block';
-        });
-      });
-      document.querySelectorAll('input[name="careOfCaregiverMobile"]').forEach(function(r){
-        r.addEventListener('change', function(){
-          document.getElementById('caregiverFieldsMobile').style.display = this.value==='yes' ? 'block' : 'none';
-          if(this.value==='no'){document.getElementById('regCaregiverNameMobile').value=''; document.getElementById('regCaregiverPhoneMobile').value='';}
-        });
-      });
-      document.querySelectorAll('input[name="accommodationsRequestedMobile"]').forEach(function(r){
-        r.addEventListener('change', function(){
-          document.getElementById('accommodationsFieldMobile').style.display = this.value==='yes' ? 'block' : 'none';
-          if(this.value==='no') document.getElementById('regAccommodationsMobile').value='';
-        });
-      });
-      var submit=document.getElementById('regSubmitMobile');
-      submit.addEventListener('click', function(){
-        var emailV=email.value.trim(), nameV=name.value.trim(), phoneV=phone.value.trim(), payEl=document.querySelector('input[name="payMethodMobile"]:checked'), payValue=payEl ? payEl.value : 'later', errEl=document.getElementById('regErrorMobile');
-        errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
-        if(!emailV || !nameV){errEl.textContent='Please enter your email and full name.'; return;}
-        if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
-        var inclusionData=null;
-        if(ev.inclusion){
-          var careEl=document.querySelector('input[name="careOfCaregiverMobile"]:checked');
-          var accEl=document.querySelector('input[name="accommodationsRequestedMobile"]:checked');
-          var dobM=document.getElementById('regDobMonthMobile'), dobD=document.getElementById('regDobDayMobile'), dobY=document.getElementById('regDobYearMobile');
-          var dob = (dobY && dobY.value && dobM && dobM.value && dobD && dobD.value)
-            ? (String(dobM.value).length<2?'0':'')+dobM.value + '/' + (String(dobD.value).length<2?'0':'')+dobD.value + '/' + dobY.value : '';
-          inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
-        }
-        var btn=this; btn.disabled=true; btn.textContent='Submitting…';
-        apiPost({action:'register', instanceId:ev.instanceId, name:nameV, email:emailV, phone:phoneV, payMethod:payValue, inclusionData:inclusionData}).then(function(r){
-          btn.disabled=false; btn.textContent='Register';
-          if(r && r.success){document.getElementById('regSuccessMobile').textContent=r.message || 'You\'re registered!'; btn.style.display='none'; load(); loadSessions();}
-          else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
-        }).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});
-      });
-    }
-
-    function renderSessions(){
-      var sessions=(S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : [];
-      var filtered=sessions.filter(function(s){
-        var typeLC=String(s.type || '').toLowerCase();
-        var catLC=String(s.category || '').toLowerCase();
-        var isShow=(typeLC==='event' || catLC==='performance');
-        if(S.showClasses && !S.showShows && isShow) return false;
-        if(S.showShows && !S.showClasses && !isShow) return false;
-        return true;
-      });
-      var html='';
-      if(!filtered.length){html='<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:14px;">No sessions found.</div>';}
-      else{
-        html='<div class="sessions-grid">';
-        filtered.forEach(function(s){
-          var hasImg=s.imageUrl && s.imageUrl.trim();
-          var sid=esc(s.sessionId);
-          html += '<div class="session-card">'
-            + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy">' : '')
-            + '<div class="session-card-body">'
-            + '<div class="session-card-category">'+esc(s.category||s.type||'')+'</div>'
-            + '<div class="session-card-title">'+esc(s.title)+'</div>'
-            + (s.description ? '<div class="session-card-desc">'+esc(s.description)+'</div>' : '')
-            + (s.costText ? '<div class="session-card-cost">'+esc(s.costText)+' per session</div>' : '')
-            + '<button class="session-card-toggle" data-sid="'+sid+'">'+s.instances.length+(s.instances.length===1?' upcoming date':' upcoming dates')+' — view all</button>'
-            + '<div class="session-instances" id="si-'+sid+'">'+buildInstanceRows(s.instances)+'</div>'
-            + '</div></div>';
-        });
-        html += '</div>';
-      }
-      var area=document.getElementById('sessionsArea');
-      area.innerHTML=html;
-      attachSessionListeners();
-      broadcastHeight();
-    }
-
-    function buildInstanceRows(instances){
-      if(!instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
-      return instances.map(function(ev){
-        var k=registerEvent(ev);
-        var canReg=ev.isPublic && !ev.isFull && !ev.isCancelled;
-        var statusBadge = ev.statusLabel
-          ? '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-left:6px;">'+esc(ev.statusLabel)+'</span>'
-          : '';
-        return '<div class="session-instance-row"'+(ev.isCancelled?' style="opacity:0.6;"':'')+'>'+
-          '<div>'+
-            '<div class="session-instance-date">'+esc(ev.dateLabel)+statusBadge+'</div>'+
-            '<div class="session-instance-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'+
-            (ev.location ? '<div class="session-instance-spots">'+esc(ev.location)+'</div>' : '')+
-            (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '')+
-          '</div>'+
-          '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
-            (canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+
-            '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>'+
-          '</div>'+
-        '</div>';
-      }).join('');
-    }
-
-    function broadcastHeight(){
-      try{
-        var h=Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
-        window.parent.postMessage({type:'wingsHeight', height:h}, '*');
-      }catch(e){}
-    }
-
-    function setLoading(on){
-      document.getElementById('loadingOverlay').classList.toggle('active', !!on);
-      document.getElementById('prevBtn').disabled=!!on;
-      document.getElementById('nextBtn').disabled=!!on;
-    }
-
-    document.getElementById('mobilePanelHost').addEventListener('click', function(e){
-      var close=e.target.closest('.panel-close');
-      if(close) closeMobilePanel();
     });
+  });
 
-    document.getElementById('prevBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, -7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1)); load();}});
-    document.getElementById('nextBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, 7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10), 1)); load();}});
-    document.getElementById('viewWeek').addEventListener('click', function(){if(S.view==='week') return; S.view='week'; document.getElementById('viewWeek').classList.add('active'); document.getElementById('viewMonth').classList.remove('active'); load();});
-    document.getElementById('viewMonth').addEventListener('click', function(){if(S.view==='month') return; S.view='month'; S.currentMonth=monthKey(S.currentMonday); document.getElementById('viewMonth').classList.add('active'); document.getElementById('viewWeek').classList.remove('active'); load();});
-    document.getElementById('tabClasses').addEventListener('click', function(){S.showClasses=!S.showClasses; this.classList.toggle('active',S.showClasses); if(S.data) render(); if(S.sessionsData) renderSessions();});
-    document.getElementById('tabShows').addEventListener('click', function(){S.showShows=!S.showShows; this.classList.toggle('active',S.showShows); if(S.data) render(); if(S.sessionsData) renderSessions();});
+  document.getElementById('planTierMobile').addEventListener('change', calculateFees);
 
-    attachCalendarListeners();
-    load();
-    loadSessions();
-    broadcastHeight();
-    setTimeout(broadcastHeight,800);
-    setTimeout(broadcastHeight,1200);
-    setTimeout(broadcastHeight,2500);
-    setTimeout(broadcastHeight,5000);
-    if(window.ResizeObserver){new ResizeObserver(broadcastHeight).observe(document.body);}
-  </script>
-</body>
-</html>
+  function calculateFees() {
+    var emailV = email.value.trim();
+    var tier = document.getElementById('planTierMobile').value;
+    
+    apiPost({ action: 'calculateRegistrationFee', email: emailV, paymentType: 'monthly', planTier: tier })
+      .then(function(res) {
+        if (res.success) {
+          var breakout = "Total: $" + res.totalDue;
+          if (res.isProrated) breakout += " (Prorated 50% for mid-month)";
+          if (res.isFirstTime) breakout += " + $25 One-Time Reg Fee";
+          document.getElementById('feeBreakout').textContent = breakout;
+        }
+      });
+  }
+
+  function validateCurrentPlan() {
+    var emailV = email.value.trim();
+    var banner = document.getElementById('planStatusBanner');
+    var submitBtn = document.getElementById('regSubmitMobile');
+
+    if (!emailV) {
+      banner.style.display = 'block';
+      banner.style.background = '#fff3cd';
+      banner.style.color = '#856404';
+      banner.textContent = 'Please enter your email address above to validate your active plan.';
+      submitBtn.disabled = true;
+      return;
+    }
+
+    banner.style.display = 'block';
+    banner.style.background = '#e2e3e5';
+    banner.style.color = '#383d41';
+    banner.textContent = 'Checking plan status...';
+
+    apiPost({ action: 'checkPlanStatus', email: emailV, instanceId: ev.instanceId })
+      .then(function(res) {
+        banner.textContent = res.message;
+        if (res.valid) {
+          banner.style.background = '#d4edda';
+          banner.style.color = '#155724';
+          submitBtn.disabled = false;
+        } else {
+          banner.style.background = '#f8d7da';
+          banner.style.color = '#721c24';
+          submitBtn.disabled = true;
+        }
+      });
+  }
+
+  email.addEventListener('blur', function() {
+    var type = document.querySelector('input[name="payTypeMobile"]:checked').value;
+    if (type === 'current') validateCurrentPlan();
+    if (type === 'monthly') calculateFees();
+  });
+}
+</script>

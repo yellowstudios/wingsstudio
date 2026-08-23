@@ -92,6 +92,10 @@
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
 
+    /* Smooth Fade Transitions to prevent visual bounces */
+    .recognized-tooltip, .duplicate-block, #planStatusBanner, #exceededOptions {
+      transition: opacity 0.25s ease-in-out;
+    }
     .recognized-tooltip{display:none; background:#e8f5e9; border:1px solid #a5d6a7; color:#1b5e20; border-radius:6px; padding:8px 10px; font-size:12px; font-weight:600; margin-bottom:8px;}
     .duplicate-block{display:none; background:#e3f2fd; border:1px solid #90caf9; color:#0d47a1; border-radius:8px; padding:12px; font-size:13px; margin-top:10px;}
 
@@ -570,7 +574,7 @@
       }
 
       var filtered = ALL_TIERS.filter(function(t){ return t.mins > minMins; });
-      if (filtered.length === 0) filtered = ALL_TIERS; // Fallback
+      if (filtered.length === 0) filtered = ALL_TIERS;
 
       filtered.forEach(function(t) {
         var opt = document.createElement('option');
@@ -778,9 +782,15 @@
         apiPost({ action: 'calculateRegistrationFee', email: emailV, paymentType: 'monthly', planTier: tier, baseClassPrice: basePrice })
           .then(function(res){
             if (res && res.success) {
-              var breakout = "Total: $" + res.totalDue.toFixed(2);
-              if (res.isProrated) breakout += " (Prorated 50% for mid-month enrollment)";
-              if (res.isFirstTime) breakout += " + $25 One-Time Registration Fee";
+              var breakout = "";
+              if (res.isUpgrade) {
+                breakout = "Upgrade from " + (res.currentTier || 'current plan') + " → " + tier + ". Total Due: $" + res.totalDue.toFixed(2);
+                if (res.isProrated) breakout += " (Differential prorated 50% for mid-month upgrade)";
+              } else {
+                breakout = "Total: $" + res.totalDue.toFixed(2);
+                if (res.isProrated) breakout += " (Prorated 50% for mid-month enrollment)";
+                if (res.isFirstTime) breakout += " + $25 One-Time Registration Fee";
+              }
               document.getElementById('feeBreakout').textContent = breakout;
               updateItemizedSummary();
             }

@@ -99,6 +99,19 @@
     .pay-option:hover{background:#fdf9f0;}
     .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
 
+    .summary-card{background:#fcfaf5; border:1px solid var(--accent); border-radius:8px; padding:12px; margin-top:14px;}
+    .summary-title{font-weight:700; font-size:13px; color:var(--ink); margin-bottom:6px;}
+    .summary-row{display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;}
+    .summary-total{display:flex; justify-content:space-between; font-weight:700; font-size:15px; border-top:1px solid var(--line); padding-top:6px; margin-top:6px;}
+
+    .confirmation-view{text-align:center; padding:10px 0;}
+    .confirm-icon{font-size:42px; color:#2e7d32; margin-bottom:8px;}
+    .confirm-title{font-size:20px; font-weight:800; color:var(--ink); margin-bottom:6px;}
+    .confirm-msg{font-size:14px; color:var(--muted); margin-bottom:16px;}
+    .confirm-btns{display:flex; gap:10px; flex-wrap:wrap;}
+    .confirm-btn{flex:1; padding:10px; border-radius:6px; font-weight:600; font-size:13px; cursor:pointer; border:1px solid var(--line); background:#fff;}
+    .confirm-btn.primary{background:var(--accent); color:#fff; border-color:var(--accent);}
+
     .page-section{padding:16px 16px 0;}
     .section-title{font-size:26px;line-height:1.15;font-weight:800;margin:0 0 6px;letter-spacing:-0.02em;}
     .section-subtitle{font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.5;}
@@ -373,6 +386,14 @@
           + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event.</div>'
           + '</div>'
 
+          <!-- ITEMIZED SUMMARY CARD -->
+          + '<div class="summary-card" id="summaryCard">'
+          + '<div class="summary-title">Reservation Summary</div>'
+          + '<div class="summary-row"><span>Type:</span><span id="sumType">Single Class (Drop-In)</span></div>'
+          + '<div class="summary-row" id="sumBreakoutRow" style="display:none;"><span>Rate Details:</span><span id="sumBreakout">-</span></div>'
+          + '<div class="summary-total"><span>Total Promised:</span><span id="sumTotal">$0.00</span></div>'
+          + '</div>'
+
           + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
           + '<div class="pay-title">A few more details</div>'
           + '<p class="reg-note">This session has inclusive programming. Share only what you\'re comfortable with.</p>'
@@ -525,9 +546,34 @@
       if (singleInput) {
         singleInput.value = basePrice;
         singleInput.min = basePrice;
-        singleInput.addEventListener('change', function(){
-          if(Number(this.value) < basePrice) this.value = basePrice;
-        });
+        singleInput.addEventListener('input', updateItemizedSummary);
+      }
+
+      function updateItemizedSummary(){
+        var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
+        var val = payTypeEl ? payTypeEl.value : 'single';
+        var sumType = document.getElementById('sumType');
+        var sumBreakoutRow = document.getElementById('sumBreakoutRow');
+        var sumBreakout = document.getElementById('sumBreakout');
+        var sumTotal = document.getElementById('sumTotal');
+
+        if(val === 'single'){
+          sumType.textContent = 'Single Class (Drop-In)';
+          sumBreakoutRow.style.display = 'none';
+          var amt = singleInput ? Number(singleInput.value) : basePrice;
+          if(amt < basePrice) amt = basePrice;
+          sumTotal.textContent = '$' + amt.toFixed(2);
+        } else if(val === 'current'){
+          sumType.textContent = 'Already Paid / Current Plan';
+          sumBreakoutRow.style.display = 'none';
+          sumTotal.textContent = '$0.00 (Covered)';
+        } else if(val === 'monthly'){
+          sumType.textContent = 'Monthly Class Plan (' + document.getElementById('planTierMobile').value + ')';
+          sumBreakoutRow.style.display = 'flex';
+          sumBreakout.textContent = document.getElementById('feeBreakout').textContent || 'Calculating...';
+          var parsedTotal = document.getElementById('feeBreakout').textContent.match(/\$([0-9.]+)/);
+          sumTotal.textContent = parsedTotal ? parsedTotal[0] : '$0.00';
+        }
       }
 
       if(email){
@@ -561,6 +607,7 @@
           var val = payTypeEl ? payTypeEl.value : 'single';
           if (val === 'current') validateCurrentPlan();
           if (val === 'monthly') calculateFees();
+          updateItemizedSummary();
         });
       }
 
@@ -575,11 +622,15 @@
 
           if (val === 'current') validateCurrentPlan();
           else if (val === 'monthly') calculateFees();
+          updateItemizedSummary();
         });
       });
 
       var tierSelect = document.getElementById('planTierMobile');
-      if (tierSelect) tierSelect.addEventListener('change', calculateFees);
+      if (tierSelect) tierSelect.addEventListener('change', function(){
+        calculateFees();
+        updateItemizedSummary();
+      });
 
       function calculateFees(){
         var emailV = email.value.trim();
@@ -591,6 +642,7 @@
               if (res.isProrated) breakout += " (Prorated 50% for mid-month enrollment)";
               if (res.isFirstTime) breakout += " + $25 One-Time Registration Fee";
               document.getElementById('feeBreakout').textContent = breakout;
+              updateItemizedSummary();
             }
           }).catch(function(){});
       }
@@ -672,6 +724,8 @@
         });
       });
 
+      updateItemizedSummary();
+
       submit.addEventListener('click', function(){
         var emailV=email.value.trim(), fNameV=firstNameInput.value.trim(), lNameV=lastNameInput.value.trim(), phoneV=phone.value.trim(), payMethodEl=document.querySelector('input[name="payMethodMobile"]:checked'), payMethodVal=payMethodEl ? payMethodEl.value : 'later', errEl=document.getElementById('regErrorMobile');
         var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked'), payTypeVal=payTypeEl ? payTypeEl.value : 'single';
@@ -710,7 +764,24 @@
           inclusionData:inclusionData
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
-          if(r && r.success){document.getElementById('regSuccessMobile').textContent=r.message || 'You\'re reserved!'; btn.style.display='none'; load(); loadSessions();}
+          if(r && r.success){
+            // RENDER CONFIRMATION SCREEN IMMEDIATELY
+            var bodyHost = document.getElementById('mobilePanelBody');
+            bodyHost.innerHTML = '<div class="confirmation-view">'
+              + '<div class="confirm-icon">✓</div>'
+              + '<div class="confirm-title">Reservation Confirmed!</div>'
+              + '<div class="confirm-msg">' + esc(r.message || 'Your reservation has been recorded.') + '<br><br><strong>Reservation ID:</strong> ' + esc(r.registrationId) + '</div>'
+              + '<div class="confirm-btns">'
+              + '<button class="confirm-btn primary" id="btnConfirmCal">Back to Calendar</button>'
+              + '<button class="confirm-btn" id="btnConfirmHome" onclick="window.top.location.href=\'https://wtfdc.org\'">Return to Home</button>'
+              + '</div>'
+              + '</div>';
+            
+            document.getElementById('btnConfirmCal').addEventListener('click', function(){
+              closeMobilePanel();
+              load(); loadSessions();
+            });
+          }
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
         }).catch(function(){btn.disabled=false; btn.textContent=getReserveButtonText(ev); errEl.textContent='Connection error. Please try again.';});
       });

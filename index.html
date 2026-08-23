@@ -93,6 +93,7 @@
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
 
     .recognized-tooltip{display:none; background:#e8f5e9; border:1px solid #a5d6a7; color:#1b5e20; border-radius:6px; padding:8px 10px; font-size:12px; font-weight:600; margin-bottom:8px;}
+    .duplicate-block{display:none; background:#e3f2fd; border:1px solid #90caf9; color:#0d47a1; border-radius:8px; padding:12px; font-size:13px; margin-top:10px;}
 
     .pay-section{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
     .pay-title{font-weight:600;font-size:14px;margin-bottom:6px;}
@@ -329,6 +330,20 @@
           + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
           + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
           + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
+
+          <!-- DUPLICATE REGISTRATION BLOCK -->
+          + '<div class="duplicate-block" id="duplicateBlock">'
+          + '<strong>Already Reserved:</strong> You are already registered for this session.<br><br>'
+          + '<button type="button" id="btnOpenCancelPrompt" style="width:100%; padding:8px; background:#c0392b; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Cancel Reservation</button>'
+          + '<div id="cancelPromptArea" style="display:none; margin-top:10px;">'
+          + '<p class="reg-note" style="color:#0d47a1;">Please share your reason for cancelling (not required, but appreciated):</p>'
+          + '<textarea class="reg-input" id="cancelReasonInput" rows="2" placeholder="Reason for cancellation..."></textarea>'
+          + '<p class="reg-note" style="font-size:11px;"><em>Per studio policy, cancellations take effect on the 1st of the following month for plan billing purposes.</em></p>'
+          + '<button type="button" id="btnSubmitCancel" style="width:100%; padding:8px; background:#c0392b; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Confirm Cancellation</button>'
+          + '</div>'
+          + '</div>'
+
+          + '<div id="mainFormFields">'
           + '<div style="display:flex;gap:8px;margin-bottom:0;">'
           + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
           + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
@@ -368,6 +383,12 @@
           + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
           + '</div>'
 
+          + '<div id="extraContributionBlock" style="margin-top:10px;">'
+          + '<label class="reg-label">Optional Additional Contribution ($)</label>'
+          + '<input type="number" class="reg-input" id="extraContributionMobile" min="0" step="1" placeholder="0.00">'
+          + '<div class="reg-note">Add an optional tax-deductible contribution to support our programs.</div>'
+          + '</div>'
+
           + '<div id="planStatusBanner" style="display:none; margin-top:10px; padding:10px; border-radius:6px; font-size:13px;"></div>'
 
           + '<div id="exceededOptions" style="display:none; margin-top:10px; padding:10px; background:#fff3cd; border:1px solid #ffeeba; border-radius:6px; font-size:13px; color:#856404;">'
@@ -393,7 +414,7 @@
           + '<div class="summary-title">Reservation Summary</div>'
           + '<div class="summary-row"><span>Type:</span><span id="sumType">Single Class (Drop-In)</span></div>'
           + '<div class="summary-row" id="sumBreakoutRow" style="display:none;"><span>Rate Details:</span><span id="sumBreakout">-</span></div>'
-          + '<div class="summary-total"><span>Total Promised:</span><span id="sumTotal">$0.00</span></div>'
+          + '<div class="summary-total"><span>Total Amount Due:</span><span id="sumTotal">$0.00</span></div>'
           + '</div>'
 
           + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
@@ -424,6 +445,8 @@
           + '</div>'
           + '</div>'
           + '<button class="reg-submit" id="regSubmitMobile">'+btnActionText+'</button>'
+          + '</div>' <!-- End mainFormFields -->
+
           + '<div class="reg-success" id="regSuccessMobile"></div>'
           + '<div class="reg-error" id="regErrorMobile"></div>'
           + '</div>';
@@ -541,8 +564,12 @@
       var phone=document.getElementById('regPhoneMobile');
       var submit=document.getElementById('regSubmitMobile');
       var tooltip=document.getElementById('recognizedTooltip');
+      var dupBlock=document.getElementById('duplicateBlock');
+      var mainFields=document.getElementById('mainFormFields');
+      var extraInput=document.getElementById('extraContributionMobile');
       var emailTimer=null;
       var lastFetchedEmail = "";
+      var existingRegIdForCancel = "";
 
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
@@ -551,6 +578,7 @@
         singleInput.min = basePrice;
         singleInput.addEventListener('input', updateItemizedSummary);
       }
+      if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
 
       function updateItemizedSummary(){
         var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
@@ -560,22 +588,28 @@
         var sumBreakout = document.getElementById('sumBreakout');
         var sumTotal = document.getElementById('sumTotal');
 
+        var extraVal = extraInput ? Number(extraInput.value) : 0;
+        if(isNaN(extraVal) || extraVal < 0) extraVal = 0;
+
         if(val === 'single'){
           sumType.textContent = 'Single Class (Drop-In)';
           sumBreakoutRow.style.display = 'none';
           var amt = singleInput ? Number(singleInput.value) : basePrice;
           if(amt < basePrice) amt = basePrice;
-          sumTotal.textContent = '$' + amt.toFixed(2);
+          var tot = amt + extraVal;
+          sumTotal.textContent = '$' + tot.toFixed(2);
         } else if(val === 'current'){
           sumType.textContent = 'Already Paid / Current Plan';
           sumBreakoutRow.style.display = 'none';
-          sumTotal.textContent = '$0.00 (Covered)';
+          sumTotal.textContent = extraVal > 0 ? '$' + extraVal.toFixed(2) + ' (Contribution)' : '$0.00 (Covered by Plan)';
         } else if(val === 'monthly'){
           sumType.textContent = 'Monthly Class Plan (' + document.getElementById('planTierMobile').value + ')';
           sumBreakoutRow.style.display = 'flex';
           sumBreakout.textContent = document.getElementById('feeBreakout').textContent || 'Calculating...';
           var parsedTotal = document.getElementById('feeBreakout').textContent.match(/\$([0-9.]+)/);
-          sumTotal.textContent = parsedTotal ? parsedTotal[0] : '$0.00';
+          var baseTierAmt = parsedTotal ? Number(parsedTotal[1]) : 0;
+          var tot = baseTierAmt + extraVal;
+          sumTotal.textContent = '$' + tot.toFixed(2);
         }
       }
 
@@ -587,12 +621,14 @@
             if (lastFetchedEmail && v !== lastFetchedEmail) {
               firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
               tooltip.style.display = 'none';
+              dupBlock.style.display = 'none';
+              mainFields.style.display = 'block';
               lastFetchedEmail = "";
             }
             return;
           }
           emailTimer=setTimeout(function(){
-            apiPost({action:'checkParticipant', email:v}).then(function(r){
+            apiPost({action:'checkParticipant', email:v, instanceId:ev.instanceId}).then(function(r){
               if(r && r.exists){
                 firstNameInput.value = r.firstName || ''; 
                 lastNameInput.value  = r.lastName  || ''; 
@@ -601,6 +637,16 @@
 
                 tooltip.style.display = 'block';
                 tooltip.textContent = "Welcome back, " + (r.firstName || 'Participant') + "! We've auto-filled your details.";
+
+                if(r.alreadyRegistered){
+                  dupBlock.style.display = 'block';
+                  mainFields.style.display = 'none';
+                  existingRegIdForCancel = r.existingRegId;
+                  return;
+                } else {
+                  dupBlock.style.display = 'none';
+                  mainFields.style.display = 'block';
+                }
 
                 if(r.hasActivePlan){
                   var rCurrent = document.getElementById('payTypeCurrent');
@@ -612,6 +658,8 @@
               } else if (lastFetchedEmail) {
                 firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
                 tooltip.style.display = 'none';
+                dupBlock.style.display = 'none';
+                mainFields.style.display = 'block';
                 lastFetchedEmail = "";
               }
             }).catch(function(){});
@@ -626,6 +674,39 @@
           updateItemizedSummary();
         });
       }
+
+      var btnOpenCancel = document.getElementById('btnOpenCancelPrompt');
+      if(btnOpenCancel) btnOpenCancel.addEventListener('click', function(){
+        document.getElementById('cancelPromptArea').style.display = 'block';
+        this.style.display = 'none';
+      });
+
+      var btnSubmitCancel = document.getElementById('btnSubmitCancel');
+      if(btnSubmitCancel) btnSubmitCancel.addEventListener('click', function(){
+        var reasonV = document.getElementById('cancelReasonInput').value.trim();
+        var btn = this; btn.disabled = true; btn.textContent = 'Processing Cancellation...';
+        apiPost({action:'cancelRegistration', registrationId:existingRegIdForCancel, reason:reasonV, email:email.value.trim()})
+          .then(function(r){
+            btn.disabled = false; btn.textContent = 'Confirm Cancellation';
+            if(r && r.success){
+              var bodyHost = document.getElementById('mobilePanelBody');
+              bodyHost.innerHTML = '<div class="confirmation-view">'
+                + '<div class="confirm-icon" style="color:#c0392b;">✓</div>'
+                + '<div class="confirm-title">Reservation Cancelled</div>'
+                + '<div class="confirm-msg">' + esc(r.message || 'Your reservation has been cancelled.') + '</div>'
+                + '<div class="confirm-btns">'
+                + '<button class="confirm-btn primary" id="btnConfirmCal">Back to Calendar</button>'
+                + '</div>'
+                + '</div>';
+              
+              document.getElementById('btnConfirmCal').addEventListener('click', function(){
+                closeMobilePanel(); load(); loadSessions();
+              });
+            } else {
+              alert(r.message || 'Could not cancel reservation.');
+            }
+          });
+      });
 
       document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
         r.addEventListener('change', function(){
@@ -745,6 +826,7 @@
       submit.addEventListener('click', function(){
         var emailV=email.value.trim(), fNameV=firstNameInput.value.trim(), lNameV=lastNameInput.value.trim(), phoneV=phone.value.trim(), payMethodEl=document.querySelector('input[name="payMethodMobile"]:checked'), payMethodVal=payMethodEl ? payMethodEl.value : 'later', errEl=document.getElementById('regErrorMobile');
         var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked'), payTypeVal=payTypeEl ? payTypeEl.value : 'single';
+        var extraVal = extraInput ? Number(extraInput.value) : 0;
         var fullNameV = (fNameV + ' ' + lNameV).trim();
 
         errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
@@ -777,6 +859,7 @@
           payType:payTypeVal,
           singleAmount: singleInput ? singleInput.value : basePrice,
           planTier: document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : '',
+          extraContribution: extraVal,
           inclusionData:inclusionData
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
@@ -793,8 +876,7 @@
               + '</div>';
             
             document.getElementById('btnConfirmCal').addEventListener('click', function(){
-              closeMobilePanel();
-              load(); loadSessions();
+              closeMobilePanel(); load(); loadSessions();
             });
           }
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}

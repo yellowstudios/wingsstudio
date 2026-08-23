@@ -228,6 +228,18 @@
     function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight(); focusTodayOnMobile();}
     function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
 
+    function parseDurationMinutes(durRaw) {
+      if(!durRaw) return 60;
+      if(typeof durRaw === 'number') return durRaw > 10 ? durRaw : Math.round(durRaw * 1440);
+      var str = String(durRaw).trim();
+      if(str.includes(':')) {
+        var p = str.split(':');
+        return (parseInt(p[0], 10) * 60) + parseInt(p[1], 10);
+      }
+      var num = parseInt(str, 10);
+      return isNaN(num) ? 60 : num;
+    }
+
     function getReserveButtonText(ev) {
       var typeLC = String(ev.type || '').toLowerCase();
       var catLC = String(ev.category || '').toLowerCase();
@@ -603,7 +615,8 @@
       var currentUserRequiredMins = 0;
       var currentPlanValidStatus = false;
 
-      populateTierDropdown('', 0);
+      var classMins = parseDurationMinutes(ev.duration);
+      populateTierDropdown('', classMins);
 
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
@@ -661,8 +674,8 @@
               mainFields.style.display = 'block';
               lastFetchedEmail = "";
               currentUserCurrentTier = "";
-              currentUserRequiredMins = 0;
-              populateTierDropdown('', 0);
+              currentUserRequiredMins = classMins;
+              populateTierDropdown('', classMins);
             }
             return;
           }
@@ -674,6 +687,7 @@
                 phone.value          = r.phone     || ''; 
                 lastFetchedEmail = v;
                 currentUserCurrentTier = r.currentTier || '';
+                currentUserRequiredMins = r.requiredMins || classMins;
 
                 tooltip.style.display = 'block';
                 tooltip.textContent = "Welcome back, " + (r.firstName || 'Participant') + "! We've auto-filled your details.";
@@ -708,8 +722,8 @@
                 mainFields.style.display = 'block';
                 lastFetchedEmail = "";
                 currentUserCurrentTier = "";
-                currentUserRequiredMins = 0;
-                populateTierDropdown('', 0);
+                currentUserRequiredMins = classMins;
+                populateTierDropdown('', classMins);
               }
             }).catch(function(){});
           },600);
@@ -767,7 +781,7 @@
           document.getElementById('exceededOptions').style.display = 'none';
 
           if (val === 'monthly') {
-            populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);
+            populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins || classMins);
             calculateFees();
           } else if (val === 'current') {
             validateCurrentPlan();
@@ -838,7 +852,7 @@
               banner.style.color = '#721c24';
               exceededBlock.style.display = 'block';
               currentPlanValidStatus = false;
-              currentUserRequiredMins = res.requiredMins || 0;
+              currentUserRequiredMins = res.requiredMins || classMins;
               currentUserCurrentTier = res.currentTier || '';
               
               populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);

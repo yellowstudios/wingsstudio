@@ -352,13 +352,13 @@
           + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
           + '</div>'
 
-          + '<div id="pinBlock" style="display:none; margin-top:10px;">'
-          + '<label class="reg-label">Participant PIN / Security ID *</label>'
-          + '<input type="text" class="reg-input" id="pinInputMobile" placeholder="Enter PIN (e.g. P001)">'
-          + '<div class="reg-note">Your PIN is your Wings Participant ID (e.g. P001 from your welcome email).</div>'
-          + '</div>'
-
           + '<div id="planStatusBanner" style="display:none; margin-top:10px; padding:10px; border-radius:6px; font-size:13px;"></div>'
+
+          + '<div id="exceededOptions" style="display:none; margin-top:10px; padding:10px; background:#fff3cd; border:1px solid #ffeeba; border-radius:6px; font-size:13px; color:#856404;">'
+          + '<strong>Weekly Plan Limit Exceeded:</strong> Choose an option to proceed:<br><br>'
+          + '<button type="button" id="btnSwitchDropIn" style="width:100%; padding:8px; background:#fff; border:1px solid #c89b3c; border-radius:5px; font-weight:600; cursor:pointer; margin-bottom:6px;">Pay Extra Class as Drop-In</button>'
+          + '<button type="button" id="btnSwitchUpgrade" style="width:100%; padding:8px; background:#c89b3c; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Upgrade Monthly Plan Tier</button>'
+          + '</div>'
 
           + '<div class="pay-section" id="methodSection">'
           + '<div class="pay-title">Payment Method</div>'
@@ -525,6 +525,9 @@
       if (singleInput) {
         singleInput.value = basePrice;
         singleInput.min = basePrice;
+        singleInput.addEventListener('change', function(){
+          if(Number(this.value) < basePrice) this.value = basePrice;
+        });
       }
 
       if(email){
@@ -566,19 +569,13 @@
           var val = this.value;
           document.getElementById('singlePayBlock').style.display = (val === 'single') ? 'block' : 'none';
           document.getElementById('monthlyPayBlock').style.display = (val === 'monthly') ? 'block' : 'none';
-          document.getElementById('pinBlock').style.display = (val === 'current') ? 'block' : 'none';
           document.getElementById('methodSection').style.display = (val === 'current') ? 'none' : 'block';
           document.getElementById('planStatusBanner').style.display = 'none';
+          document.getElementById('exceededOptions').style.display = 'none';
 
           if (val === 'current') validateCurrentPlan();
           else if (val === 'monthly') calculateFees();
         });
-      });
-
-      var pinInput = document.getElementById('pinInputMobile');
-      if (pinInput) pinInput.addEventListener('input', function(){
-        var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
-        if (payTypeEl && payTypeEl.value === 'current') validateCurrentPlan();
       });
 
       var tierSelect = document.getElementById('planTierMobile');
@@ -600,15 +597,14 @@
 
       function validateCurrentPlan(){
         var emailV = email.value.trim();
-        var pinV = pinInput ? pinInput.value.trim() : '';
         var banner = document.getElementById('planStatusBanner');
+        var exceededBlock = document.getElementById('exceededOptions');
 
         if (!emailV) {
           banner.style.display = 'block';
           banner.style.background = '#fff3cd';
           banner.style.color = '#856404';
-          banner.textContent = 'Please enter your email address above.';
-          submit.disabled = true;
+          banner.textContent = 'Please enter your email address above to check active plan.';
           return;
         }
 
@@ -616,26 +612,40 @@
         banner.style.background = '#e2e3e5';
         banner.style.color = '#383d41';
         banner.textContent = 'Validating current plan with studio server...';
+        exceededBlock.style.display = 'none';
 
-        apiPost({ action: 'checkPlanStatus', email: emailV, pin: pinV, instanceId: ev.instanceId })
+        apiPost({ action: 'checkPlanStatus', email: emailV, instanceId: ev.instanceId })
           .then(function(res){
             banner.textContent = res.message;
             if (res && res.valid) {
               banner.style.background = '#d4edda';
               banner.style.color = '#155724';
-              submit.disabled = false;
+            } else if (res && res.status === 'EXCEEDED') {
+              banner.style.background = '#f8d7da';
+              banner.style.color = '#721c24';
+              exceededBlock.style.display = 'block';
             } else {
               banner.style.background = '#f8d7da';
               banner.style.color = '#721c24';
-              submit.disabled = true;
             }
           }).catch(function(){
             banner.style.background = '#f8d7da';
             banner.style.color = '#721c24';
             banner.textContent = 'Server validation failed. Please try again.';
-            submit.disabled = true;
           });
       }
+
+      var btnDropIn = document.getElementById('btnSwitchDropIn');
+      if (btnDropIn) btnDropIn.addEventListener('click', function(){
+        var rSingle = document.querySelector('input[name="payTypeMobile"][value="single"]');
+        if (rSingle) { rSingle.checked = true; rSingle.dispatchEvent(new Event('change')); }
+      });
+
+      var btnUpgrade = document.getElementById('btnSwitchUpgrade');
+      if (btnUpgrade) btnUpgrade.addEventListener('click', function(){
+        var rMonthly = document.querySelector('input[name="payTypeMobile"][value="monthly"]');
+        if (rMonthly) { rMonthly.checked = true; rMonthly.dispatchEvent(new Event('change')); }
+      });
 
       document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){
         r.addEventListener('change', function(){

@@ -192,6 +192,20 @@
     var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null};
     var monthByDay = {}, eventMap = {}, mobilePanelEl = null;
 
+    var ALL_TIERS = [
+      { tier: '1 hour/week', mins: 60, rate: 65 },
+      { tier: '1.5 hours/week', mins: 90, rate: 85 },
+      { tier: '2 hours/week', mins: 120, rate: 100 },
+      { tier: '2.5 hours/week', mins: 150, rate: 120 },
+      { tier: '3 hours/week', mins: 180, rate: 135 },
+      { tier: '3.5 hours/week', mins: 210, rate: 150 },
+      { tier: '4 hours/week', mins: 240, rate: 160 },
+      { tier: '4.5 hours/week', mins: 270, rate: 170 },
+      { tier: '5 hours/week', mins: 300, rate: 185 },
+      { tier: '5.5 hours/week', mins: 330, rate: 200 },
+      { tier: '6 hours/week', mins: 360, rate: 215 }
+    ];
+
     function mondayOf(date){var d=new Date(date); d.setHours(0,0,0,0); var day=d.getDay(), diff=day===0?-6:1-day; d.setDate(d.getDate()+diff); return d;}
     function addDays(date,n){var d=new Date(date); d.setDate(d.getDate()+n); return d;}
     function dateKey(date){var d=new Date(date); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
@@ -331,9 +345,8 @@
           + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
           + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
 
-          <!-- DUPLICATE REGISTRATION BLOCK -->
           + '<div class="duplicate-block" id="duplicateBlock">'
-          + '<strong>Already Reserved:</strong> You are already registered for this session.<br><br>'
+          + '<div id="dupDetailsText" style="margin-bottom:8px; line-height:1.4;"></div>'
           + '<button type="button" id="btnOpenCancelPrompt" style="width:100%; padding:8px; background:#c0392b; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Cancel Reservation</button>'
           + '<div id="cancelPromptArea" style="display:none; margin-top:10px;">'
           + '<p class="reg-note" style="color:#0d47a1;">Please share your reason for cancelling (not required, but appreciated):</p>'
@@ -367,19 +380,7 @@
 
           + '<div id="monthlyPayBlock" style="display:none; margin-top:10px;">'
           + '<label class="reg-label">Monthly Class Plan Tier</label>'
-          + '<select class="reg-input" id="planTierMobile">'
-          + '<option value="1 hour/week">1 hour/week – $65/month</option>'
-          + '<option value="1.5 hours/week">1.5 hours/week – $85/month</option>'
-          + '<option value="2 hours/week">2 hours/week – $100/month</option>'
-          + '<option value="2.5 hours/week">2.5 hours/week – $120/month</option>'
-          + '<option value="3 hours/week">3 hours/week – $135/month</option>'
-          + '<option value="3.5 hours/week">3.5 hours/week – $150/month</option>'
-          + '<option value="4 hours/week">4 hours/week – $160/month</option>'
-          + '<option value="4.5 hours/week">4.5 hours/week – $170/month</option>'
-          + '<option value="5 hours/week">5 hours/week – $185/month</option>'
-          + '<option value="5.5 hours/week">5.5 hours/week – $200/month</option>'
-          + '<option value="6 hours/week">6 hours/week – $215/month</option>'
-          + '</select>'
+          + '<select class="reg-input" id="planTierMobile"></select>'
           + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
           + '</div>'
 
@@ -445,7 +446,7 @@
           + '</div>'
           + '</div>'
           + '<button class="reg-submit" id="regSubmitMobile">'+btnActionText+'</button>'
-          + '</div>' <!-- End mainFormFields -->
+          + '</div>'
 
           + '<div class="reg-success" id="regSuccessMobile"></div>'
           + '<div class="reg-error" id="regErrorMobile"></div>'
@@ -557,6 +558,28 @@
       for(var y=cur;y>=1920;y--) o+='<option value="'+y+'">'+y+'</option>'; return o;
     }
 
+    function populateTierDropdown(currentTier) {
+      var select = document.getElementById('planTierMobile');
+      if (!select) return;
+      select.innerHTML = '';
+
+      var minMins = 0;
+      if (currentTier) {
+        var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
+        if (match) minMins = match.mins;
+      }
+
+      var filtered = ALL_TIERS.filter(function(t){ return t.mins > minMins; });
+      if (filtered.length === 0) filtered = ALL_TIERS; // Fallback
+
+      filtered.forEach(function(t) {
+        var opt = document.createElement('option');
+        opt.value = t.tier;
+        opt.textContent = t.tier + ' – $' + t.rate + '/month';
+        select.appendChild(opt);
+      });
+    }
+
     function wireMobileForm(ev){
       var email=document.getElementById('regEmailMobile');
       var firstNameInput=document.getElementById('regFirstNameMobile');
@@ -570,6 +593,10 @@
       var emailTimer=null;
       var lastFetchedEmail = "";
       var existingRegIdForCancel = "";
+      var currentUserCurrentTier = "";
+      var currentPlanValidStatus = false;
+
+      populateTierDropdown('');
 
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
@@ -603,7 +630,8 @@
           sumBreakoutRow.style.display = 'none';
           sumTotal.textContent = extraVal > 0 ? '$' + extraVal.toFixed(2) + ' (Contribution)' : '$0.00 (Covered by Plan)';
         } else if(val === 'monthly'){
-          sumType.textContent = 'Monthly Class Plan (' + document.getElementById('planTierMobile').value + ')';
+          var tierVal = document.getElementById('planTierMobile').value;
+          sumType.textContent = 'Monthly Class Plan (' + tierVal + ')';
           sumBreakoutRow.style.display = 'flex';
           sumBreakout.textContent = document.getElementById('feeBreakout').textContent || 'Calculating...';
           var parsedTotal = document.getElementById('feeBreakout').textContent.match(/\$([0-9.]+)/);
@@ -624,6 +652,8 @@
               dupBlock.style.display = 'none';
               mainFields.style.display = 'block';
               lastFetchedEmail = "";
+              currentUserCurrentTier = "";
+              populateTierDropdown('');
             }
             return;
           }
@@ -634,6 +664,7 @@
                 lastNameInput.value  = r.lastName  || ''; 
                 phone.value          = r.phone     || ''; 
                 lastFetchedEmail = v;
+                currentUserCurrentTier = r.currentTier || '';
 
                 tooltip.style.display = 'block';
                 tooltip.textContent = "Welcome back, " + (r.firstName || 'Participant') + "! We've auto-filled your details.";
@@ -642,6 +673,12 @@
                   dupBlock.style.display = 'block';
                   mainFields.style.display = 'none';
                   existingRegIdForCancel = r.existingRegId;
+
+                  var dupText = '<strong>Already Reserved:</strong> ' + esc(r.firstName + ' ' + r.lastName) + ' is registered for this session.<br>'
+                    + '<strong>Reservation ID:</strong> ' + esc(r.existingRegId) + '<br>'
+                    + '<strong>Payment Type:</strong> ' + esc(r.existingPayType) + '<br>'
+                    + '<strong>Payment Method:</strong> ' + esc(r.existingPayMethod);
+                  document.getElementById('dupDetailsText').innerHTML = dupText;
                   return;
                 } else {
                   dupBlock.style.display = 'none';
@@ -661,6 +698,8 @@
                 dupBlock.style.display = 'none';
                 mainFields.style.display = 'block';
                 lastFetchedEmail = "";
+                currentUserCurrentTier = "";
+                populateTierDropdown('');
               }
             }).catch(function(){});
           },600);
@@ -717,8 +756,12 @@
           document.getElementById('planStatusBanner').style.display = 'none';
           document.getElementById('exceededOptions').style.display = 'none';
 
-          if (val === 'current') validateCurrentPlan();
-          else if (val === 'monthly') calculateFees();
+          if (val === 'monthly') {
+            populateTierDropdown(currentUserCurrentTier);
+            calculateFees();
+          } else if (val === 'current') {
+            validateCurrentPlan();
+          }
           updateItemizedSummary();
         });
       });
@@ -754,6 +797,7 @@
           banner.style.background = '#fff3cd';
           banner.style.color = '#856404';
           banner.textContent = 'Please enter your email address above to check active plan.';
+          currentPlanValidStatus = false;
           return;
         }
 
@@ -769,18 +813,22 @@
             if (res && res.valid) {
               banner.style.background = '#d4edda';
               banner.style.color = '#155724';
+              currentPlanValidStatus = true;
             } else if (res && res.status === 'EXCEEDED') {
               banner.style.background = '#f8d7da';
               banner.style.color = '#721c24';
               exceededBlock.style.display = 'block';
+              currentPlanValidStatus = false;
             } else {
               banner.style.background = '#f8d7da';
               banner.style.color = '#721c24';
+              currentPlanValidStatus = false;
             }
           }).catch(function(){
             banner.style.background = '#f8d7da';
             banner.style.color = '#721c24';
             banner.textContent = 'Server validation failed. Please try again.';
+            currentPlanValidStatus = false;
           });
       }
 
@@ -793,7 +841,10 @@
       var btnUpgrade = document.getElementById('btnSwitchUpgrade');
       if (btnUpgrade) btnUpgrade.addEventListener('click', function(){
         var rMonthly = document.querySelector('input[name="payTypeMobile"][value="monthly"]');
-        if (rMonthly) { rMonthly.checked = true; rMonthly.dispatchEvent(new Event('change')); }
+        if (rMonthly) { 
+          rMonthly.checked = true; 
+          rMonthly.dispatchEvent(new Event('change')); 
+        }
       });
 
       document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){
@@ -830,6 +881,12 @@
         var fullNameV = (fNameV + ' ' + lNameV).trim();
 
         errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
+        
+        if(payTypeVal === 'current' && !currentPlanValidStatus){
+          errEl.textContent = 'You do not have an active monthly plan with available hours. Please select Single Class or Monthly Plan to reserve.';
+          return;
+        }
+
         if(!emailV || !fNameV || !lNameV){errEl.textContent='Please enter your email, first name, and last name.'; return;}
         if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
 

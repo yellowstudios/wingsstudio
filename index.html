@@ -92,6 +92,8 @@
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
 
+    .recognized-tooltip{display:none; background:#e8f5e9; border:1px solid #a5d6a7; color:#1b5e20; border-radius:6px; padding:8px 10px; font-size:12px; font-weight:600; margin-bottom:8px;}
+
     .pay-section{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
     .pay-title{font-weight:600;font-size:14px;margin-bottom:6px;}
     .pay-options{display:flex;flex-direction:column;gap:8px;}
@@ -326,6 +328,7 @@
           + '<div class="reg-title">Reserve for this session</div>'
           + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
           + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
+          + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
           + '<div style="display:flex;gap:8px;margin-bottom:0;">'
           + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
           + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
@@ -335,9 +338,9 @@
           + '<div class="pay-section">'
           + '<div class="pay-title">Payment Type</div>'
           + '<div class="pay-options">'
-          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" checked> Single Class (Drop-In)</label>'
-          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="monthly"> Monthly Class Plan</label>'
-          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="current"> Already Paid / Current Plan</label>'
+          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" id="payTypeSingle" checked> Single Class (Drop-In)</label>'
+          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="monthly" id="payTypeMonthly"> Monthly Class Plan</label>'
+          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="current" id="payTypeCurrent"> Already Paid / Current Plan</label>'
           + '</div>'
           + '</div>'
 
@@ -381,12 +384,11 @@
           + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="cash"> Cash</label>'
           + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="check"> Check</label>'
           + '</div>'
-          + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:none;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>'
+          + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:block;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>'
           + '<div id="zelleInfoMobile" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Include your name and event in the memo.</div>'
           + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event.</div>'
           + '</div>'
 
-          <!-- ITEMIZED SUMMARY CARD -->
           + '<div class="summary-card" id="summaryCard">'
           + '<div class="summary-title">Reservation Summary</div>'
           + '<div class="summary-row"><span>Type:</span><span id="sumType">Single Class (Drop-In)</span></div>'
@@ -538,6 +540,7 @@
       var lastNameInput=document.getElementById('regLastNameMobile');
       var phone=document.getElementById('regPhoneMobile');
       var submit=document.getElementById('regSubmitMobile');
+      var tooltip=document.getElementById('recognizedTooltip');
       var emailTimer=null;
       var lastFetchedEmail = "";
 
@@ -583,6 +586,7 @@
           if(v.length<5 || !v.includes('@')) {
             if (lastFetchedEmail && v !== lastFetchedEmail) {
               firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
+              tooltip.style.display = 'none';
               lastFetchedEmail = "";
             }
             return;
@@ -594,8 +598,20 @@
                 lastNameInput.value  = r.lastName  || ''; 
                 phone.value          = r.phone     || ''; 
                 lastFetchedEmail = v;
+
+                tooltip.style.display = 'block';
+                tooltip.textContent = "Welcome back, " + (r.firstName || 'Participant') + "! We've auto-filled your details.";
+
+                if(r.hasActivePlan){
+                  var rCurrent = document.getElementById('payTypeCurrent');
+                  if(rCurrent){
+                    rCurrent.checked = true;
+                    rCurrent.dispatchEvent(new Event('change'));
+                  }
+                }
               } else if (lastFetchedEmail) {
                 firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
+                tooltip.style.display = 'none';
                 lastFetchedEmail = "";
               }
             }).catch(function(){});
@@ -765,7 +781,6 @@
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
           if(r && r.success){
-            // RENDER CONFIRMATION SCREEN IMMEDIATELY
             var bodyHost = document.getElementById('mobilePanelBody');
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'

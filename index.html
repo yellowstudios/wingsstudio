@@ -80,7 +80,6 @@
     .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;min-width:80px;}
     .modal-value{color:var(--muted);}
     .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
-    .modal-title{font-weight:700;font-size:18px;margin-bottom:4px;}
     .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:14px;}
     .reg-section.active{display:block;}
     .reg-title{font-weight:600;font-size:14px;margin-bottom:6px;}
@@ -88,7 +87,6 @@
     .reg-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;display:block;}
     .reg-input{width:100%;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;}
     .reg-input:focus{outline:none;border-color:var(--accent);}
-    .reg-input:disabled{background:#f5f5f5;color:var(--muted);}
     .reg-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:2px;}
     .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
@@ -115,7 +113,6 @@
       .week-grid{grid-template-columns:1fr;}
     }
 
-    .sessions-section{padding:16px;max-height:none;overflow:visible;}
     .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
     .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
     .session-card-img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#f5f5f5;display:block;}
@@ -159,7 +156,7 @@
 
   <div class="page-section">
     <h2 class="section-title">Our Calendar</h2>
-    <p class="section-subtitle">Browse our calendar and register for any upcoming date.</p>
+    <p class="section-subtitle">Browse our schedule and reserve your space for any upcoming date.</p>
     <div id="calendarArea"></div>
   </div>
 
@@ -170,7 +167,7 @@
 
   <div class="page-section sessions-block">
     <h2 class="section-title sessions-title">Our Sessions</h2>
-    <p class="section-subtitle">Browse our full program and register for any upcoming date.</p>
+    <p class="section-subtitle">Browse our full program and reserve for any upcoming date.</p>
     <div id="sessionsArea"></div>
   </div>
 
@@ -198,6 +195,13 @@
     function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight(); focusTodayOnMobile();}
     function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
 
+    function getReserveButtonText(ev) {
+      var typeLC = String(ev.type || '').toLowerCase();
+      var catLC = String(ev.category || '').toLowerCase();
+      if (typeLC === 'show' || typeLC === 'event' || catLC === 'performance') return 'Reserve Tickets';
+      return 'Reserve Space';
+    }
+
     function renderWeek(events){
       var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];});
       events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } });
@@ -211,6 +215,7 @@
           dayEvs.forEach(function(ev){
             var k=registerEvent(ev);
             var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
+            var btnText = getReserveButtonText(ev);
             var statusBadge = ev.statusLabel
               ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
               : '';
@@ -223,7 +228,7 @@
               + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
               + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
               + '</div>'
-              + (ev.isPublic && !ev.isFull && !ev.isCancelled ? '<button class="btn-register" data-id="'+esc(k)+'">Register</button>' : '')
+              + (ev.isPublic && !ev.isFull && !ev.isCancelled ? '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>' : '')
               + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
               + '<div class="mobile-panel-slot"></div>'
               + '</div>';
@@ -287,6 +292,7 @@
       S.activeEv=ev;
       document.getElementById(titleId).textContent=ev.title;
       var body=document.getElementById(bodyId);
+      var btnActionText = getReserveButtonText(ev);
       var html='';
       html += '<div class="modal-subtitle">'+esc(ev.startTime+' – '+ev.endTime)+'</div>';
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
@@ -304,10 +310,13 @@
       if(ev.isPublic && !ev.isFull){
         html += '<hr class="modal-divider">';
         html += '<div class="reg-section active" id="regSectionMobile">'
-          + '<div class="reg-title">Register for this event</div>'
-          + '<p class="reg-note">Enter your email — if you\'ve registered before, we\'ll fill in your details.</p>'
+          + '<div class="reg-title">Reserve for this session</div>'
+          + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
           + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
-          + '<input type="text" class="reg-input" id="regNameMobile" placeholder="Full name *" autocomplete="name">'
+          + '<div style="display:flex;gap:8px;margin-bottom:0;">'
+          + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
+          + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
+          + '</div>'
           + '<input type="tel" class="reg-input" id="regPhoneMobile" placeholder="Phone number *" autocomplete="tel">'
           
           + '<div class="pay-section">'
@@ -322,7 +331,7 @@
           + '<div id="singlePayBlock" style="margin-top:10px;">'
           + '<label class="reg-label">Payment Amount ($)</label>'
           + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1">'
-          + '<div class="reg-note">Defaulted to minimum class rate. You may add an optional contribution.</div>'
+          + '<div class="reg-note">Defaulted to minimum rate. You may add an optional contribution.</div>'
           + '</div>'
 
           + '<div id="monthlyPayBlock" style="display:none; margin-top:10px;">'
@@ -343,6 +352,12 @@
           + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
           + '</div>'
 
+          + '<div id="pinBlock" style="display:none; margin-top:10px;">'
+          + '<label class="reg-label">Participant PIN / Security ID *</label>'
+          + '<input type="text" class="reg-input" id="pinInputMobile" placeholder="Enter PIN (e.g. P001)">'
+          + '<div class="reg-note">Your PIN is your Wings Participant ID (e.g. P001 from your welcome email).</div>'
+          + '</div>'
+
           + '<div id="planStatusBanner" style="display:none; margin-top:10px; padding:10px; border-radius:6px; font-size:13px;"></div>'
 
           + '<div class="pay-section" id="methodSection">'
@@ -355,7 +370,7 @@
           + '</div>'
           + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:none;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>'
           + '<div id="zelleInfoMobile" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Include your name and event in the memo.</div>'
-          + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event. Make checks payable to <strong>Wings to Fly Dance Company</strong>.</div>'
+          + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event.</div>'
           + '</div>'
 
           + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
@@ -385,7 +400,7 @@
           + '<textarea class="reg-input" id="regAccommodationsMobile" rows="3" placeholder="Please share anything that would help us support you." style="resize:vertical;"></textarea>'
           + '</div>'
           + '</div>'
-          + '<button class="reg-submit" id="regSubmitMobile">Register</button>'
+          + '<button class="reg-submit" id="regSubmitMobile">'+btnActionText+'</button>'
           + '<div class="reg-success" id="regSuccessMobile"></div>'
           + '<div class="reg-error" id="regErrorMobile"></div>'
           + '</div>';
@@ -463,7 +478,8 @@
       else{
         events.forEach(function(ev){
           var k=registerEvent(ev);
-          html += '<div class="panel-event"><div class="panel-event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div><div class="panel-event-title">'+esc(ev.title)+'</div><div class="panel-btns">'+(ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+'<button class="btn-info" data-id="'+esc(k)+'">More Info</button></div></div>';
+          var btnText = getReserveButtonText(ev);
+          html += '<div class="panel-event"><div class="panel-event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div><div class="panel-event-title">'+esc(ev.title)+'</div><div class="panel-btns">'+(ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'">'+btnText+'</button>' : '')+'<button class="btn-info" data-id="'+esc(k)+'">More Info</button></div></div>';
         });
       }
       html += '</div></div>';
@@ -497,9 +513,12 @@
 
     function wireMobileForm(ev){
       var email=document.getElementById('regEmailMobile');
-      var name=document.getElementById('regNameMobile');
+      var firstNameInput=document.getElementById('regFirstNameMobile');
+      var lastNameInput=document.getElementById('regLastNameMobile');
       var phone=document.getElementById('regPhoneMobile');
+      var submit=document.getElementById('regSubmitMobile');
       var emailTimer=null;
+      var lastFetchedEmail = "";
 
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
@@ -512,11 +531,24 @@
         email.addEventListener('input', function(){
           var v=this.value.trim();
           clearTimeout(emailTimer);
-          name.disabled=false; phone.disabled=false;
-          if(v.length<5 || !v.includes('@')) return;
+          if(v.length<5 || !v.includes('@')) {
+            if (lastFetchedEmail && v !== lastFetchedEmail) {
+              firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
+              lastFetchedEmail = "";
+            }
+            return;
+          }
           emailTimer=setTimeout(function(){
             apiPost({action:'checkParticipant', email:v}).then(function(r){
-              if(r && r.exists){name.value=r.name||''; phone.value=r.phone||''; name.disabled=true; phone.disabled=true;}
+              if(r && r.exists){
+                firstNameInput.value = r.firstName || ''; 
+                lastNameInput.value  = r.lastName  || ''; 
+                phone.value          = r.phone     || ''; 
+                lastFetchedEmail = v;
+              } else if (lastFetchedEmail) {
+                firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
+                lastFetchedEmail = "";
+              }
             }).catch(function(){});
           },600);
         });
@@ -534,12 +566,19 @@
           var val = this.value;
           document.getElementById('singlePayBlock').style.display = (val === 'single') ? 'block' : 'none';
           document.getElementById('monthlyPayBlock').style.display = (val === 'monthly') ? 'block' : 'none';
+          document.getElementById('pinBlock').style.display = (val === 'current') ? 'block' : 'none';
           document.getElementById('methodSection').style.display = (val === 'current') ? 'none' : 'block';
           document.getElementById('planStatusBanner').style.display = 'none';
 
           if (val === 'current') validateCurrentPlan();
           else if (val === 'monthly') calculateFees();
         });
+      });
+
+      var pinInput = document.getElementById('pinInputMobile');
+      if (pinInput) pinInput.addEventListener('input', function(){
+        var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
+        if (payTypeEl && payTypeEl.value === 'current') validateCurrentPlan();
       });
 
       var tierSelect = document.getElementById('planTierMobile');
@@ -561,15 +600,15 @@
 
       function validateCurrentPlan(){
         var emailV = email.value.trim();
+        var pinV = pinInput ? pinInput.value.trim() : '';
         var banner = document.getElementById('planStatusBanner');
-        var submitBtn = document.getElementById('regSubmitMobile');
 
         if (!emailV) {
           banner.style.display = 'block';
           banner.style.background = '#fff3cd';
           banner.style.color = '#856404';
-          banner.textContent = 'Please enter your email address above to validate your active plan.';
-          submitBtn.disabled = true;
+          banner.textContent = 'Please enter your email address above.';
+          submit.disabled = true;
           return;
         }
 
@@ -578,23 +617,23 @@
         banner.style.color = '#383d41';
         banner.textContent = 'Validating current plan with studio server...';
 
-        apiPost({ action: 'checkPlanStatus', email: emailV, instanceId: ev.instanceId })
+        apiPost({ action: 'checkPlanStatus', email: emailV, pin: pinV, instanceId: ev.instanceId })
           .then(function(res){
             banner.textContent = res.message;
             if (res && res.valid) {
               banner.style.background = '#d4edda';
               banner.style.color = '#155724';
-              submitBtn.disabled = false;
+              submit.disabled = false;
             } else {
               banner.style.background = '#f8d7da';
               banner.style.color = '#721c24';
-              submitBtn.disabled = true;
+              submit.disabled = true;
             }
           }).catch(function(){
             banner.style.background = '#f8d7da';
             banner.style.color = '#721c24';
             banner.textContent = 'Server validation failed. Please try again.';
-            submitBtn.disabled = true;
+            submit.disabled = true;
           });
       }
 
@@ -623,17 +662,17 @@
         });
       });
 
-      var submit=document.getElementById('regSubmitMobile');
       submit.addEventListener('click', function(){
-        var emailV=email.value.trim(), nameV=name.value.trim(), phoneV=phone.value.trim(), payMethodEl=document.querySelector('input[name="payMethodMobile"]:checked'), payMethodVal=payMethodEl ? payMethodEl.value : 'later', errEl=document.getElementById('regErrorMobile');
+        var emailV=email.value.trim(), fNameV=firstNameInput.value.trim(), lNameV=lastNameInput.value.trim(), phoneV=phone.value.trim(), payMethodEl=document.querySelector('input[name="payMethodMobile"]:checked'), payMethodVal=payMethodEl ? payMethodEl.value : 'later', errEl=document.getElementById('regErrorMobile');
         var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked'), payTypeVal=payTypeEl ? payTypeEl.value : 'single';
+        var fullNameV = (fNameV + ' ' + lNameV).trim();
 
         errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
-        if(!emailV || !nameV){errEl.textContent='Please enter your email and full name.'; return;}
+        if(!emailV || !fNameV || !lNameV){errEl.textContent='Please enter your email, first name, and last name.'; return;}
         if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
 
         if(payTypeVal === 'single' && singleInput && Number(singleInput.value) < basePrice){
-          errEl.textContent='Payment amount cannot be less than the minimum class price ($' + basePrice.toFixed(2) + ').';
+          errEl.textContent='Payment amount cannot be less than the minimum rate ($' + basePrice.toFixed(2) + ').';
           return;
         }
 
@@ -651,7 +690,7 @@
         apiPost({
           action:'register', 
           instanceId:ev.instanceId, 
-          name:nameV, 
+          name:fullNameV, 
           email:emailV, 
           phone:phoneV, 
           payMethod:payMethodVal, 
@@ -660,10 +699,10 @@
           planTier: document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : '',
           inclusionData:inclusionData
         }).then(function(r){
-          btn.disabled=false; btn.textContent='Register';
-          if(r && r.success){document.getElementById('regSuccessMobile').textContent=r.message || 'You\'re registered!'; btn.style.display='none'; load(); loadSessions();}
+          btn.disabled=false; btn.textContent=getReserveButtonText(ev);
+          if(r && r.success){document.getElementById('regSuccessMobile').textContent=r.message || 'You\'re reserved!'; btn.style.display='none'; load(); loadSessions();}
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
-        }).catch(function(){btn.disabled=false; btn.textContent='Register'; errEl.textContent='Connection error. Please try again.';});
+        }).catch(function(){btn.disabled=false; btn.textContent=getReserveButtonText(ev); errEl.textContent='Connection error. Please try again.';});
       });
     }
 
@@ -708,6 +747,7 @@
       return instances.map(function(ev){
         var k=registerEvent(ev);
         var canReg=ev.isPublic && !ev.isFull && !ev.isCancelled;
+        var btnText = getReserveButtonText(ev);
         var statusBadge = ev.statusLabel
           ? '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-left:6px;">'+esc(ev.statusLabel)+'</span>'
           : '';
@@ -719,7 +759,7 @@
             (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '')+
           '</div>'+
           '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
-            (canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">Register</button>' : '')+
+            (canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">'+btnText+'</button>' : '')+
             '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>'+
           '</div>'+
         '</div>';

@@ -562,27 +562,30 @@
       for(var y=cur;y>=1920;y--) o+='<option value="'+y+'">'+y+'</option>'; return o;
     }
 
-    function populateTierDropdown(currentTier) {
-      var select = document.getElementById('planTierMobile');
-      if (!select) return;
-      select.innerHTML = '';
+function populateTierDropdown(currentTier, requiredMins) {
+  var select = document.getElementById('planTierMobile');
+  if (!select) return;
+  select.innerHTML = '';
 
-      var minMins = 0;
-      if (currentTier) {
-        var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
-        if (match) minMins = match.mins;
-      }
+  var minMins = 0;
+  if (currentTier) {
+    var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
+    if (match) minMins = match.mins;
+  }
 
-      var filtered = ALL_TIERS.filter(function(t){ return t.mins > minMins; });
-      if (filtered.length === 0) filtered = ALL_TIERS;
+  // Ensure upgrade tier covers BOTH existing current tier AND required class minutes
+  var targetMin = Math.max(minMins, requiredMins || 0);
 
-      filtered.forEach(function(t) {
-        var opt = document.createElement('option');
-        opt.value = t.tier;
-        opt.textContent = t.tier + ' – $' + t.rate + '/month';
-        select.appendChild(opt);
-      });
-    }
+  var filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin && t.mins > minMins; });
+  if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > minMins; });
+
+  filtered.forEach(function(t) {
+    var opt = document.createElement('option');
+    opt.value = t.tier;
+    opt.textContent = t.tier + ' – $' + t.rate + '/month';
+    select.appendChild(opt);
+  });
+}
 
     function wireMobileForm(ev){
       var email=document.getElementById('regEmailMobile');
@@ -797,50 +800,53 @@
           }).catch(function(){});
       }
 
-      function validateCurrentPlan(){
-        var emailV = email.value.trim();
-        var banner = document.getElementById('planStatusBanner');
-        var exceededBlock = document.getElementById('exceededOptions');
+function validateCurrentPlan(){
+  var emailV = email.value.trim();
+  var banner = document.getElementById('planStatusBanner');
+  var exceededBlock = document.getElementById('exceededOptions');
 
-        if (!emailV) {
-          banner.style.display = 'block';
-          banner.style.background = '#fff3cd';
-          banner.style.color = '#856404';
-          banner.textContent = 'Please enter your email address above to check active plan.';
-          currentPlanValidStatus = false;
-          return;
-        }
+  if (!emailV) {
+    banner.style.display = 'block';
+    banner.style.background = '#fff3cd';
+    banner.style.color = '#856404';
+    banner.textContent = 'Please enter your email address above to check active plan.';
+    currentPlanValidStatus = false;
+    return;
+  }
 
-        banner.style.display = 'block';
-        banner.style.background = '#e2e3e5';
-        banner.style.color = '#383d41';
-        banner.textContent = 'Validating current plan with studio server...';
-        exceededBlock.style.display = 'none';
+  banner.style.display = 'block';
+  banner.style.background = '#e2e3e5';
+  banner.style.color = '#383d41';
+  banner.textContent = 'Validating current plan with studio server...';
+  exceededBlock.style.display = 'none';
 
-        apiPost({ action: 'checkPlanStatus', email: emailV, instanceId: ev.instanceId })
-          .then(function(res){
-            banner.textContent = res.message;
-            if (res && res.valid) {
-              banner.style.background = '#d4edda';
-              banner.style.color = '#155724';
-              currentPlanValidStatus = true;
-            } else if (res && res.status === 'EXCEEDED') {
-              banner.style.background = '#f8d7da';
-              banner.style.color = '#721c24';
-              exceededBlock.style.display = 'block';
-              currentPlanValidStatus = false;
-            } else {
-              banner.style.background = '#f8d7da';
-              banner.style.color = '#721c24';
-              currentPlanValidStatus = false;
-            }
-          }).catch(function(){
-            banner.style.background = '#f8d7da';
-            banner.style.color = '#721c24';
-            banner.textContent = 'Server validation failed. Please try again.';
-            currentPlanValidStatus = false;
-          });
+  apiPost({ action: 'checkPlanStatus', email: emailV, instanceId: ev.instanceId })
+    .then(function(res){
+      banner.textContent = res.message;
+      if (res && res.valid) {
+        banner.style.background = '#d4edda';
+        banner.style.color = '#155724';
+        currentPlanValidStatus = true;
+      } else if (res && res.status === 'EXCEEDED') {
+        banner.style.background = '#f8d7da';
+        banner.style.color = '#721c24';
+        exceededBlock.style.display = 'block';
+        currentPlanValidStatus = false;
+        
+        // Populate upgrade tier dropdown with required capacity filter
+        populateTierDropdown(res.currentTier || '', res.requiredMins || 0);
+      } else {
+        banner.style.background = '#f8d7da';
+        banner.style.color = '#721c24';
+        currentPlanValidStatus = false;
       }
+    }).catch(function(){
+      banner.style.background = '#f8d7da';
+      banner.style.color = '#721c24';
+      banner.textContent = 'Server validation failed. Please try again.';
+      currentPlanValidStatus = false;
+    });
+}
 
       var btnDropIn = document.getElementById('btnSwitchDropIn');
       if (btnDropIn) btnDropIn.addEventListener('click', function(){

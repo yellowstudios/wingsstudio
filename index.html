@@ -224,7 +224,7 @@
     function focusTodayOnMobile(){if(!isMobile()) return; setTimeout(function(){var target=document.querySelector('.day-column.today, .month-cell.today'); if(target && target.scrollIntoView) target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});},100);}
     function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
     
-    // Optimized Loader with Memory Caching + Background Predictive Prefetching
+    // High-Speed Loader with Cascade Pre-fetching
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       if(!forceFresh && S.cache[cacheKey]){
@@ -250,12 +250,21 @@
       });
     }
 
-    // Silently pre-fetches Month view & adjacent periods into memory so FIRST click is instant
+    // Cascade Pre-fetching: Pre-fetches Month view AND adjacent months so ALL month clicks are instant
     function prefetchAdjacentPeriods(){
-      // Always pre-fetch current month if not already cached
+      // Always silently pre-fetch current month if not cached
       var curMonthKey = 'month_' + S.currentMonth;
       if(!S.cache[curMonthKey]){
-        apiGet({month: S.currentMonth}).then(function(res){ S.cache[curMonthKey] = res; }).catch(function(){});
+        apiGet({month: S.currentMonth}).then(function(res){ 
+          S.cache[curMonthKey] = res; 
+          // Pre-fetch adjacent months relative to current month
+          if(res.prevMonth && !S.cache['month_' + res.prevMonth]){
+            apiGet({month: res.prevMonth}).then(function(pRes){ S.cache['month_' + res.prevMonth] = pRes; }).catch(function(){});
+          }
+          if(res.nextMonth && !S.cache['month_' + res.nextMonth]){
+            apiGet({month: res.nextMonth}).then(function(nRes){ S.cache['month_' + res.nextMonth] = nRes; }).catch(function(){});
+          }
+        }).catch(function(){});
       }
 
       if(!S.data) return;

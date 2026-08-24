@@ -192,7 +192,7 @@
 
   <script>
     var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
-    var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null};
+    var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null,cache:{}};
     var monthByDay = {}, eventMap = {}, mobilePanelEl = null;
 
     var ALL_TIERS = [
@@ -223,8 +223,47 @@
     function isMobile(){return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;}
     function focusTodayOnMobile(){if(!isMobile()) return; setTimeout(function(){var target=document.querySelector('.day-column.today, .month-cell.today'); if(target && target.scrollIntoView) target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});},100);}
     function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
-    function load(){setLoading(true); var params=S.view==='month'?{month:S.currentMonth}:{week:dateKey(S.currentMonday)}; apiGet(params).then(function(data){S.data=data; render(); setLoading(false); setTimeout(focusTodayOnMobile,150);}).catch(function(err){setLoading(false); document.getElementById('periodLabel').textContent='Error — try again'; console.error(err);});}
-    function loadSessions(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading sessions…</div>'; apiGet({view:'sessions'}).then(function(data){S.sessionsData=data; renderSessions();}).catch(function(){document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Could not load sessions.</div>';});}
+    
+    // Client-Side In-Memory Cache Optimization (< 10ms switching)
+    function load(forceFresh){
+      var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
+      if(!forceFresh && S.cache[cacheKey]){
+        S.data = S.cache[cacheKey];
+        render();
+        setTimeout(focusTodayOnMobile, 100);
+        return;
+      }
+      setLoading(true); 
+      var params = S.view === 'month' ? {month:S.currentMonth} : {week:dateKey(S.currentMonday)}; 
+      apiGet(params).then(function(data){
+        S.data = data; 
+        S.cache[cacheKey] = data; // Store in browser memory
+        render(); 
+        setLoading(false); 
+        setTimeout(focusTodayOnMobile, 150);
+      }).catch(function(err){
+        setLoading(false); 
+        document.getElementById('periodLabel').textContent='Error — try again'; 
+        console.error(err);
+      });
+    }
+
+    function loadSessions(){
+      if(S.cache['sessions']){
+        S.sessionsData = S.cache['sessions'];
+        renderSessions();
+        return;
+      }
+      document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading sessions…</div>'; 
+      apiGet({view:'sessions'}).then(function(data){
+        S.sessionsData=data; 
+        S.cache['sessions']=data;
+        renderSessions();
+      }).catch(function(){
+        document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Could not load sessions.</div>';
+      });
+    }
+
     function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight(); focusTodayOnMobile();}
     function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
 
@@ -752,6 +791,7 @@
           .then(function(r){
             btn.disabled = false; btn.textContent = 'Confirm Cancellation';
             if(r && r.success){
+              S.cache = {}; // Clear client cache on cancellation
               var bodyHost = document.getElementById('mobilePanelBody');
               bodyHost.innerHTML = '<div class="confirmation-view">'
                 + '<div class="confirm-icon" style="color:#c0392b;">✓</div>'
@@ -763,7 +803,7 @@
                 + '</div>';
               
               document.getElementById('btnConfirmCal').addEventListener('click', function(){
-                closeMobilePanel(); load(); loadSessions();
+                closeMobilePanel(); load(true); loadSessions();
               });
             } else {
               alert(r.message || 'Could not cancel reservation.');
@@ -958,6 +998,7 @@
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
           if(r && r.success){
+            S.cache = {}; // Invalidate client cache on new successful registration
             var bodyHost = document.getElementById('mobilePanelBody');
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
@@ -970,7 +1011,7 @@
               + '</div>';
             
             document.getElementById('btnConfirmCal').addEventListener('click', function(){
-              closeMobilePanel(); load(); loadSessions();
+              closeMobilePanel(); load(true); loadSessions();
             });
           }
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
@@ -1065,7 +1106,8 @@
 
     attachCalendarListeners();
     load();
-    loadSessions();
+    // Lazy-load sessions after initial calendar render to maximize initial load speed
+    setTimeout(loadSessions, 600);
     broadcastHeight();
     setTimeout(broadcastHeight,800);
     setTimeout(broadcastHeight,1200);

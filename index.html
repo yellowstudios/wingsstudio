@@ -74,7 +74,14 @@
     .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;pointer-events:none;}
     .loading-overlay.active{display:flex;}
 
-    .modal-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:14px;display:none;}
+    .modal-img {
+  width: 100%;
+  max-height: 450px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  display: none;
+}
     .modal-img.show{display:block;}
     .modal-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
     .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;min-width:80px;}
@@ -138,7 +145,13 @@
 
     .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
     .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
-    .session-card-img{width:100%;aspect-ratio:16/9;object-fit:contain;background:#f5f5f5;display:block;}
+    .session-card-img {
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  background: #f5f5f5;
+  display: block;
+}
     .session-card-body{padding:14px;flex:1;display:flex;flex-direction:column;}
     .session-card-category{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:4px;}
     .session-card-title{font-size:16px;font-weight:700;margin-bottom:6px;}

@@ -230,7 +230,7 @@
       if(!forceFresh && S.cache[cacheKey]){
         S.data = S.cache[cacheKey];
         render();
-        prefetchAdjacentPeriods(); // Background fetch next/prev periods
+        prefetchAdjacentPeriods();
         setTimeout(focusTodayOnMobile, 100);
         return;
       }
@@ -238,10 +238,10 @@
       var params = S.view === 'month' ? {month:S.currentMonth} : {week:dateKey(S.currentMonday)}; 
       apiGet(params).then(function(data){
         S.data = data; 
-        S.cache[cacheKey] = data; // Store in browser memory
+        S.cache[cacheKey] = data;
         render(); 
         setLoading(false); 
-        prefetchAdjacentPeriods(); // Background fetch next/prev periods
+        prefetchAdjacentPeriods();
         setTimeout(focusTodayOnMobile, 150);
       }).catch(function(err){
         setLoading(false); 
@@ -250,14 +250,11 @@
       });
     }
 
-    // Cascade Pre-fetching: Pre-fetches Month view AND adjacent months so ALL month clicks are instant
     function prefetchAdjacentPeriods(){
-      // Always silently pre-fetch current month if not cached
       var curMonthKey = 'month_' + S.currentMonth;
       if(!S.cache[curMonthKey]){
         apiGet({month: S.currentMonth}).then(function(res){ 
           S.cache[curMonthKey] = res; 
-          // Pre-fetch adjacent months relative to current month
           if(res.prevMonth && !S.cache['month_' + res.prevMonth]){
             apiGet({month: res.prevMonth}).then(function(pRes){ S.cache['month_' + res.prevMonth] = pRes; }).catch(function(){});
           }
@@ -414,13 +411,15 @@
       document.getElementById(titleId).textContent=ev.title;
       var body=document.getElementById(bodyId);
       var btnActionText = getReserveButtonText(ev);
+      var hasTiers = ev.tiers && ev.tiers.length > 0;
       var html='';
+
       html += '<div class="modal-subtitle">'+esc(ev.startTime+' – '+ev.endTime)+'</div>';
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       if(ev.duration) html += '<div class="modal-row"><span class="modal-label">Duration</span><span class="modal-value">'+esc(formatDuration(ev.duration))+'</span></div>';
-      if(ev.costText) html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
+      if(ev.costText && !hasTiers) html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
       if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
       if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
       if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>';
@@ -452,30 +451,45 @@
           + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
           + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
           + '</div>'
-          + '<input type="tel" class="reg-input" id="regPhoneMobile" placeholder="Phone number *" autocomplete="tel">'
+          + '<input type="tel" class="reg-input" id="regPhoneMobile" placeholder="Phone number *" autocomplete="tel">';
           
-          + '<div class="pay-section">'
-          + '<div class="pay-title">Payment Type</div>'
-          + '<div class="pay-options">'
-          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" id="payTypeSingle" checked> Single Class (Drop-In)</label>'
-          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="monthly" id="payTypeMonthly"> Monthly Class Plan</label>'
-          + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="current" id="payTypeCurrent"> Already Paid / Current Plan</label>'
-          + '</div>'
-          + '</div>'
+          if (!hasTiers) {
+            html += '<div class="pay-section">'
+              + '<div class="pay-title">Payment Type</div>'
+              + '<div class="pay-options">'
+              + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" id="payTypeSingle" checked> Single Class (Drop-In)</label>'
+              + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="monthly" id="payTypeMonthly"> Monthly Class Plan</label>'
+              + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="current" id="payTypeCurrent"> Already Paid / Current Plan</label>'
+              + '</div>'
+              + '</div>'
 
-          + '<div id="singlePayBlock" style="margin-top:10px;">'
-          + '<label class="reg-label">Payment Amount ($)</label>'
-          + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1">'
-          + '<div class="reg-note">Defaulted to minimum rate. You may add an optional contribution.</div>'
-          + '</div>'
+              + '<div id="singlePayBlock" style="margin-top:10px;">'
+              + '<label class="reg-label">Payment Amount ($)</label>'
+              + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1">'
+              + '<div class="reg-note">Defaulted to minimum rate. You may add an optional contribution.</div>'
+              + '</div>'
 
-          + '<div id="monthlyPayBlock" style="display:none; margin-top:10px;">'
-          + '<label class="reg-label">Monthly Class Plan Tier</label>'
-          + '<select class="reg-input" id="planTierMobile"></select>'
-          + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
-          + '</div>'
+              + '<div id="monthlyPayBlock" style="display:none; margin-top:10px;">'
+              + '<label class="reg-label">Monthly Class Plan Tier</label>'
+              + '<select class="reg-input" id="planTierMobile"></select>'
+              + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
+              + '</div>';
+          } else {
+            // Render Event Ticket Tiers Selection
+            html += '<div class="pay-section">'
+              + '<div class="pay-title">Select Ticket Option</div>'
+              + '<div class="pay-options">';
+            ev.tiers.forEach(function(tier, idx){
+              html += '<label class="pay-option">'
+                + '<input type="radio" name="ticketTierMobile" value="'+esc(tier.price)+'" data-name="'+esc(tier.name)+'" '+(idx===0?'checked':'')+'> '
+                + '<strong>'+esc(tier.name)+'</strong> — '+esc(tier.priceText)
+                + (tier.description ? '<br><span style="font-size:11px;color:var(--muted);">'+esc(tier.description)+'</span>' : '')
+                + '</label>';
+            });
+            html += '</div></div>';
+          }
 
-          + '<div id="extraContributionBlock" style="margin-top:10px;">'
+          html += '<div id="extraContributionBlock" style="margin-top:10px;">'
           + '<label class="reg-label">Optional Additional Contribution ($)</label>'
           + '<input type="number" class="reg-input" id="extraContributionMobile" min="0" step="1" placeholder="0.00">'
           + '<div class="reg-note">Add an optional tax-deductible contribution to support our programs.</div>'
@@ -694,6 +708,7 @@
       var classMins = parseDurationMinutes(ev.duration);
       populateTierDropdown('', classMins);
 
+      var hasTiers = ev.tiers && ev.tiers.length > 0;
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
       if (singleInput) {
@@ -703,9 +718,11 @@
       }
       if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
 
+      document.querySelectorAll('input[name="ticketTierMobile"]').forEach(function(r){
+        r.addEventListener('change', updateItemizedSummary);
+      });
+
       function updateItemizedSummary(){
-        var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
-        var val = payTypeEl ? payTypeEl.value : 'single';
         var sumType = document.getElementById('sumType');
         var sumBreakoutRow = document.getElementById('sumBreakoutRow');
         var sumBreakout = document.getElementById('sumBreakout');
@@ -713,6 +730,21 @@
 
         var extraVal = extraInput ? Number(extraInput.value) : 0;
         if(isNaN(extraVal) || extraVal < 0) extraVal = 0;
+
+        if (hasTiers) {
+          var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
+          var tierPrice = selectedTier ? Number(selectedTier.value) : 0;
+          var tierName = selectedTier ? selectedTier.getAttribute('data-name') : 'Ticket';
+          
+          sumType.textContent = tierName;
+          sumBreakoutRow.style.display = 'none';
+          var tot = tierPrice + extraVal;
+          sumTotal.textContent = '$' + tot.toFixed(2);
+          return;
+        }
+
+        var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
+        var val = payTypeEl ? payTypeEl.value : 'single';
 
         if(val === 'single'){
           sumType.textContent = 'Single Class (Drop-In)';
@@ -784,7 +816,7 @@
                   mainFields.style.display = 'block';
                 }
 
-                if(r.hasActivePlan){
+                if(r.hasActivePlan && !hasTiers){
                   var rCurrent = document.getElementById('payTypeCurrent');
                   if(rCurrent){
                     rCurrent.checked = true;
@@ -808,8 +840,8 @@
         email.addEventListener('blur', function(){
           var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
           var val = payTypeEl ? payTypeEl.value : 'single';
-          if (val === 'current') validateCurrentPlan();
-          if (val === 'monthly') calculateFees();
+          if (val === 'current' && !hasTiers) validateCurrentPlan();
+          if (val === 'monthly' && !hasTiers) calculateFees();
           updateItemizedSummary();
         });
       }
@@ -828,7 +860,7 @@
           .then(function(r){
             btn.disabled = false; btn.textContent = 'Confirm Cancellation';
             if(r && r.success){
-              S.cache = {}; // Clear client cache on cancellation
+              S.cache = {};
               var bodyHost = document.getElementById('mobilePanelBody');
               bodyHost.innerHTML = '<div class="confirmation-view">'
                 + '<div class="confirm-icon" style="color:#c0392b;">✓</div>'
@@ -990,24 +1022,33 @@
 
       submit.addEventListener('click', function(){
         var emailV=email.value.trim(), fNameV=firstNameInput.value.trim(), lNameV=lastNameInput.value.trim(), phoneV=phone.value.trim(), payMethodEl=document.querySelector('input[name="payMethodMobile"]:checked'), payMethodVal=payMethodEl ? payMethodEl.value : 'later', errEl=document.getElementById('regErrorMobile');
-        var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked'), payTypeVal=payTypeEl ? payTypeEl.value : 'single';
         var extraVal = extraInput ? Number(extraInput.value) : 0;
         var fullNameV = (fNameV + ' ' + lNameV).trim();
+        var selectedAmount = basePrice;
+        var payTypeVal = 'single';
+        var selectedTierName = '';
+
+        if (hasTiers) {
+          var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
+          if (selectedTier) {
+            selectedAmount = Number(selectedTier.value);
+            selectedTierName = selectedTier.getAttribute('data-name');
+          }
+          payTypeVal = 'ticket_tier: ' + selectedTierName;
+        } else {
+          var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked');
+          payTypeVal=payTypeEl ? payTypeEl.value : 'single';
+        }
 
         errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
         
-        if(payTypeVal === 'current' && !currentPlanValidStatus){
+        if(!hasTiers && payTypeVal === 'current' && !currentPlanValidStatus){
           errEl.textContent = 'You do not have an active monthly plan with available hours. Please select Single Class or Monthly Plan to reserve.';
           return;
         }
 
         if(!emailV || !fNameV || !lNameV){errEl.textContent='Please enter your email, first name, and last name.'; return;}
         if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
-
-        if(payTypeVal === 'single' && singleInput && Number(singleInput.value) < basePrice){
-          errEl.textContent='Payment amount cannot be less than the minimum rate ($' + basePrice.toFixed(2) + ').';
-          return;
-        }
 
         var inclusionData=null;
         if(ev.inclusion){
@@ -1028,14 +1069,14 @@
           phone:phoneV, 
           payMethod:payMethodVal, 
           payType:payTypeVal,
-          singleAmount: singleInput ? singleInput.value : basePrice,
+          singleAmount: selectedAmount,
           planTier: document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : '',
           extraContribution: extraVal,
           inclusionData:inclusionData
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
           if(r && r.success){
-            S.cache = {}; // Invalidate client cache on new successful registration
+            S.cache = {};
             var bodyHost = document.getElementById('mobilePanelBody');
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
@@ -1143,7 +1184,6 @@
 
     attachCalendarListeners();
     load();
-    // Lazy-load sessions after initial calendar render to maximize initial load speed
     setTimeout(loadSessions, 600);
     broadcastHeight();
     setTimeout(broadcastHeight,800);

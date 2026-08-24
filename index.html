@@ -104,6 +104,10 @@
     .pay-option{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;padding:8px 10px;border:1px solid var(--line);border-radius:6px;}
     .pay-option:hover{background:#fdf9f0;}
     .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
+    .protected-tier{display:none;}
+    .protected-tier.unlocked{display:flex; animation:fadeIn 0.3s ease-in;}
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
     .summary-card{background:#fcfaf5; border:1px solid var(--accent); border-radius:8px; padding:12px; margin-top:14px;}
     .summary-title{font-weight:700; font-size:13px; color:var(--ink); margin-bottom:6px;}
@@ -412,6 +416,7 @@
       var body=document.getElementById(bodyId);
       var btnActionText = getReserveButtonText(ev);
       var hasTiers = ev.tiers && ev.tiers.length > 0;
+      var hasProtectedTiers = hasTiers && ev.tiers.some(function(t){ return t.requiresPasscode; });
       var html='';
 
       html += '<div class="modal-subtitle">'+esc(ev.startTime+' – '+ev.endTime)+'</div>';
@@ -477,11 +482,25 @@
           } else {
             // Render Event Ticket Tiers Selection
             html += '<div class="pay-section">'
-              + '<div class="pay-title">Select Ticket Option</div>'
-              + '<div class="pay-options">';
+              + '<div class="pay-title">Select Ticket Option</div>';
+            
+            if (hasProtectedTiers) {
+              html += '<div style="margin-bottom:10px;">'
+                + '<label class="reg-label" style="font-weight:normal;font-size:12px;">Have an access or promo code?</label>'
+                + '<input type="text" class="reg-input" id="promoCodeInput" placeholder="Enter promo code" style="text-transform:uppercase;margin-bottom:4px;">'
+                + '<div id="promoCodeMsg" style="font-size:11px;font-weight:600;display:none;margin-bottom:6px;"></div>'
+                + '</div>';
+            }
+
+            html += '<div class="pay-options">';
+            var firstChecked = false;
             ev.tiers.forEach(function(tier, idx){
-              html += '<label class="pay-option">'
-                + '<input type="radio" name="ticketTierMobile" value="'+esc(tier.price)+'" data-name="'+esc(tier.name)+'" '+(idx===0?'checked':'')+'> '
+              var isProtected = tier.requiresPasscode === true;
+              var isChecked = !isProtected && !firstChecked;
+              if (isChecked) firstChecked = true;
+
+              html += '<label class="pay-option ' + (isProtected ? 'protected-tier' : '') + '" data-passcode="' + esc(tier.passcode || '') + '">'
+                + '<input type="radio" name="ticketTierMobile" value="'+esc(tier.price)+'" data-name="'+esc(tier.name)+'" '+(isChecked ? 'checked' : '')+'> '
                 + '<strong>'+esc(tier.name)+'</strong> — '+esc(tier.priceText)
                 + (tier.description ? '<br><span style="font-size:11px;color:var(--muted);">'+esc(tier.description)+'</span>' : '')
                 + '</label>';
@@ -698,6 +717,8 @@
       var dupBlock=document.getElementById('duplicateBlock');
       var mainFields=document.getElementById('mainFormFields');
       var extraInput=document.getElementById('extraContributionMobile');
+      var promoInput=document.getElementById('promoCodeInput');
+      var promoMsg=document.getElementById('promoCodeMsg');
       var emailTimer=null;
       var lastFetchedEmail = "";
       var existingRegIdForCancel = "";
@@ -717,6 +738,39 @@
         singleInput.addEventListener('input', updateItemizedSummary);
       }
       if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
+
+      if (promoInput) {
+        promoInput.addEventListener('input', function(){
+          var val = this.value.trim().toLowerCase();
+          var matched = false;
+          document.querySelectorAll('.protected-tier').forEach(function(el){
+            var pass = String(el.getAttribute('data-passcode') || '').toLowerCase();
+            if (val && pass && val === pass) {
+              el.classList.add('unlocked');
+              var radio = el.querySelector('input[type="radio"]');
+              if (radio) { radio.checked = true; }
+              matched = true;
+            } else {
+              el.classList.remove('unlocked');
+            }
+          });
+
+          if (promoMsg) {
+            if (matched) {
+              promoMsg.style.display = 'block';
+              promoMsg.style.color = '#2e7d32';
+              promoMsg.textContent = '✓ Access code applied! Discount option unlocked.';
+            } else if (val.length > 2) {
+              promoMsg.style.display = 'block';
+              promoMsg.style.color = '#c0392b';
+              promoMsg.textContent = '✗ Invalid access code.';
+            } else {
+              promoMsg.style.display = 'none';
+            }
+          }
+          updateItemizedSummary();
+        });
+      }
 
       document.querySelectorAll('input[name="ticketTierMobile"]').forEach(function(r){
         r.addEventListener('change', updateItemizedSummary);

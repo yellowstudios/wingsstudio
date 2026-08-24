@@ -250,8 +250,14 @@
       });
     }
 
-    // Silently pre-fetches next/prev month or week into memory for instant navigation
+    // Silently pre-fetches Month view & adjacent periods into memory so FIRST click is instant
     function prefetchAdjacentPeriods(){
+      // Always pre-fetch current month if not already cached
+      var curMonthKey = 'month_' + S.currentMonth;
+      if(!S.cache[curMonthKey]){
+        apiGet({month: S.currentMonth}).then(function(res){ S.cache[curMonthKey] = res; }).catch(function(){});
+      }
+
       if(!S.data) return;
       if(S.view === 'month'){
         if(S.data.prevMonth && !S.cache['month_' + S.data.prevMonth]){

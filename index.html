@@ -224,12 +224,13 @@
     function focusTodayOnMobile(){if(!isMobile()) return; setTimeout(function(){var target=document.querySelector('.day-column.today, .month-cell.today'); if(target && target.scrollIntoView) target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});},100);}
     function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
     
-    // Client-Side In-Memory Cache Optimization (< 10ms switching)
+    // Optimized Loader with Memory Caching + Background Predictive Prefetching
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       if(!forceFresh && S.cache[cacheKey]){
         S.data = S.cache[cacheKey];
         render();
+        prefetchAdjacentPeriods(); // Background fetch next/prev periods
         setTimeout(focusTodayOnMobile, 100);
         return;
       }
@@ -240,12 +241,33 @@
         S.cache[cacheKey] = data; // Store in browser memory
         render(); 
         setLoading(false); 
+        prefetchAdjacentPeriods(); // Background fetch next/prev periods
         setTimeout(focusTodayOnMobile, 150);
       }).catch(function(err){
         setLoading(false); 
         document.getElementById('periodLabel').textContent='Error — try again'; 
         console.error(err);
       });
+    }
+
+    // Silently pre-fetches next/prev month or week into memory for instant navigation
+    function prefetchAdjacentPeriods(){
+      if(!S.data) return;
+      if(S.view === 'month'){
+        if(S.data.prevMonth && !S.cache['month_' + S.data.prevMonth]){
+          apiGet({month: S.data.prevMonth}).then(function(res){ S.cache['month_' + S.data.prevMonth] = res; }).catch(function(){});
+        }
+        if(S.data.nextMonth && !S.cache['month_' + S.data.nextMonth]){
+          apiGet({month: S.data.nextMonth}).then(function(res){ S.cache['month_' + S.data.nextMonth] = res; }).catch(function(){});
+        }
+      } else {
+        if(S.data.prevWeek && !S.cache['week_' + S.data.prevWeek]){
+          apiGet({week: S.data.prevWeek}).then(function(res){ S.cache['week_' + S.data.prevWeek] = res; }).catch(function(){});
+        }
+        if(S.data.nextWeek && !S.cache['week_' + S.data.nextWeek]){
+          apiGet({week: S.data.nextWeek}).then(function(res){ S.cache['week_' + S.data.nextWeek] = res; }).catch(function(){});
+        }
+      }
     }
 
     function loadSessions(){

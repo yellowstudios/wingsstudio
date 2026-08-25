@@ -52,42 +52,24 @@
     .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
 
-    #mobilePanelHost{padding:0 12px;}
-    @media(min-width:901px){
-      #mobilePanelHost{display:flex;justify-content:center;padding:0 16px;}
-      #mobilePanelHost .panel{max-width:480px;width:100%;margin:10px 0 0;}
-    }
-    .panel{border:1px solid var(--line);border-radius:10px;background:#fff;margin:10px 0 0;padding:20px;display:none;}
-    .panel.active{display:block;}
-    .panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
-    .panel-title{font-size:16px;font-weight:700;}
-    .panel-close{font-size:22px;line-height:1;cursor:pointer;color:var(--muted);}
-    .panel-body{max-height:none;overflow:visible;}
-    .panel-event{border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;}
-    .panel-event-time{font-size:12px;color:var(--muted);margin-bottom:2px;}
-    .panel-event-title{font-weight:600;font-size:14px;margin-bottom:6px;}
-    .panel-btns{display:flex;gap:6px;flex-wrap:wrap;}
-    .panel-btns button{flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);min-width:120px;}
-    .panel-btns button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-    .panel-empty{color:var(--muted);text-align:center;padding:14px 0;font-size:14px;}
+    /* Fixed Modal Overlay for Smooth Mobile UX */
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:99999;padding:12px;overflow-y:auto;}
+    .modal-overlay.active{display:flex;}
+    .modal-container{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.25);position:relative;margin:auto;}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+    .modal-title{font-size:18px;font-weight:800;color:var(--ink);margin:0;}
+    .modal-close{font-size:26px;line-height:1;cursor:pointer;color:var(--muted);border:none;background:none;padding:0;}
 
-    .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9999;pointer-events:none;}
+    .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9998;pointer-events:none;}
     .loading-overlay.active{display:flex;}
 
-    .modal-img {
-  width: 100%;
-  max-height: 450px;
-  object-fit: contain;
-  border-radius: 8px;
-  margin-bottom: 14px;
-  display: none;
-}
+    .modal-img{width:100%;max-height:450px;object-fit:contain;border-radius:8px;margin-bottom:14px;display:none;background:#f5f5f5;}
     .modal-img.show{display:block;}
     .modal-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
     .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;min-width:80px;}
     .modal-value{color:var(--muted);}
     .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
-    .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:14px;}
+    .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:6px;}
     .reg-section.active{display:block;}
     .reg-title{font-weight:600;font-size:14px;margin-bottom:6px;}
     .reg-note{font-size:12px;color:var(--muted);margin-bottom:10px;}
@@ -99,9 +81,7 @@
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
 
-    .recognized-tooltip, .duplicate-block, #planStatusBanner, #exceededOptions {
-      transition: opacity 0.25s ease-in-out;
-    }
+    .recognized-tooltip, .duplicate-block, #planStatusBanner, #exceededOptions { transition: opacity 0.25s ease-in-out; }
     .recognized-tooltip{display:none; background:#e8f5e9; border:1px solid #a5d6a7; color:#1b5e20; border-radius:6px; padding:8px 10px; font-size:12px; font-weight:600; margin-bottom:8px;}
     .duplicate-block{display:none; background:#e3f2fd; border:1px solid #90caf9; color:#0d47a1; border-radius:8px; padding:12px; font-size:13px; margin-top:10px;}
 
@@ -145,13 +125,7 @@
 
     .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
     .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
-    .session-card-img {
-  width: 100%;
-  max-height: 280px;
-  object-fit: contain;
-  background: #f5f5f5;
-  display: block;
-}
+    .session-card-img{width:100%;max-height:280px;object-fit:contain;background:#f5f5f5;display:block;}
     .session-card-body{padding:14px;flex:1;display:flex;flex-direction:column;}
     .session-card-category{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:4px;}
     .session-card-title{font-size:16px;font-weight:700;margin-bottom:6px;}
@@ -168,6 +142,8 @@
     .session-instance-spots{font-size:12px;font-style:italic;color:var(--muted);}
     .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
     .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+    .share-btn{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;margin-top:4px;display:inline-block;}
   </style>
 </head>
 <body>
@@ -197,7 +173,17 @@
   </div>
 
   <div class="loading-overlay" id="loadingOverlay">Loading…</div>
-  <div id="mobilePanelHost"></div>
+
+  <!-- Fixed Fullscreen Modal Popup Container -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle"></h3>
+        <button class="modal-close" id="modalCloseBtn">×</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
 
   <div class="calendar-sessions-spacer"></div>
 
@@ -210,7 +196,7 @@
   <script>
     var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
     var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null,cache:{}};
-    var monthByDay = {}, eventMap = {}, mobilePanelEl = null;
+    var monthByDay = {}, eventMap = {};
 
     var ALL_TIERS = [
       { tier: '1 hour/week', mins: 60, rate: 65 },
@@ -237,18 +223,31 @@
     function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
     function apiGet(params){var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); return fetch(API+'?'+qs).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
     function apiPost(body){return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
-    function isMobile(){return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;}
-    function focusTodayOnMobile(){if(!isMobile()) return; setTimeout(function(){var target=document.querySelector('.day-column.today, .month-cell.today'); if(target && target.scrollIntoView) target.scrollIntoView({behavior:'smooth', block:'start', inline:'nearest'});},100);}
     function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
     
-    // High-Speed Loader with Cascade Pre-fetching
+    // Check for direct share query parameters (e.g. ?reserve=OI_055)
+    function getQueryParam(param) {
+      var search = window.location.search || '';
+      if (!search && window.parent) {
+        try { search = window.parent.location.search; } catch(e){}
+      }
+      var match = RegExp('[?&]' + param + '=([^&]*)').exec(search);
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    function checkDeepLink(){
+      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+      if (reserveId && eventMap[reserveId]) {
+        openModal(eventMap[reserveId], true);
+      }
+    }
+
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       if(!forceFresh && S.cache[cacheKey]){
         S.data = S.cache[cacheKey];
         render();
-        prefetchAdjacentPeriods();
-        setTimeout(focusTodayOnMobile, 100);
+        checkDeepLink();
         return;
       }
       setLoading(true); 
@@ -258,45 +257,12 @@
         S.cache[cacheKey] = data;
         render(); 
         setLoading(false); 
-        prefetchAdjacentPeriods();
-        setTimeout(focusTodayOnMobile, 150);
+        checkDeepLink();
       }).catch(function(err){
         setLoading(false); 
         document.getElementById('periodLabel').textContent='Error — try again'; 
         console.error(err);
       });
-    }
-
-    function prefetchAdjacentPeriods(){
-      var curMonthKey = 'month_' + S.currentMonth;
-      if(!S.cache[curMonthKey]){
-        apiGet({month: S.currentMonth}).then(function(res){ 
-          S.cache[curMonthKey] = res; 
-          if(res.prevMonth && !S.cache['month_' + res.prevMonth]){
-            apiGet({month: res.prevMonth}).then(function(pRes){ S.cache['month_' + res.prevMonth] = pRes; }).catch(function(){});
-          }
-          if(res.nextMonth && !S.cache['month_' + res.nextMonth]){
-            apiGet({month: res.nextMonth}).then(function(nRes){ S.cache['month_' + res.nextMonth] = nRes; }).catch(function(){});
-          }
-        }).catch(function(){});
-      }
-
-      if(!S.data) return;
-      if(S.view === 'month'){
-        if(S.data.prevMonth && !S.cache['month_' + S.data.prevMonth]){
-          apiGet({month: S.data.prevMonth}).then(function(res){ S.cache['month_' + S.data.prevMonth] = res; }).catch(function(){});
-        }
-        if(S.data.nextMonth && !S.cache['month_' + S.data.nextMonth]){
-          apiGet({month: S.data.nextMonth}).then(function(res){ S.cache['month_' + S.data.nextMonth] = res; }).catch(function(){});
-        }
-      } else {
-        if(S.data.prevWeek && !S.cache['week_' + S.data.prevWeek]){
-          apiGet({week: S.data.prevWeek}).then(function(res){ S.cache['week_' + S.data.prevWeek] = res; }).catch(function(){});
-        }
-        if(S.data.nextWeek && !S.cache['week_' + S.data.nextWeek]){
-          apiGet({week: S.data.nextWeek}).then(function(res){ S.cache['week_' + S.data.nextWeek] = res; }).catch(function(){});
-        }
-      }
     }
 
     function loadSessions(){
@@ -305,17 +271,15 @@
         renderSessions();
         return;
       }
-      document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);font-size:13px;">Loading sessions…</div>'; 
       apiGet({view:'sessions'}).then(function(data){
         S.sessionsData=data; 
         S.cache['sessions']=data;
         renderSessions();
-      }).catch(function(){
-        document.getElementById('sessionsArea').innerHTML='<div style="text-align:center;padding:24px;color:var(--muted);">Could not load sessions.</div>';
-      });
+        checkDeepLink();
+      }).catch(function(){});
     }
 
-    function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight(); focusTodayOnMobile();}
+    function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight();}
     function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
 
     function parseDurationMinutes(durRaw) {
@@ -365,7 +329,6 @@
               + '</div>'
               + (ev.isPublic && !ev.isFull && !ev.isCancelled ? '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>' : '')
               + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
-              + '<div class="mobile-panel-slot"></div>'
               + '</div>';
           });
         }
@@ -399,44 +362,41 @@
       attachCalendarListeners();
     }
 
-    function openMobilePanel(ev, openReg){
-      closeMobilePanel();
-      var host = document.getElementById('mobilePanelHost');
-      var panel = document.createElement('div');
-      panel.className = 'panel active';
-      panel.id = 'mobilePanel';
-      panel.innerHTML =
-        '<div class="panel-header">'
-        + '<div class="panel-title" id="mobilePanelTitle"></div>'
-        + '<span class="panel-close" id="mobilePanelClose">×</span>'
-        + '</div>'
-        + '<div class="panel-body" id="mobilePanelBody"></div>';
-      host.appendChild(panel);
-      mobilePanelEl = panel;
-      fillPanelContent('mobilePanelBody', 'mobilePanelTitle', ev, openReg, true);
-      document.getElementById('mobilePanelClose').addEventListener('click', closeMobilePanel);
+    function openModal(ev, openReg){
+      S.activeEv = ev;
+      var overlay = document.getElementById('modalOverlay');
+      document.getElementById('modalTitle').textContent = ev.title;
+      fillModalContent('modalBody', ev, openReg);
+      overlay.classList.add('active');
     }
 
-    function closeMobilePanel(){
-      var host=document.getElementById('mobilePanelHost');
-      host.innerHTML='';
-      mobilePanelEl=null;
+    function closeModal(){
+      document.getElementById('modalOverlay').classList.remove('active');
+      S.activeEv = null;
     }
 
-    function fillPanelContent(bodyId,titleId,ev,openReg,isMobilePanel){
-      S.activeEv=ev;
-      document.getElementById(titleId).textContent=ev.title;
-      var body=document.getElementById(bodyId);
+    function copyShareLink(instanceId){
+      var url = "https://wtfdc.org/UpcomingEvents?reserve=" + encodeURIComponent(instanceId);
+      navigator.clipboard.writeText(url).then(function(){
+        alert("Direct link copied to clipboard:\n" + url);
+      }).catch(function(){
+        prompt("Copy direct link:", url);
+      });
+    }
+
+    function fillModalContent(bodyId, ev, openReg){
+      var body = document.getElementById(bodyId);
       var btnActionText = getReserveButtonText(ev);
       var hasTiers = ev.tiers && ev.tiers.length > 0;
       var hasProtectedTiers = hasTiers && ev.tiers.some(function(t){ return t.requiresPasscode; });
-      var html='';
+      var html = '';
 
-      // Display the full date (e.g. "Saturday, January 30, 2027") above the time range
-if (ev.dateLabel) {
-  html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
-}
-html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.startTime + ' – ' + ev.endTime) + '</div>';
+      // Full Date Displayed Below Title
+      if (ev.dateLabel) {
+        html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
+      }
+      html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.startTime + ' – ' + ev.endTime) + '</div>';
+
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
@@ -448,10 +408,14 @@ html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.star
       if(ev.spotsText) html += '<div class="modal-row"><span class="modal-label">Availability</span><span class="modal-value">'+esc(ev.spotsText)+'</span></div>';
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
-      if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;">This event is currently full. Check back for future sessions!</span></div>';
+      
+      // Share Direct Link Button
+      html += '<div style="margin-top:6px;"><button type="button" class="share-btn" onclick="copyShareLink(\''+esc(ev.instanceId)+'\')">🔗 Copy Direct Link / QR URL</button></div>';
+
+      if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
       if(ev.isPublic && !ev.isFull){
         html += '<hr class="modal-divider">';
-        html += '<div class="reg-section active" id="regSectionMobile">'
+        html += '<div class="reg-section active" id="regSectionModal">'
           + '<div class="reg-title">Reserve for this session</div>'
           + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
           + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
@@ -497,7 +461,6 @@ html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.star
               + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
               + '</div>';
           } else {
-            // Render Event Ticket Tiers Selection
             html += '<div class="pay-section">'
               + '<div class="pay-title">Select Ticket Option</div>';
             
@@ -600,18 +563,6 @@ html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.star
         if(incMobile) incMobile.style.display = '';
       }
 
-      setTimeout(function(){
-        var panel = document.getElementById('mobilePanel');
-        if(!panel) return;
-        if(openReg){
-          var regForm = document.getElementById('regSectionMobile');
-          if(regForm) regForm.scrollIntoView({ behavior:'smooth', block:'start' });
-          else panel.scrollIntoView({ behavior:'smooth', block:'start' });
-        } else {
-          panel.scrollIntoView({ behavior:'smooth', block:'start' });
-        }
-      }, 80);
-
       wireMobileForm(ev);
     }
 
@@ -624,7 +575,7 @@ html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.star
         if(btn){
           var ev = eventMap[btn.getAttribute('data-id')];
           if(!ev) return;
-          openMobilePanel(ev, btn.classList.contains('btn-register'));
+          openModal(ev, btn.classList.contains('btn-register'));
           return;
         }
         var cell=e.target.closest('.month-cell');
@@ -653,37 +604,44 @@ html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.star
         if(!btn) return;
         var ev=eventMap[btn.getAttribute('data-id')];
         if(!ev) return;
-        openMobilePanel(ev, btn.classList.contains('btn-register'));
+        openModal(ev, btn.classList.contains('btn-register'));
       });
     }
 
     function openDayPanel(dayKey, events){
-      var panelHost=document.getElementById('mobilePanelHost');
       var parts=dayKey.split('-');
       var d=new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-      var html='<div class="panel active"><div class="panel-header"><div class="panel-title">'+d.toLocaleDateString("en-US",{weekday:"long", month:"long", day:"numeric"})+'</div><span class="panel-close" id="dayPanelClose">×</span></div><div class="panel-body">';
-      if(!events.length){html += '<div class="panel-empty">No events this day.</div>';}
+      var titleStr = d.toLocaleDateString("en-US",{weekday:"long", month:"long", day:"numeric"});
+      
+      document.getElementById('modalTitle').textContent = titleStr;
+      var body = document.getElementById('modalBody');
+      var html = '';
+      if(!events.length){html = '<div style="color:var(--muted);text-align:center;padding:14px 0;font-size:14px;">No events this day.</div>';}
       else{
         events.forEach(function(ev){
           var k=registerEvent(ev);
           var btnText = getReserveButtonText(ev);
-          html += '<div class="panel-event"><div class="panel-event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div><div class="panel-event-title">'+esc(ev.title)+'</div><div class="panel-btns">'+(ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'">'+btnText+'</button>' : '')+'<button class="btn-info" data-id="'+esc(k)+'">More Info</button></div></div>';
+          html += '<div class="panel-event" style="border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;">'
+            + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
+            + '<div class="panel-event-title" style="font-weight:600;font-size:14px;margin-bottom:6px;">'+esc(ev.title)+'</div>'
+            + '<div class="panel-btns" style="display:flex;gap:6px;flex-wrap:wrap;">'
+            + (ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;">'+btnText+'</button>' : '')
+            + '<button class="btn-info" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);">More Info</button>'
+            + '</div></div>';
         });
       }
-      html += '</div></div>';
-      panelHost.innerHTML=html;
-      document.getElementById('dayPanelClose').addEventListener('click', function(){panelHost.innerHTML='';});
-      attachMobilePanelDelegates(panelHost);
-      panelHost.firstElementChild.scrollIntoView({behavior:'smooth', block:'start'});
+      body.innerHTML = html;
+      document.getElementById('modalOverlay').classList.add('active');
+      attachModalDelegates(body);
     }
 
-    function attachMobilePanelDelegates(root){
+    function attachModalDelegates(root){
       root.addEventListener('click', function(e){
         var btn=e.target.closest('.btn-register, .btn-info');
         if(!btn) return;
         var ev=eventMap[btn.getAttribute('data-id')];
         if(!ev) return;
-        openMobilePanel(ev, btn.classList.contains('btn-register'));
+        openModal(ev, btn.classList.contains('btn-register'));
       });
     }
 
@@ -699,32 +657,28 @@ html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.star
       for(var y=cur;y>=1920;y--) o+='<option value="'+y+'">'+y+'</option>'; return o;
     }
 
-function populateTierDropdown(currentTier, requiredMins) {
-  var select = document.getElementById('planTierMobile');
-  if (!select) return;
-  select.innerHTML = '';
+    function populateTierDropdown(currentTier, requiredMins) {
+      var select = document.getElementById('planTierMobile');
+      if (!select) return;
+      select.innerHTML = '';
 
-  var currentMins = 0;
-  if (currentTier) {
-    var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
-    if (match) currentMins = match.mins;
-  }
+      var currentMins = 0;
+      if (currentTier) {
+        var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
+        if (match) currentMins = match.mins;
+      }
 
-  // Target must be strictly GREATER than current tier minutes AND at least requiredMins
-  var targetMin = Math.max(currentMins + 1, requiredMins || 0);
+      var targetMin = Math.max(currentMins + 1, requiredMins || 0);
+      var filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin; });
+      if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > currentMins; });
 
-  var filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin; });
-
-  // Fallback safety if already at top tier
-  if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > currentMins; });
-
-  filtered.forEach(function(t) {
-    var opt = document.createElement('option');
-    opt.value = t.tier;
-    opt.textContent = t.tier + ' – $' + t.rate + '/month';
-    select.appendChild(opt);
-  });
-}
+      filtered.forEach(function(t) {
+        var opt = document.createElement('option');
+        opt.value = t.tier;
+        opt.textContent = t.tier + ' – $' + t.rate + '/month';
+        select.appendChild(opt);
+      });
+    }
 
     function wireMobileForm(ev){
       var email=document.getElementById('regEmailMobile');
@@ -934,7 +888,7 @@ function populateTierDropdown(currentTier, requiredMins) {
             btn.disabled = false; btn.textContent = 'Confirm Cancellation';
             if(r && r.success){
               S.cache = {};
-              var bodyHost = document.getElementById('mobilePanelBody');
+              var bodyHost = document.getElementById('modalBody');
               bodyHost.innerHTML = '<div class="confirmation-view">'
                 + '<div class="confirm-icon" style="color:#c0392b;">✓</div>'
                 + '<div class="confirm-title">Reservation Cancelled</div>'
@@ -945,7 +899,7 @@ function populateTierDropdown(currentTier, requiredMins) {
                 + '</div>';
               
               document.getElementById('btnConfirmCal').addEventListener('click', function(){
-                closeMobilePanel(); load(true); loadSessions();
+                closeModal(); load(true); loadSessions();
               });
             } else {
               alert(r.message || 'Could not cancel reservation.');
@@ -1150,7 +1104,7 @@ function populateTierDropdown(currentTier, requiredMins) {
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
           if(r && r.success){
             S.cache = {};
-            var bodyHost = document.getElementById('mobilePanelBody');
+            var bodyHost = document.getElementById('modalBody');
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
               + '<div class="confirm-title">Reservation Confirmed!</div>'
@@ -1162,7 +1116,7 @@ function populateTierDropdown(currentTier, requiredMins) {
               + '</div>';
             
             document.getElementById('btnConfirmCal').addEventListener('click', function(){
-              closeMobilePanel(); load(true); loadSessions();
+              closeModal(); load(true); loadSessions();
             });
           }
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
@@ -1237,15 +1191,9 @@ function populateTierDropdown(currentTier, requiredMins) {
       }catch(e){}
     }
 
-    function setLoading(on){
-      document.getElementById('loadingOverlay').classList.toggle('active', !!on);
-      document.getElementById('prevBtn').disabled=!!on;
-      document.getElementById('nextBtn').disabled=!!on;
-    }
-
-    document.getElementById('mobilePanelHost').addEventListener('click', function(e){
-      var close=e.target.closest('.panel-close');
-      if(close) closeMobilePanel();
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e){
+      if (e.target === this) closeModal();
     });
 
     document.getElementById('prevBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, -7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1)); load();}});
@@ -1257,12 +1205,8 @@ function populateTierDropdown(currentTier, requiredMins) {
 
     attachCalendarListeners();
     load();
-    setTimeout(loadSessions, 600);
+    setTimeout(loadSessions, 400);
     broadcastHeight();
-    setTimeout(broadcastHeight,800);
-    setTimeout(broadcastHeight,1200);
-    setTimeout(broadcastHeight,2500);
-    setTimeout(broadcastHeight,5000);
     if(window.ResizeObserver){new ResizeObserver(broadcastHeight).observe(document.body);}
   </script>
 </body>

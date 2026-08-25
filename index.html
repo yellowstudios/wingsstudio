@@ -695,30 +695,32 @@
       for(var y=cur;y>=1920;y--) o+='<option value="'+y+'">'+y+'</option>'; return o;
     }
 
-    function populateTierDropdown(currentTier, requiredMins) {
-      var select = document.getElementById('planTierMobile');
-      if (!select) return;
-      select.innerHTML = '';
+function populateTierDropdown(currentTier, requiredMins) {
+  var select = document.getElementById('planTierMobile');
+  if (!select) return;
+  select.innerHTML = '';
 
-      var minMins = 0;
-      if (currentTier) {
-        var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
-        if (match) minMins = match.mins;
-      }
+  var currentMins = 0;
+  if (currentTier) {
+    var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
+    if (match) currentMins = match.mins;
+  }
 
-      var targetMin = Math.max(minMins, requiredMins || 0);
+  // Target must be strictly GREATER than current tier minutes AND at least requiredMins
+  var targetMin = Math.max(currentMins + 1, requiredMins || 0);
 
-      var filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin && t.mins > minMins; });
-      if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > minMins; });
-      if (filtered.length === 0) filtered = ALL_TIERS;
+  var filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin; });
 
-      filtered.forEach(function(t) {
-        var opt = document.createElement('option');
-        opt.value = t.tier;
-        opt.textContent = t.tier + ' – $' + t.rate + '/month';
-        select.appendChild(opt);
-      });
-    }
+  // Fallback safety if already at top tier
+  if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > currentMins; });
+
+  filtered.forEach(function(t) {
+    var opt = document.createElement('option');
+    opt.value = t.tier;
+    opt.textContent = t.tier + ' – $' + t.rate + '/month';
+    select.appendChild(opt);
+  });
+}
 
     function wireMobileForm(ev){
       var email=document.getElementById('regEmailMobile');

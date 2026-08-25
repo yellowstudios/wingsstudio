@@ -432,7 +432,11 @@
       var hasProtectedTiers = hasTiers && ev.tiers.some(function(t){ return t.requiresPasscode; });
       var html='';
 
-      html += '<div class="modal-subtitle">'+esc(ev.startTime+' – '+ev.endTime)+'</div>';
+      // Display the full date (e.g. "Saturday, January 30, 2027") above the time range
+if (ev.dateLabel) {
+  html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
+}
+html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.startTime + ' – ' + ev.endTime) + '</div>';
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';

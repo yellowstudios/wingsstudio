@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Wings to Fly — Schedule</title>
 
-<script>
+  <script>
     (function() {
       var search = window.location.search || '';
       if (search.indexOf('standalone=true') !== -1) {
@@ -224,8 +224,6 @@
 
   <script>
     var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
-    
-    // drive where json file is stored (uploaded to Yellow Studios Wings github) 
     var STATIC_JSON_URL = "./calendar_data.json"; 
     
     var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null,cache:{}};
@@ -277,37 +275,36 @@
       return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
 
-function checkDeepLink(){
-  var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
-  var isStandalone = getQueryParam('standalone') === 'true';
-  
-  if (isStandalone) {
-    document.body.classList.add('standalone-mode');
-    
-    // Add "Back to Calendar" navigation bar for standalone mode
-    var modalContainer = document.querySelector('.modal-container');
-    if (modalContainer && !document.getElementById('standaloneBackBtn')) {
-      var navDiv = document.createElement('div');
-      navDiv.id = 'standaloneBackBtn';
-      navDiv.style.cssText = 'margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between;';
-      navDiv.innerHTML = '<a href="https://wtfdc.org/UpcomingEvents" target="_top" style="display:inline-flex; align-items:center; gap:6px; background:#fff; color:var(--ink); border:1px solid var(--line); padding:8px 14px; border-radius:6px; font-size:13px; font-weight:600; text-decoration:none; cursor:pointer;">'
-        + '‹ Back to Full Calendar'
-        + '</a>';
-      modalContainer.insertBefore(navDiv, modalContainer.firstChild);
-    }
-  }
-
-  if (reserveId) {
-    var checkTimer = setInterval(function(){
-      if (eventMap[reserveId]) {
-        clearInterval(checkTimer);
-        openModal(eventMap[reserveId], true);
+    function checkDeepLink(){
+      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+      var isStandalone = getQueryParam('standalone') === 'true';
+      
+      if (isStandalone) {
+        document.body.classList.add('standalone-mode');
+        
+        var modalContainer = document.querySelector('.modal-container');
+        if (modalContainer && !document.getElementById('standaloneBackBtn')) {
+          var navDiv = document.createElement('div');
+          navDiv.id = 'standaloneBackBtn';
+          navDiv.style.cssText = 'margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between;';
+          navDiv.innerHTML = '<a href="https://wtfdc.org/UpcomingEvents" target="_top" style="display:inline-flex; align-items:center; gap:6px; background:#fff; color:var(--ink); border:1px solid var(--line); padding:8px 14px; border-radius:6px; font-size:13px; font-weight:600; text-decoration:none; cursor:pointer;">'
+            + '‹ Back to Full Calendar'
+            + '</a>';
+          modalContainer.insertBefore(navDiv, modalContainer.firstChild);
+        }
       }
-    }, 50);
-    
-    setTimeout(function(){ clearInterval(checkTimer); }, 5000);
-  }
-}
+
+      if (reserveId) {
+        var checkTimer = setInterval(function(){
+          if (eventMap[reserveId]) {
+            clearInterval(checkTimer);
+            openModal(eventMap[reserveId], true);
+          }
+        }, 50);
+        
+        setTimeout(function(){ clearInterval(checkTimer); }, 5000);
+      }
+    }
 
     function processPayloadData(data, cacheKey) {
       S.data = data; 
@@ -325,10 +322,9 @@ function checkDeepLink(){
       checkDeepLink();
     }
 
-function load(forceFresh){
+    function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       
-      // 1. Render instantly from local storage if available
       var localData = localStorage.getItem(cacheKey);
       if (localData && !forceFresh && !S.data) {
         try {
@@ -339,10 +335,9 @@ function load(forceFresh){
 
       if (!S.data) setLoading(true); 
 
-      // 2. Fast Static Fetch with a 3-second mobile controller timeout
       if (!forceFresh && S.view === 'week' && dateKey(S.currentMonday) === dateKey(mondayOf(new Date()))) {
         var controller = new AbortController();
-        var timeoutId = setTimeout(function() { controller.abort(); }, 3000); // Abort static fetch after 3s on slow mobile connections
+        var timeoutId = setTimeout(function() { controller.abort(); }, 3000);
 
         fetch(STATIC_JSON_URL + '?t=' + new Date().getTime(), { signal: controller.signal })
           .then(function(r){
@@ -584,9 +579,9 @@ function load(forceFresh){
           + '<div class="reg-title">Reserve for this session</div>'
           + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
           + '<div style="position:relative; margin-bottom:8px;">'
-+ '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email" style="padding-right:36px; margin-bottom:0;">'
-+ '<span id="emailCheckSpinner" style="display:none; position:absolute; right:10px; top:10px; font-size:14px;">⏳</span>'
-+ '</div>'
+          + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email" style="padding-right:36px; margin-bottom:0;">'
+          + '<span id="emailCheckSpinner" style="display:none; position:absolute; right:10px; top:10px; font-size:14px;">⏳</span>'
+          + '</div>'
           + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
 
           + '<div class="duplicate-block" id="duplicateBlock">'
@@ -601,7 +596,7 @@ function load(forceFresh){
           + '</div>'
 
           + '<div id="mainFormFields">'
-+ '<div id="attendeeRosterBlock" style="display:none;"></div>'
+          + '<div id="attendeeRosterBlock" style="display:none;"></div>'
           + '<div style="display:flex;gap:8px;margin-bottom:0;">'
           + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
           + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
@@ -863,51 +858,48 @@ function load(forceFresh){
     }
 
     function wireMobileForm(ev){
-function wireMobileForm(ev){
-  // PASTE IT RIGHT HERE AT THE TOP OF wireMobileForm:
-  function updateAttendeeRoster(qty) {
-    var container = document.getElementById('attendeeRosterBlock');
-    if (!container) return;
-    if (qty <= 1) {
-      container.innerHTML = '';
-      container.style.display = 'none';
-      return;
-    }
-    
-    var html = '<div style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">'
-      + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Guest Details</div>'
-      + '<p class="reg-note">Please provide contact details for each attendee in your party.</p>'
-      + '<label style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; cursor:pointer;">'
-      + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be in this group, click here to skip</em></span>'
-      + '</label>'
-      + '<div id="attendeeRows">';
+      function updateAttendeeRoster(qty) {
+        var container = document.getElementById('attendeeRosterBlock');
+        if (!container) return;
+        if (qty <= 1) {
+          container.innerHTML = '';
+          container.style.display = 'none';
+          return;
+        }
+        
+        var html = '<div style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">'
+          + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Guest Details</div>'
+          + '<p class="reg-note">Please provide contact details for each additional attendee in your party.</p>'
+          + '<label style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; cursor:pointer;">'
+          + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be in this group, click here to skip</em></span>'
+          + '</label>'
+          + '<div id="attendeeRows">';
 
-    for (var i = 1; i <= qty; i++) {
-      html += '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
-        + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + i + '</div>'
-        + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
-        + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
-        + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
-        + '</div>'
-        + '<div style="display:flex; gap:6px;">'
-        + '<input type="email" class="reg-input att-em" placeholder="Email" style="flex:1; margin-bottom:0;">'
-        + '<input type="tel" class="reg-input att-ph" placeholder="Phone" style="flex:1; margin-bottom:0;">'
-        + '</div>'
-        + '</div>';
-    }
-    html += '</div></div>';
-    container.style.display = 'block';
-    container.innerHTML = html;
+        for (var i = 1; i <= qty; i++) {
+          html += '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
+            + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + i + '</div>'
+            + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
+            + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
+            + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
+            + '</div>'
+            + '<div style="display:flex; gap:6px;">'
+            + '<input type="email" class="reg-input att-em" placeholder="Email" style="flex:1; margin-bottom:0;">'
+            + '<input type="tel" class="reg-input att-ph" placeholder="Phone" style="flex:1; margin-bottom:0;">'
+            + '</div>'
+            + '</div>';
+        }
+        html += '</div></div>';
+        container.style.display = 'block';
+        container.innerHTML = html;
 
-    var chk = document.getElementById('chkSkipAttendees');
-    if (chk) {
-      chk.addEventListener('change', function() {
-        document.getElementById('attendeeRows').style.display = this.checked ? 'none' : 'block';
-      });
-    }
-  }
+        var chk = document.getElementById('chkSkipAttendees');
+        if (chk) {
+          chk.addEventListener('change', function() {
+            document.getElementById('attendeeRows').style.display = this.checked ? 'none' : 'block';
+          });
+        }
+      }
 
-  // ... rest of wireMobileForm continues below ...
       var email=document.getElementById('regEmailMobile');
       var firstNameInput=document.getElementById('regFirstNameMobile');
       var lastNameInput=document.getElementById('regLastNameMobile');
@@ -1204,10 +1196,9 @@ function wireMobileForm(ev){
               var breakout = "";
               if (res.isUpgrade) {
                 breakout = "Upgrade from " + (res.currentTier || 'current plan') + " → " + tier + ". Total Due Today: $" + res.totalDue.toFixed(2);
-                if (res.isProrated) breakout += " (Differential prorated 50% for mid-month upgrade)";
               } else {
                 breakout = "Total Due Today: $" + res.totalDue.toFixed(2);
-                if (res.isProrated) breakout += " (Prorated 50% for mid-month enrollment)";
+                if (res.planStartDate) breakout += " (Plan Effective: " + res.planStartDate + ")";
                 if (res.isFirstTime) breakout += " + $25 One-Time Registration Fee";
               }
               document.getElementById('feeBreakout').textContent = breakout;
@@ -1407,10 +1398,12 @@ function wireMobileForm(ev){
         filtered.forEach(function(s){
           var hasImg=s.imageUrl && s.imageUrl.trim();
           var sid=esc(s.sessionId);
+          var catLabel = (s.category && !s.category.match(/^[A-Z]_\d+/)) ? s.category : (s.type || 'Session');
+          
           html += '<div class="session-card">'
             + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy">' : '')
             + '<div class="session-card-body">'
-            + '<div class="session-card-category">'+esc(s.category||s.type||'')+'</div>'
+            + '<div class="session-card-category">'+esc(catLabel)+'</div>'
             + '<div class="session-card-title">'+esc(s.title)+'</div>'
             + (s.description ? '<div class="session-card-desc">'+esc(s.description)+'</div>' : '')
             + (s.costText ? '<div class="session-card-cost">'+esc(s.costText)+' per session</div>' : '')

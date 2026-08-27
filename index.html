@@ -465,14 +465,13 @@ function renderWeek(events){
       
       var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId);
 
-html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--line); display:flex; flex-direction:column; gap:6px;">'
-  + '<a href="' + directUrl + '" target="_top" style="color:var(--accent); font-weight:600; font-size:13px; text-decoration:underline; display:inline-block;">'
-  + '↗ Open Full Direct Registration Page'
+var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId);
+
+html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
+  + '<a href="' + directUrl + '" target="_top" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
+  + '↗ Open Full Registration Page'
   + '</a>'
-  + '<button type="button" class="share-btn" onclick="copyShareLink(\'' + esc(ev.instanceId) + '\')" style="text-align:left; text-decoration:none; opacity:0.8;">'
-  + '📋 Copy Direct Link for Social Media / QR Codes'
-  + '</button>'
-  + '</div>';)">🔗 Copy Direct Link / QR URL</button></div>';
+  + '</div>';
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 
@@ -527,8 +526,32 @@ html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed va
               + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
               + '</div>';
           } else {
-            html += '<div class="pay-section">'
-              + '<div class="pay-title">Select Ticket Option</div>';
+var isShowOrEvent = (function(){
+  var typeLC = String(ev.type || '').toLowerCase();
+  var catLC = String(ev.category || '').toLowerCase();
+  return typeLC === 'show' || typeLC === 'event' || catLC === 'performance';
+})();
+
+html += '<div class="pay-section">'
+  + '<div class="pay-title">Select Ticket Option</div>';
+
+if (isShowOrEvent) {
+  html += '<div style="margin-bottom:12px;">'
+    + '<label class="reg-label">Ticket Quantity</label>'
+    + '<select class="reg-input" id="ticketQtyMobile" style="margin-bottom:4px;">'
+    + '<option value="1">1 Ticket</option>'
+    + '<option value="2">2 Tickets</option>'
+    + '<option value="3">3 Tickets</option>'
+    + '<option value="4">4 Tickets</option>'
+    + '<option value="5">5 Tickets</option>'
+    + '<option value="6">6 Tickets</option>'
+    + '<option value="7">7 Tickets</option>'
+    + '<option value="8">8 Tickets</option>'
+    + '<option value="9">9 Tickets</option>'
+    + '<option value="10">10 Tickets</option>'
+    + '</select>'
+    + '</div>';
+}
             
             if (hasProtectedTiers) {
               html += '<div style="margin-bottom:10px;">'
@@ -814,6 +837,62 @@ html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed va
       document.querySelectorAll('input[name="ticketTierMobile"]').forEach(function(r){
         r.addEventListener('change', updateItemizedSummary);
       });
+// --- ADD THIS HERE (Right above function updateItemizedSummary) ---
+      var qtyInput = document.getElementById('ticketQtyMobile');
+      if (qtyInput) {
+        qtyInput.addEventListener('change', updateItemizedSummary);
+      }
+
+      function updateItemizedSummary(){
+        var sumType = document.getElementById('sumType');
+        var sumBreakoutRow = document.getElementById('sumBreakoutRow');
+        var sumBreakout = document.getElementById('sumBreakout');
+        var sumTotal = document.getElementById('sumTotal');
+
+        var extraVal = extraInput ? Number(extraInput.value) : 0;
+        if(isNaN(extraVal) || extraVal < 0) extraVal = 0;
+
+        // --- ADD THIS LINE (Calculates quantity) ---
+        var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+
+        if (hasTiers) {
+          var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
+          var tierPrice = selectedTier ? Number(selectedTier.value) : 0;
+          var tierName = selectedTier ? selectedTier.getAttribute('data-name') : 'Ticket';
+          
+          sumType.textContent = (qty > 1 ? qty + 'x ' : '') + tierName;
+          sumBreakoutRow.style.display = 'none';
+          var tot = (tierPrice * qty) + extraVal; // Multiplies price by quantity
+          sumTotal.textContent = '$' + tot.toFixed(2);
+          return;
+        }
+
+        var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
+        var val = payTypeEl ? payTypeEl.value : 'single';
+
+        if(val === 'single'){
+          sumType.textContent = (qty > 1 ? qty + 'x Tickets ' : '') + 'Single Class (Drop-In)';
+          sumBreakoutRow.style.display = 'none';
+          var amt = singleInput ? Number(singleInput.value) : basePrice;
+          if(amt < basePrice) amt = basePrice;
+          var tot = (amt * qty) + extraVal; // Multiplies single class price by quantity
+          sumTotal.textContent = '$' + tot.toFixed(2);
+        } else if(val === 'current'){
+          sumType.textContent = 'Already Paid / Current Plan';
+          sumBreakoutRow.style.display = 'none';
+          sumTotal.textContent = extraVal > 0 ? '$' + extraVal.toFixed(2) + ' (Contribution)' : '$0.00 (Covered by Plan)';
+        } else if(val === 'monthly'){
+          var tierSelect = document.getElementById('planTierMobile');
+          var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
+          sumType.textContent = 'Monthly Class Plan (' + tierVal + ')';
+          sumBreakoutRow.style.display = 'flex';
+          sumBreakout.textContent = document.getElementById('feeBreakout').textContent || 'Calculating...';
+          var parsedTotal = document.getElementById('feeBreakout').textContent.match(/\$([0-9.]+)/);
+          var baseTierAmt = parsedTotal ? Number(parsedTotal[1]) : 0;
+          var tot = baseTierAmt + extraVal;
+          sumTotal.textContent = '$' + tot.toFixed(2);
+        }
+      }
 
       function updateItemizedSummary(){
         var sumType = document.getElementById('sumType');
@@ -1120,6 +1199,7 @@ html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed va
         var selectedAmount = basePrice;
         var payTypeVal = 'single';
         var selectedTierName = '';
+var qtyInput = document.getElementById('ticketQtyMobile'); var ticketQty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
 
         if (hasTiers) {
           var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
@@ -1153,7 +1233,7 @@ html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed va
           inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
         }
 
-        var btn=this; btn.disabled=true; btn.textContent='Submitting…';
+var btn=this; btn.disabled=true; btn.textContent='Submitting…';
         apiPost({
           action:'register', 
           instanceId:ev.instanceId, 
@@ -1162,7 +1242,8 @@ html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed va
           phone:phoneV, 
           payMethod:payMethodVal, 
           payType:payTypeVal,
-          singleAmount: selectedAmount,
+          singleAmount: selectedAmount * ticketQty,
+          ticketQuantity: ticketQty,
           planTier: document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : '',
           extraContribution: extraVal,
           inclusionData:inclusionData

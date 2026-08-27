@@ -255,31 +255,26 @@
       return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
 
-    function checkDeepLink(){
-      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
-      var isStandalone = getQueryParam('standalone') === 'true';
-      
-      if (isStandalone) {
-        document.body.classList.add('standalone-mode');
-      }
+function checkDeepLink(){
+  var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+  var isStandalone = getQueryParam('standalone') === 'true';
+  
+  if (isStandalone) {
+    document.body.classList.add('standalone-mode');
+  }
 
-      if (reserveId) {
-        if (eventMap[reserveId]) {
-          openModal(eventMap[reserveId], true);
-        } else {
-          var retryCount = 0;
-          var checkTimer = setInterval(function(){
-            retryCount++;
-            if (eventMap[reserveId]) {
-              clearInterval(checkTimer);
-              openModal(eventMap[reserveId], true);
-            } else if (retryCount > 30) {
-              clearInterval(checkTimer);
-            }
-          }, 100);
-        }
+  if (reserveId) {
+    var checkTimer = setInterval(function(){
+      if (eventMap[reserveId]) {
+        clearInterval(checkTimer);
+        openModal(eventMap[reserveId], true);
       }
-    }
+    }, 50);
+    
+    // Safety timeout after 5 seconds
+    setTimeout(function(){ clearInterval(checkTimer); }, 5000);
+  }
+}
 
     function processPayloadData(data, cacheKey) {
       S.data = data; 
@@ -524,15 +519,15 @@
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
-      var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
+var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
 
-      if (!document.body.classList.contains('standalone-mode')) {
-        html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
-          + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
-          + '↗ Open Full Registration Page in New Tab'
-          + '</a>'
-          + '</div>';
-      }
+if (!document.body.classList.contains('standalone-mode')) {
+  html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
+    + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; padding:12px 14px; border-radius:6px; text-decoration:none; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
+    + '↗ Open Full Standalone Registration Page'
+    + '</a>'
+    + '</div>';
+}
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 

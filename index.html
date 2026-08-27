@@ -253,22 +253,32 @@
       }
     }
 
-    function load(forceFresh){
+function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       if(!forceFresh && S.cache[cacheKey]){
         S.data = S.cache[cacheKey];
         render();
         checkDeepLink();
+        if (!S.sessionsData) loadSessions(); // Ensures sessions load from cache
         return;
       }
       setLoading(true); 
       var params = S.view === 'month' ? {month:S.currentMonth} : {week:dateKey(S.currentMonday)}; 
       apiGet(params).then(function(data){
+        if(!data || data.error){
+          setLoading(false);
+          document.getElementById('periodLabel').textContent='Error — try again';
+          console.error(data ? data.error : 'Empty data returned');
+          return;
+        }
         S.data = data; 
         S.cache[cacheKey] = data;
         render(); 
         setLoading(false); 
         checkDeepLink();
+
+        // Chain loadSessions() directly here so it never gets missed
+        if (!S.sessionsData) loadSessions();
       }).catch(function(err){
         setLoading(false); 
         document.getElementById('periodLabel').textContent='Error — try again'; 
@@ -453,7 +463,16 @@ function renderWeek(events){
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
-      html += '<div style="margin-top:6px;"><button type="button" class="share-btn" onclick="copyShareLink(\''+esc(ev.instanceId)+'\')">🔗 Copy Direct Link / QR URL</button></div>';
+      var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId);
+
+html += '<div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--line); display:flex; flex-direction:column; gap:6px;">'
+  + '<a href="' + directUrl + '" target="_top" style="color:var(--accent); font-weight:600; font-size:13px; text-decoration:underline; display:inline-block;">'
+  + '↗ Open Full Direct Registration Page'
+  + '</a>'
+  + '<button type="button" class="share-btn" onclick="copyShareLink(\'' + esc(ev.instanceId) + '\')" style="text-align:left; text-decoration:none; opacity:0.8;">'
+  + '📋 Copy Direct Link for Social Media / QR Codes'
+  + '</button>'
+  + '</div>';)">🔗 Copy Direct Link / QR URL</button></div>';
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 
@@ -1171,7 +1190,10 @@ function renderWeek(events){
       });
     }
 
-    function renderSessions(){
+function renderSessions(){
+      var area=document.getElementById('sessionsArea');
+      if (!area) return; // Safeguard if DOM container isn't ready
+      
       var sessions=(S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : [];
       var filtered=sessions.filter(function(s){
         var typeLC=String(s.type || '').toLowerCase();
@@ -1181,6 +1203,7 @@ function renderWeek(events){
         if(S.showShows && !S.showClasses && !isShow) return false;
         return true;
       });
+      
       var html='';
       if(!filtered.length){html='<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:14px;">No sessions found.</div>';}
       else{
@@ -1199,9 +1222,9 @@ function renderWeek(events){
             + '<div class="session-instances" id="si-'+sid+'">'+buildInstanceRows(s.instances)+'</div>'
             + '</div></div>';
         });
-        html += '</div>';
+        html += '<' + '/div>';
       }
-      var area=document.getElementById('sessionsArea');
+      
       area.innerHTML=html;
       attachSessionListeners();
       broadcastHeight();
@@ -1255,9 +1278,8 @@ function renderWeek(events){
     document.getElementById('tabClasses').addEventListener('click', function(){S.showClasses=!S.showClasses; this.classList.toggle('active',S.showClasses); if(S.data) render(); if(S.sessionsData) renderSessions();});
     document.getElementById('tabShows').addEventListener('click', function(){S.showShows=!S.showShows; this.classList.toggle('active',S.showShows); if(S.data) render(); if(S.sessionsData) renderSessions();});
 
-    attachCalendarListeners();
-    load();
-    setTimeout(loadSessions, 300);
+attachCalendarListeners();
+load();
     broadcastHeight();
     if(window.ResizeObserver){new ResizeObserver(broadcastHeight).observe(document.body);}
   </script>

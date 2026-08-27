@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Wings to Fly — Schedule</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<meta name="mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <style>
     :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
     *{box-sizing:border-box;}
@@ -53,7 +53,6 @@
     .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
 
-    /* Fixed Modal Overlay for Smooth Mobile UX */
     .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:99999;padding:12px;overflow-y:auto;}
     .modal-overlay.active{display:flex;}
     .modal-container{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.25);position:relative;margin:auto;}
@@ -175,7 +174,6 @@
 
   <div class="loading-overlay" id="loadingOverlay">Loading…</div>
 
-  <!-- Fixed Fullscreen Modal Popup Container -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal-container">
       <div class="modal-header">
@@ -191,11 +189,7 @@
   <div class="page-section sessions-block">
     <h2 class="section-title sessions-title">Our Sessions</h2>
     <p class="section-subtitle">Browse our full program and reserve for any upcoming date.</p>
-    <div id="sessionsArea">
-  <button id="btnLoadSessions" style="display:block; width:100%; max-width:300px; margin:20px auto; padding:12px 18px; background:var(--accent); color:#fff; border:none; border-radius:6px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; text-align:center;">
-    View All Program Sessions 👇
-  </button>
-</div>
+    <div id="sessionsArea"></div>
   </div>
 
   <script>
@@ -230,7 +224,6 @@
     function apiPost(body){return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
     function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
     
-    // Check for direct share query parameters (e.g. ?reserve=OI_055)
     function getQueryParam(param) {
       var search = window.location.search || '';
       if (!search && window.parent) {
@@ -240,28 +233,25 @@
       return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
 
-// Replace Lines 319-324 in index.html
-function checkDeepLink(){
-  var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
-  if (reserveId) {
-    // If data is ready, open modal immediately
-    if (eventMap[reserveId]) {
-      openModal(eventMap[reserveId], true);
-    } else {
-      // Retry briefly while the initial load() request finishes fetching
-      var retryCount = 0;
-      var checkTimer = setInterval(function(){
-        retryCount++;
+    function checkDeepLink(){
+      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+      if (reserveId) {
         if (eventMap[reserveId]) {
-          clearInterval(checkTimer);
           openModal(eventMap[reserveId], true);
-        } else if (retryCount > 30) {
-          clearInterval(checkTimer); // Stop retrying after 3 seconds
+        } else {
+          var retryCount = 0;
+          var checkTimer = setInterval(function(){
+            retryCount++;
+            if (eventMap[reserveId]) {
+              clearInterval(checkTimer);
+              openModal(eventMap[reserveId], true);
+            } else if (retryCount > 30) {
+              clearInterval(checkTimer);
+            }
+          }, 100);
         }
-      }, 100);
+      }
     }
-  }
-}
 
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
@@ -337,8 +327,21 @@ function checkDeepLink(){
             var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
             var btnText = getReserveButtonText(ev);
             var statusBadge = ev.statusLabel
-              ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
+              ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
               : '';
+            
+            var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+            var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+            
+            var btnHtml = '';
+            if (canRegister) {
+              btnHtml = '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>';
+            } else if (ev.isPast) {
+              btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
+            } else if (!isUpcoming) {
+              btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Registration Closed</div>';
+            }
+
             evHtml += '<div class="event-card" data-evcard="1" style="'+cardStyle+'">'
               + statusBadge
               + '<div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
@@ -348,18 +351,7 @@ function checkDeepLink(){
               + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
               + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
               + '</div>'
-              + (function(){
-    var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
-    var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
-    if (canRegister) {
-      return '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>';
-    } else if (ev.isPast) {
-      return '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
-    } else if (!isUpcoming) {
-      return '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Registration Closed</div>';
-    }
-    return '';
-  })()
+              + btnHtml
               + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
               + '</div>';
           });
@@ -407,18 +399,18 @@ function checkDeepLink(){
       S.activeEv = null;
     }
 
-function copyShareLink(instanceId){
-  var url = "https://wtfdc.org/UpcomingEvents?event=" + encodeURIComponent(instanceId);
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(function(){
-      alert("Direct event link copied to clipboard:\n" + url);
-    }).catch(function(){
-      prompt("Copy direct link:", url);
-    });
-  } else {
-    prompt("Copy direct link:", url);
-  }
-}
+    function copyShareLink(instanceId){
+      var url = "https://wtfdc.org/UpcomingEvents?event=" + encodeURIComponent(instanceId);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function(){
+          alert("Direct event link copied to clipboard:\n" + url);
+        }).catch(function(){
+          prompt("Copy direct link:", url);
+        });
+      } else {
+        prompt("Copy direct link:", url);
+      }
+    }
 
     function fillModalContent(bodyId, ev, openReg){
       var body = document.getElementById(bodyId);
@@ -427,13 +419,12 @@ function copyShareLink(instanceId){
       var hasProtectedTiers = hasTiers && ev.tiers.some(function(t){ return t.requiresPasscode; });
       var html = '';
 
-      // Full Date Displayed Below Title
       if (ev.dateLabel) {
         html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
       }
       html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.startTime + ' – ' + ev.endTime) + '</div>';
 
-      if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
+      if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       if(ev.duration) html += '<div class="modal-row"><span class="modal-label">Duration</span><span class="modal-value">'+esc(formatDuration(ev.duration))+'</span></div>';
@@ -445,14 +436,14 @@ function copyShareLink(instanceId){
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
-      // Share Direct Link Button
       html += '<div style="margin-top:6px;"><button type="button" class="share-btn" onclick="copyShareLink(\''+esc(ev.instanceId)+'\')">🔗 Copy Direct Link / QR URL</button></div>';
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
-    var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
-var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
 
-if (canRegister) {
+      var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+      var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+
+      if (canRegister) {
         html += '<hr class="modal-divider">';
         html += '<div class="reg-section active" id="regSectionModal">'
           + '<div class="reg-title">Reserve for this session</div>'
@@ -1204,15 +1195,15 @@ if (canRegister) {
       return instances.map(function(ev){
         var k=registerEvent(ev);
         var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
-var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+        var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
         var btnText = getReserveButtonText(ev);
-var statusBadge = ev.statusLabel
-  ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;'
-    + 'background:' + esc(ev.statusColor) + '1a;'
-    + 'color:' + esc(ev.statusColor) + ';'
-    + 'border:1px solid ' + esc(ev.borderColor || ev.statusColor) + ';'
-    + 'margin-bottom:4px;">' + esc(ev.statusLabel) + '</span>'
-  : '';
+        var statusBadge = ev.statusLabel
+          ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;'
+            + 'background:' + esc(ev.statusColor) + '1a;'
+            + 'color:' + esc(ev.statusColor) + ';'
+            + 'border:1px solid ' + esc(ev.borderColor || ev.statusColor) + ';'
+            + 'margin-bottom:4px;">' + esc(ev.statusLabel) + '</span>'
+          : '';
         return '<div class="session-instance-row"'+(ev.isCancelled?' style="opacity:0.6;"':'')+'>'+
           '<div>'+
             '<div class="session-instance-date">'+esc(ev.dateLabel)+statusBadge+'</div>'+
@@ -1247,28 +1238,11 @@ var statusBadge = ev.statusLabel
     document.getElementById('tabClasses').addEventListener('click', function(){S.showClasses=!S.showClasses; this.classList.toggle('active',S.showClasses); if(S.data) render(); if(S.sessionsData) renderSessions();});
     document.getElementById('tabShows').addEventListener('click', function(){S.showShows=!S.showShows; this.classList.toggle('active',S.showShows); if(S.data) render(); if(S.sessionsData) renderSessions();});
 
-attachCalendarListeners();
+    attachCalendarListeners();
     load();
+    setTimeout(loadSessions, 300);
     broadcastHeight();
     if(window.ResizeObserver){new ResizeObserver(broadcastHeight).observe(document.body);}
-
-    document.getElementById('sessionsArea').addEventListener('click', function(e) {
-      var btn = e.target.closest('#btnLoadSessions');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Loading Program Sessions…';
-        
-        // Fetch sessions on-demand without reloading the page
-        apiGet({view:'sessions'}).then(function(data){
-          S.sessionsData = data; 
-          S.cache['sessions'] = data;
-          renderSessions();
-        }).catch(function(){
-          btn.disabled = false;
-          btn.textContent = 'Error loading sessions. Try again.';
-        });
-      }
-    });
   </script>
 </body>
 </html>

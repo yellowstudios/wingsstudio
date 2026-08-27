@@ -12,8 +12,8 @@
     :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
     *{box-sizing:border-box;}
     html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
-   body{overflow:auto;}
-    body.modal-open{overflow:hidden !important;} /* Keeps background fixed while scrolling modal */
+    body{overflow:auto;}
+    body.modal-open{overflow:hidden !important;}
     body.standalone-mode .toolbar, body.standalone-mode .page-section, body.standalone-mode .calendar-sessions-spacer { display:none !important; }
     body.standalone-mode .modal-overlay { position:static; background:none; display:block; padding:20px 12px; }
     body.standalone-mode .modal-container { max-width:650px; box-shadow:none; border:1px solid var(--line); }
@@ -62,7 +62,7 @@
     .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
 
-  .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:99999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:99999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
     .modal-overlay.active{display:flex;}
     .modal-container{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.25);position:relative;margin:auto;touch-action:pan-y;}
     .modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
@@ -206,7 +206,10 @@
 
   <script>
     var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
-    var STATIC_JSON_URL = "./calendar_data.json"; // Path to static staged JSON file
+    
+    // REPLACE YOUR_DRIVE_FILE_ID BELOW WITH YOUR ACTUAL GOOGLE DRIVE FILE ID
+    var STATIC_JSON_URL = "https://lh3.googleusercontent.com/d/YOUR_DRIVE_FILE_ID"; 
+    
     var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null,cache:{}};
     var monthByDay = {}, eventMap = {};
 
@@ -256,26 +259,25 @@
       return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
 
-function checkDeepLink(){
-  var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
-  var isStandalone = getQueryParam('standalone') === 'true';
-  
-  if (isStandalone) {
-    document.body.classList.add('standalone-mode');
-  }
-
-  if (reserveId) {
-    var checkTimer = setInterval(function(){
-      if (eventMap[reserveId]) {
-        clearInterval(checkTimer);
-        openModal(eventMap[reserveId], true);
+    function checkDeepLink(){
+      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+      var isStandalone = getQueryParam('standalone') === 'true';
+      
+      if (isStandalone) {
+        document.body.classList.add('standalone-mode');
       }
-    }, 50);
-    
-    // Safety timeout after 5 seconds
-    setTimeout(function(){ clearInterval(checkTimer); }, 5000);
-  }
-}
+
+      if (reserveId) {
+        var checkTimer = setInterval(function(){
+          if (eventMap[reserveId]) {
+            clearInterval(checkTimer);
+            openModal(eventMap[reserveId], true);
+          }
+        }, 50);
+        
+        setTimeout(function(){ clearInterval(checkTimer); }, 5000);
+      }
+    }
 
     function processPayloadData(data, cacheKey) {
       S.data = data; 
@@ -296,7 +298,6 @@ function checkDeepLink(){
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       
-      // 1. Instant Local Storage Hydration (0ms)
       var localData = localStorage.getItem(cacheKey);
       if (localData && !forceFresh && !S.data) {
         try {
@@ -307,7 +308,6 @@ function checkDeepLink(){
 
       if (!S.data) setLoading(true); 
 
-      // 2. Fetch Static JSON for ultra-fast initial page load
       if (!forceFresh && S.view === 'week' && dateKey(S.currentMonday) === dateKey(mondayOf(new Date()))) {
         fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
           .then(function(r){
@@ -318,7 +318,6 @@ function checkDeepLink(){
             processPayloadData(data, cacheKey);
           })
           .catch(function(){
-            // Fallback to Live Apps Script API if static file fails
             fetchLiveApi(cacheKey);
           });
       } else {
@@ -422,11 +421,10 @@ function checkDeepLink(){
             var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
             var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
             
-var btnHtml = '';
+            var btnHtml = '';
             if (canRegister) {
               var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
               btnHtml = '<a href="' + directUrl + '" target="_blank" rel="noopener" class="btn-register" style="text-decoration:none;">' + btnText + '</a>';
-            }
             } else if (ev.isPast) {
               btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
             } else if (!isUpcoming) {
@@ -479,25 +477,24 @@ var btnHtml = '';
       attachCalendarListeners();
     }
 
-function openModal(ev, openReg){
-  S.activeEv = ev;
-  var overlay = document.getElementById('modalOverlay');
-  document.getElementById('modalTitle').textContent = ev.title;
-  fillModalContent('modalBody', ev, openReg);
-  
-  overlay.classList.add('active');
-  document.body.classList.add('modal-open'); // Prevents parent page scroll lock
-  
-  // Scroll form back to the top on launch
-  var container = overlay.querySelector('.modal-container');
-  if (container) container.scrollTop = 0;
-}
+    function openModal(ev, openReg){
+      S.activeEv = ev;
+      var overlay = document.getElementById('modalOverlay');
+      document.getElementById('modalTitle').textContent = ev.title;
+      fillModalContent('modalBody', ev, openReg);
+      
+      overlay.classList.add('active');
+      document.body.classList.add('modal-open');
+      
+      var container = overlay.querySelector('.modal-container');
+      if (container) container.scrollTop = 0;
+    }
 
-function closeModal(){
-  document.getElementById('modalOverlay').classList.remove('active');
-  document.body.classList.remove('modal-open'); // Restores parent page scroll
-  S.activeEv = null;
-}
+    function closeModal(){
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.body.classList.remove('modal-open');
+      S.activeEv = null;
+    }
 
     function fillModalContent(bodyId, ev, openReg){
       var body = document.getElementById(bodyId);
@@ -529,15 +526,15 @@ function closeModal(){
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
-var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
+      var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
 
-if (!document.body.classList.contains('standalone-mode')) {
-  html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
-    + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; padding:12px 14px; border-radius:6px; text-decoration:none; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
-    + '↗ Open Full Standalone Registration Page'
-    + '</a>'
-    + '</div>';
-}
+      if (!document.body.classList.contains('standalone-mode')) {
+        html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
+          + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; padding:12px 14px; border-radius:6px; text-decoration:none; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
+          + '↗ Open Full Standalone Registration Page'
+          + '</a>'
+          + '</div>';
+      }
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 
@@ -715,11 +712,11 @@ if (!document.body.classList.contains('standalone-mode')) {
       if(!area || area.dataset.listenersAttached) return;
       area.dataset.listenersAttached='1';
       area.addEventListener('click', function(e){
-        var btn = e.target.closest('.btn-register, .btn-info');
-        if(btn){
-          var ev = eventMap[btn.getAttribute('data-id')];
+        var btnInfo = e.target.closest('.btn-info');
+        if(btnInfo){
+          var ev = eventMap[btnInfo.getAttribute('data-id')];
           if(!ev) return;
-          openModal(ev, btn.classList.contains('btn-register'));
+          openModal(ev, false);
           return;
         }
         var cell=e.target.closest('.month-cell');
@@ -744,11 +741,11 @@ if (!document.body.classList.contains('standalone-mode')) {
           broadcastHeight();
           return;
         }
-        var btn=e.target.closest('.btn-register, .btn-info');
-        if(!btn) return;
-        var ev=eventMap[btn.getAttribute('data-id')];
+        var btnInfo=e.target.closest('.btn-info');
+        if(!btnInfo) return;
+        var ev=eventMap[btnInfo.getAttribute('data-id')];
         if(!ev) return;
-        openModal(ev, btn.classList.contains('btn-register'));
+        openModal(ev, false);
       });
     }
 
@@ -769,7 +766,7 @@ if (!document.body.classList.contains('standalone-mode')) {
             + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
             + '<div class="panel-event-title" style="font-weight:600;font-size:14px;margin-bottom:6px;">'+esc(ev.title)+'</div>'
             + '<div class="panel-btns" style="display:flex;gap:6px;flex-wrap:wrap;">'
-            + (ev.isPublic && !ev.isFull ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_blank" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;">'+btnText+'</button>' : '')
+            + (ev.isPublic && !ev.isFull ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_blank" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')
             + '<button class="btn-info" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);">More Info</button>'
             + '</div></div>';
         });
@@ -781,11 +778,11 @@ if (!document.body.classList.contains('standalone-mode')) {
 
     function attachModalDelegates(root){
       root.addEventListener('click', function(e){
-        var btn=e.target.closest('.btn-register, .btn-info');
-        if(!btn) return;
-        var ev=eventMap[btn.getAttribute('data-id')];
+        var btnInfo=e.target.closest('.btn-info');
+        if(!btnInfo) return;
+        var ev=eventMap[btnInfo.getAttribute('data-id')];
         if(!ev) return;
-        openModal(ev, btn.classList.contains('btn-register'));
+        openModal(ev, false);
       });
     }
 

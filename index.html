@@ -270,43 +270,43 @@ function checkDeepLink(){
   }
 }
 
-    function load(forceFresh){
-      var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
-      if(!forceFresh && S.cache[cacheKey]){
-        S.data = S.cache[cacheKey];
-        if (S.cache['sessions']) S.sessionsData = S.cache['sessions'];
-        render();
-        renderSessions();
-        checkDeepLink();
-        return;
-      }
-      setLoading(true); 
-      var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
-      apiGet(params).then(function(data){
-        if(!data || data.error){
-          setLoading(false);
-          document.getElementById('periodLabel').textContent='Error — try again';
-          console.error(data ? data.error : 'Empty data returned');
-          return;
-        }
-        S.data = data; 
-        S.cache[cacheKey] = data;
+function load(forceFresh){
+  var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
+  
+  // 1. Instant local render if available
+  var localData = localStorage.getItem(cacheKey);
+  if (localData && !forceFresh && !S.data) {
+    try {
+      S.data = JSON.parse(localData);
+      render();
+    } catch(e) {}
+  }
 
-        if (data.sessionsPayload) {
-          S.sessionsData = data.sessionsPayload;
-          S.cache['sessions'] = data.sessionsPayload;
-        }
-
-        render(); 
-        renderSessions();
-        setLoading(false); 
-        checkDeepLink();
-      }).catch(function(err){
-        setLoading(false); 
-        document.getElementById('periodLabel').textContent='Error — try again'; 
-        console.error(err);
-      });
+  setLoading(!S.data); 
+  var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
+  
+  apiGet(params).then(function(data){
+    if(!data || data.error){
+      setLoading(false);
+      return;
     }
+    S.data = data; 
+    S.cache[cacheKey] = data;
+    try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
+
+    if (data.sessionsPayload) {
+      S.sessionsData = data.sessionsPayload;
+      S.cache['sessions'] = data.sessionsPayload;
+    }
+
+    render(); 
+    renderSessions();
+    setLoading(false); 
+    checkDeepLink();
+  }).catch(function(err){
+    setLoading(false); 
+  });
+}
 
     function loadSessions(){
       if(S.cache['sessions']){

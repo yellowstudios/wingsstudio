@@ -461,7 +461,7 @@ function load(forceFresh){
             var btnHtml = '';
             if (canRegister) {
               var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
-              btnHtml = '<a href="' + directUrl + '" target="_blank" rel="noopener" class="btn-register" style="text-decoration:none;">' + btnText + '</a>';
+              btnHtml = '<a href="' + directUrl + '" target="_top" rel="noopener" class="btn-register" style="text-decoration:none;">' + btnText + '</a>';
             } else if (ev.isPast) {
               btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
             } else if (!isUpcoming) {
@@ -583,7 +583,10 @@ function load(forceFresh){
         html += '<div class="reg-section active" id="regSectionModal">'
           + '<div class="reg-title">Reserve for this session</div>'
           + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
-          + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email">'
+          + '<div style="position:relative; margin-bottom:8px;">'
++ '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email" style="padding-right:36px; margin-bottom:0;">'
++ '<span id="emailCheckSpinner" style="display:none; position:absolute; right:10px; top:10px; font-size:14px;">⏳</span>'
++ '</div>'
           + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
 
           + '<div class="duplicate-block" id="duplicateBlock">'
@@ -598,6 +601,7 @@ function load(forceFresh){
           + '</div>'
 
           + '<div id="mainFormFields">'
++ '<div id="attendeeRosterBlock" style="display:none;"></div>'
           + '<div style="display:flex;gap:8px;margin-bottom:0;">'
           + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
           + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
@@ -803,7 +807,7 @@ function load(forceFresh){
             + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
             + '<div class="panel-event-title" style="font-weight:600;font-size:14px;margin-bottom:6px;">'+esc(ev.title)+'</div>'
             + '<div class="panel-btns" style="display:flex;gap:6px;flex-wrap:wrap;">'
-            + (ev.isPublic && !ev.isFull ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_blank" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')
+            + (ev.isPublic && !ev.isFull ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')
             + '<button class="btn-info" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);">More Info</button>'
             + '</div></div>';
         });
@@ -859,6 +863,51 @@ function load(forceFresh){
     }
 
     function wireMobileForm(ev){
+function wireMobileForm(ev){
+  // PASTE IT RIGHT HERE AT THE TOP OF wireMobileForm:
+  function updateAttendeeRoster(qty) {
+    var container = document.getElementById('attendeeRosterBlock');
+    if (!container) return;
+    if (qty <= 1) {
+      container.innerHTML = '';
+      container.style.display = 'none';
+      return;
+    }
+    
+    var html = '<div style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">'
+      + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Guest Details</div>'
+      + '<p class="reg-note">Please provide contact details for each attendee in your party.</p>'
+      + '<label style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; cursor:pointer;">'
+      + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be in this group, click here to skip</em></span>'
+      + '</label>'
+      + '<div id="attendeeRows">';
+
+    for (var i = 1; i <= qty; i++) {
+      html += '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
+        + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + i + '</div>'
+        + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
+        + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
+        + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
+        + '</div>'
+        + '<div style="display:flex; gap:6px;">'
+        + '<input type="email" class="reg-input att-em" placeholder="Email" style="flex:1; margin-bottom:0;">'
+        + '<input type="tel" class="reg-input att-ph" placeholder="Phone" style="flex:1; margin-bottom:0;">'
+        + '</div>'
+        + '</div>';
+    }
+    html += '</div></div>';
+    container.style.display = 'block';
+    container.innerHTML = html;
+
+    var chk = document.getElementById('chkSkipAttendees');
+    if (chk) {
+      chk.addEventListener('change', function() {
+        document.getElementById('attendeeRows').style.display = this.checked ? 'none' : 'block';
+      });
+    }
+  }
+
+  // ... rest of wireMobileForm continues below ...
       var email=document.getElementById('regEmailMobile');
       var firstNameInput=document.getElementById('regFirstNameMobile');
       var lastNameInput=document.getElementById('regLastNameMobile');
@@ -969,6 +1018,7 @@ function load(forceFresh){
           sumBreakoutRow.style.display = 'none';
           var tot = (tierPrice * qty) + extraVal;
           sumTotal.textContent = '$' + tot.toFixed(2);
+          updateAttendeeRoster(qty);
           return;
         }
 
@@ -997,6 +1047,8 @@ function load(forceFresh){
           var tot = baseTierAmt + extraVal;
           sumTotal.textContent = '$' + tot.toFixed(2);
         }
+
+        updateAttendeeRoster(qty);
       }
 
       if(email){
@@ -1017,7 +1069,11 @@ function load(forceFresh){
             return;
           }
           emailTimer=setTimeout(function(){
+            var spinner = document.getElementById('emailCheckSpinner');
+            if (spinner) spinner.style.display = 'inline';
+
             apiPost({action:'checkParticipant', email:v, instanceId:ev.instanceId}).then(function(r){
+              if (spinner) spinner.style.display = 'none';
               if(r && r.exists){
                 firstNameInput.value = r.firstName || ''; 
                 lastNameInput.value  = r.lastName  || ''; 
@@ -1062,8 +1118,10 @@ function load(forceFresh){
                 currentUserRequiredMins = classMins;
                 populateTierDropdown('', classMins);
               }
-            }).catch(function(){});
-          },600);
+            }).catch(function(){
+              if (spinner) spinner.style.display = 'none';
+            });
+          },400);
         });
 
         email.addEventListener('blur', function(){
@@ -1390,7 +1448,7 @@ function load(forceFresh){
             (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '')+
           '</div>'+
           '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
-            (canReg ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_blank" rel="noopener" class="session-instance-btn primary" style="text-decoration:none;display:inline-block;text-align:center;">'+btnText+'</a>' : '')+
+            (canReg ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="session-instance-btn primary" style="text-decoration:none;display:inline-block;text-align:center;">'+btnText+'</a>' : '')+
             '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>'+
           '</div>'+
         '</div>';

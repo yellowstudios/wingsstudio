@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Wings to Fly — Schedule</title>
+  <link rel="preconnect" href="https://script.google.com" crossorigin />
+  <link rel="dns-prefetch" href="https://script.google.com" />
+  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <meta name="mobile-web-app-capable" content="yes" />
   <style>
@@ -202,6 +205,7 @@
 
   <script>
     var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
+    var STATIC_JSON_URL = "./calendar_data.json"; // Path to static staged JSON file
     var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null,cache:{}};
     var monthByDay = {}, eventMap = {};
 
@@ -228,85 +232,116 @@
     function esc(str){var d=document.createElement('div'); d.textContent=String(str==null?'':str); return d.innerHTML;}
     function evKey(ev){return String(ev.instanceId||ev.id||'');}
     function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
-    function apiGet(params){var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); return fetch(API+'?'+qs).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
-    function apiPost(body){return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});}
+    
+    function apiGet(params){
+      var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); 
+      return fetch(API+'?'+qs).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});
+    }
+
+    function apiPost(body){
+      return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});
+    }
+
     function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
     
-function getQueryParam(param) {
-  var search = window.location.search || '';
-  // Inspect parent frame URL (wtfdc.org) if embedded inside an iframe
-  if (window.parent && window.parent !== window) {
-    try { 
-      search = window.parent.location.search || search; 
-    } catch(e) {}
-  }
-  var match = RegExp('[?&]' + param + '=([^&]*)').exec(search);
-  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-}
+    function getQueryParam(param) {
+      var search = window.location.search || '';
+      if (window.parent && window.parent !== window) {
+        try { 
+          search = window.parent.location.search || search; 
+        } catch(e) {}
+      }
+      var match = RegExp('[?&]' + param + '=([^&]*)').exec(search);
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
 
-function checkDeepLink(){
-  var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
-  var isStandalone = getQueryParam('standalone') === 'true';
-  
-  if (isStandalone) {
-    document.body.classList.add('standalone-mode');
-  }
+    function checkDeepLink(){
+      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+      var isStandalone = getQueryParam('standalone') === 'true';
+      
+      if (isStandalone) {
+        document.body.classList.add('standalone-mode');
+      }
 
-  if (reserveId) {
-    if (eventMap[reserveId]) {
-      openModal(eventMap[reserveId], true);
-    } else {
-      var retryCount = 0;
-      var checkTimer = setInterval(function(){
-        retryCount++;
+      if (reserveId) {
         if (eventMap[reserveId]) {
-          clearInterval(checkTimer);
           openModal(eventMap[reserveId], true);
-        } else if (retryCount > 30) {
-          clearInterval(checkTimer);
+        } else {
+          var retryCount = 0;
+          var checkTimer = setInterval(function(){
+            retryCount++;
+            if (eventMap[reserveId]) {
+              clearInterval(checkTimer);
+              openModal(eventMap[reserveId], true);
+            } else if (retryCount > 30) {
+              clearInterval(checkTimer);
+            }
+          }, 100);
         }
-      }, 100);
-    }
-  }
-}
-
-function load(forceFresh){
-  var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
-  
-  // 1. Instant local render if available
-  var localData = localStorage.getItem(cacheKey);
-  if (localData && !forceFresh && !S.data) {
-    try {
-      S.data = JSON.parse(localData);
-      render();
-    } catch(e) {}
-  }
-
-  setLoading(!S.data); 
-  var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
-  
-  apiGet(params).then(function(data){
-    if(!data || data.error){
-      setLoading(false);
-      return;
-    }
-    S.data = data; 
-    S.cache[cacheKey] = data;
-    try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
-
-    if (data.sessionsPayload) {
-      S.sessionsData = data.sessionsPayload;
-      S.cache['sessions'] = data.sessionsPayload;
+      }
     }
 
-    render(); 
-    renderSessions();
-    setLoading(false); 
-    checkDeepLink();
-  }).catch(function(err){
-    setLoading(false); 
-  });
-}
+    function processPayloadData(data, cacheKey) {
+      S.data = data; 
+      S.cache[cacheKey] = data;
+      try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
+
+      if (data.sessionsPayload) {
+        S.sessionsData = data.sessionsPayload;
+        S.cache['sessions'] = data.sessionsPayload;
+      }
+
+      render(); 
+      renderSessions();
+      setLoading(false); 
+      checkDeepLink();
+    }
+
+    function load(forceFresh){
+      var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
+      
+      // 1. Instant Local Storage Hydration (0ms)
+      var localData = localStorage.getItem(cacheKey);
+      if (localData && !forceFresh && !S.data) {
+        try {
+          S.data = JSON.parse(localData);
+          render();
+        } catch(e) {}
+      }
+
+      if (!S.data) setLoading(true); 
+
+      // 2. Fetch Static JSON for ultra-fast initial page load
+      if (!forceFresh && S.view === 'week' && dateKey(S.currentMonday) === dateKey(mondayOf(new Date()))) {
+        fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
+          .then(function(r){
+            if (!r.ok) throw new Error('Static file missing');
+            return r.json();
+          })
+          .then(function(data){
+            processPayloadData(data, cacheKey);
+          })
+          .catch(function(){
+            // Fallback to Live Apps Script API if static file fails
+            fetchLiveApi(cacheKey);
+          });
+      } else {
+        fetchLiveApi(cacheKey);
+      }
+    }
+
+    function fetchLiveApi(cacheKey) {
+      var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
+      apiGet(params).then(function(data){
+        if(!data || data.error){
+          setLoading(false);
+          return;
+        }
+        processPayloadData(data, cacheKey);
+      }).catch(function(err){
+        setLoading(false); 
+      });
+    }
 
     function loadSessions(){
       if(S.cache['sessions']){
@@ -489,15 +524,15 @@ function load(forceFresh){
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
-var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
+      var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
 
-if (!document.body.classList.contains('standalone-mode')) {
-  html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
-    + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
-    + '↗ Open Full Registration Page in New Tab'
-    + '</a>'
-    + '</div>';
-}
+      if (!document.body.classList.contains('standalone-mode')) {
+        html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
+          + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
+          + '↗ Open Full Registration Page in New Tab'
+          + '</a>'
+          + '</div>';
+      }
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 

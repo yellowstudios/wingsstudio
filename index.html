@@ -422,9 +422,11 @@ function checkDeepLink(){
             var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
             var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
             
-            var btnHtml = '';
+var btnHtml = '';
             if (canRegister) {
-              btnHtml = '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>';
+              var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
+              btnHtml = '<a href="' + directUrl + '" target="_blank" rel="noopener" class="btn-register" style="text-decoration:none;">' + btnText + '</a>';
+            }
             } else if (ev.isPast) {
               btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
             } else if (!isUpcoming) {
@@ -767,7 +769,7 @@ if (!document.body.classList.contains('standalone-mode')) {
             + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
             + '<div class="panel-event-title" style="font-weight:600;font-size:14px;margin-bottom:6px;">'+esc(ev.title)+'</div>'
             + '<div class="panel-btns" style="display:flex;gap:6px;flex-wrap:wrap;">'
-            + (ev.isPublic && !ev.isFull ? '<button class="primary btn-register" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;">'+btnText+'</button>' : '')
+            + (ev.isPublic && !ev.isFull ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_blank" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;">'+btnText+'</button>' : '')
             + '<button class="btn-info" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);">More Info</button>'
             + '</div></div>';
         });
@@ -1354,7 +1356,7 @@ if (!document.body.classList.contains('standalone-mode')) {
             (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '')+
           '</div>'+
           '<div style="display:flex;gap:6px;flex-wrap:wrap;">'+
-            (canReg ? '<button class="session-instance-btn primary btn-register" data-id="'+esc(k)+'">'+btnText+'</button>' : '')+
+            (canReg ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_blank" rel="noopener" class="session-instance-btn primary" style="text-decoration:none;display:inline-block;text-align:center;">'+btnText+'</a>' : '')+
             '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>'+
           '</div>'+
         '</div>';

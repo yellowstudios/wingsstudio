@@ -235,12 +235,28 @@
       return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
     }
 
-    function checkDeepLink(){
-      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
-      if (reserveId && eventMap[reserveId]) {
-        openModal(eventMap[reserveId], true);
-      }
+// Replace Lines 319-324 in index.html
+function checkDeepLink(){
+  var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+  if (reserveId) {
+    // If data is ready, open modal immediately
+    if (eventMap[reserveId]) {
+      openModal(eventMap[reserveId], true);
+    } else {
+      // Retry briefly while the initial load() request finishes fetching
+      var retryCount = 0;
+      var checkTimer = setInterval(function(){
+        retryCount++;
+        if (eventMap[reserveId]) {
+          clearInterval(checkTimer);
+          openModal(eventMap[reserveId], true);
+        } else if (retryCount > 30) {
+          clearInterval(checkTimer); // Stop retrying after 3 seconds
+        }
+      }, 100);
     }
+  }
+}
 
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
@@ -327,7 +343,18 @@
               + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
               + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
               + '</div>'
-              + (ev.isPublic && !ev.isFull && !ev.isCancelled ? '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>' : '')
+              + (function(){
+    var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+    var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+    if (canRegister) {
+      return '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>';
+    } else if (ev.isPast) {
+      return '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
+    } else if (!isUpcoming) {
+      return '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Registration Closed</div>';
+    }
+    return '';
+  })()
               + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
               + '</div>';
           });
@@ -375,14 +402,18 @@
       S.activeEv = null;
     }
 
-    function copyShareLink(instanceId){
-      var url = "https://wtfdc.org/UpcomingEvents?reserve=" + encodeURIComponent(instanceId);
-      navigator.clipboard.writeText(url).then(function(){
-        alert("Direct link copied to clipboard:\n" + url);
-      }).catch(function(){
-        prompt("Copy direct link:", url);
-      });
-    }
+function copyShareLink(instanceId){
+  var url = "https://wtfdc.org/UpcomingEvents?event=" + encodeURIComponent(instanceId);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(function(){
+      alert("Direct event link copied to clipboard:\n" + url);
+    }).catch(function(){
+      prompt("Copy direct link:", url);
+    });
+  } else {
+    prompt("Copy direct link:", url);
+  }
+}
 
     function fillModalContent(bodyId, ev, openReg){
       var body = document.getElementById(bodyId);
@@ -413,7 +444,10 @@
       html += '<div style="margin-top:6px;"><button type="button" class="share-btn" onclick="copyShareLink(\''+esc(ev.instanceId)+'\')">🔗 Copy Direct Link / QR URL</button></div>';
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
-      if(ev.isPublic && !ev.isFull){
+    var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+
+if (canRegister) {
         html += '<hr class="modal-divider">';
         html += '<div class="reg-section active" id="regSectionModal">'
           + '<div class="reg-title">Reserve for this session</div>'
@@ -1164,11 +1198,16 @@
       if(!instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
       return instances.map(function(ev){
         var k=registerEvent(ev);
-        var canReg=ev.isPublic && !ev.isFull && !ev.isCancelled;
+        var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
         var btnText = getReserveButtonText(ev);
-        var statusBadge = ev.statusLabel
-          ? '<span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.statusColor)+'40;margin-left:6px;">'+esc(ev.statusLabel)+'</span>'
-          : '';
+var statusBadge = ev.statusLabel
+  ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;'
+    + 'background:' + esc(ev.statusColor) + '1a;'
+    + 'color:' + esc(ev.statusColor) + ';'
+    + 'border:1px solid ' + esc(ev.borderColor || ev.statusColor) + ';'
+    + 'margin-bottom:4px;">' + esc(ev.statusLabel) + '</span>'
+  : '';
         return '<div class="session-instance-row"'+(ev.isCancelled?' style="opacity:0.6;"':'')+'>'+
           '<div>'+
             '<div class="session-instance-date">'+esc(ev.dateLabel)+statusBadge+'</div>'+

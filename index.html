@@ -1244,9 +1244,31 @@ var statusBadge = ev.statusLabel
 
     attachCalendarListeners();
     load();
-    setTimeout(loadSessions, 400);
+    ///setTimeout(loadSessions, 400); ---
+<div id="sessionsArea">
+  <button id="btnLoadSessions" style="display:block; width:100%; max-width:300px; margin:20px auto; padding:12px 18px; background:var(--accent); color:#fff; border:none; border-radius:6px; font:inherit; font-size:14px; font-weight:600; cursor:pointer; text-align:center;">
+    View All Program Sessions 👇
+  </button>
+</div>
     broadcastHeight();
     if(window.ResizeObserver){new ResizeObserver(broadcastHeight).observe(document.body);}
+document.getElementById('sessionsArea').addEventListener('click', function(e) {
+  var btn = e.target.closest('#btnLoadSessions');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Loading Program Sessions…';
+    
+    // Fetch sessions on-demand without reloading the page
+    apiGet({view:'sessions'}).then(function(data){
+      S.sessionsData = data; 
+      S.cache['sessions'] = data;
+      renderSessions();
+    }).catch(function(){
+      btn.disabled = false;
+      btn.textContent = 'Error loading sessions. Try again.';
+    });
+  }
+});
   </script>
 </body>
 </html>

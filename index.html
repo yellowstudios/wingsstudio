@@ -486,15 +486,15 @@
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
-      var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
+var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
 
-      if (!document.body.classList.contains('standalone-mode')) {
-        html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
-          + '<a href="' + directUrl + '" target="_top" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
-          + '↗ Open Full Registration Page'
-          + '</a>'
-          + '</div>';
-      }
+if (!document.body.classList.contains('standalone-mode')) {
+  html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
+    + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
+    + '↗ Open Full Registration Page in New Tab'
+    + '</a>'
+    + '</div>';
+}
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 

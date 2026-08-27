@@ -10,6 +10,11 @@
     *{box-sizing:border-box;}
     html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
     body{overflow:auto;}
+    body.standalone-mode .toolbar, body.standalone-mode .page-section, body.standalone-mode .calendar-sessions-spacer { display:none !important; }
+    body.standalone-mode .modal-overlay { position:static; background:none; display:block; padding:20px 12px; }
+    body.standalone-mode .modal-container { max-width:650px; box-shadow:none; border:1px solid var(--line); }
+    body.standalone-mode .modal-close { display:none; }
+
     .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
     .toolbar .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
     .toolbar button.nav-btn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:14px;background:#fff;cursor:pointer;}
@@ -81,6 +86,11 @@
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
 
+    .qty-control-wrapper { display:flex; align-items:center; gap:8px; margin-top:4px; margin-bottom:12px; }
+    .qty-btn { width:38px; height:38px; background:#fff; border:1px solid var(--line); border-radius:6px; font-size:18px; font-weight:700; cursor:pointer; color:var(--ink); }
+    .qty-btn:hover { background:#f0f0f0; }
+    .qty-input { width:60px; text-align:center; padding:8px; border:1px solid var(--line); border-radius:6px; font-size:15px; font-weight:700; }
+
     .recognized-tooltip, .duplicate-block, #planStatusBanner, #exceededOptions { transition: opacity 0.25s ease-in-out; }
     .recognized-tooltip{display:none; background:#e8f5e9; border:1px solid #a5d6a7; color:#1b5e20; border-radius:6px; padding:8px 10px; font-size:12px; font-weight:600; margin-bottom:8px;}
     .duplicate-block{display:none; background:#e3f2fd; border:1px solid #90caf9; color:#0d47a1; border-radius:8px; padding:12px; font-size:13px; margin-top:10px;}
@@ -142,8 +152,6 @@
     .session-instance-spots{font-size:12px;font-style:italic;color:var(--muted);}
     .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
     .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-
-    .share-btn{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;padding:0;text-decoration:underline;margin-top:4px;display:inline-block;}
   </style>
 </head>
 <body>
@@ -235,6 +243,12 @@
 
     function checkDeepLink(){
       var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+      var isStandalone = getQueryParam('standalone') === 'true';
+      
+      if (isStandalone) {
+        document.body.classList.add('standalone-mode');
+      }
+
       if (reserveId) {
         if (eventMap[reserveId]) {
           openModal(eventMap[reserveId], true);
@@ -257,13 +271,14 @@
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       if(!forceFresh && S.cache[cacheKey]){
         S.data = S.cache[cacheKey];
+        if (S.cache['sessions']) S.sessionsData = S.cache['sessions'];
         render();
+        renderSessions();
         checkDeepLink();
-        if (!S.sessionsData) loadSessions();
         return;
       }
       setLoading(true); 
-      var params = S.view === 'month' ? {month:S.currentMonth} : {week:dateKey(S.currentMonday)}; 
+      var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
       apiGet(params).then(function(data){
         if(!data || data.error){
           setLoading(false);
@@ -273,11 +288,16 @@
         }
         S.data = data; 
         S.cache[cacheKey] = data;
+
+        if (data.sessionsPayload) {
+          S.sessionsData = data.sessionsPayload;
+          S.cache['sessions'] = data.sessionsPayload;
+        }
+
         render(); 
+        renderSessions();
         setLoading(false); 
         checkDeepLink();
-
-        if (!S.sessionsData) loadSessions();
       }).catch(function(err){
         setLoading(false); 
         document.getElementById('periodLabel').textContent='Error — try again'; 
@@ -443,6 +463,12 @@
       var hasProtectedTiers = hasTiers && ev.tiers.some(function(t){ return t.requiresPasscode; });
       var html = '';
 
+      var isShowOrEvent = (function(){
+        var typeLC = String(ev.type || '').toLowerCase();
+        var catLC = String(ev.category || '').toLowerCase();
+        return typeLC === 'show' || typeLC === 'event' || catLC === 'performance';
+      })();
+
       if (ev.dateLabel) {
         html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
       }
@@ -460,13 +486,15 @@
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
-      var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId);
+      var directUrl = 'https://wtfdc.org/UpcomingEvents?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
 
-      html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
-        + '<a href="' + directUrl + '" target="_top" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
-        + '↗ Open Full Registration Page'
-        + '</a>'
-        + '</div>';
+      if (!document.body.classList.contains('standalone-mode')) {
+        html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
+          + '<a href="' + directUrl + '" target="_top" style="display:block; width:100%; text-align:center; background:#fff; color:var(--ink); border:1px solid var(--line); font-size:13px; font-weight:600; padding:10px 14px; border-radius:6px; text-decoration:none; cursor:pointer;">'
+          + '↗ Open Full Registration Page'
+          + '</a>'
+          + '</div>';
+      }
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 
@@ -521,33 +549,9 @@
               + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
               + '</div>';
           } else {
-            var isShowOrEvent = (function(){
-              var typeLC = String(ev.type || '').toLowerCase();
-              var catLC = String(ev.category || '').toLowerCase();
-              return typeLC === 'show' || typeLC === 'event' || catLC === 'performance';
-            })();
-
             html += '<div class="pay-section">'
               + '<div class="pay-title">Select Ticket Option</div>';
 
-            if (isShowOrEvent) {
-              html += '<div style="margin-bottom:12px;">'
-                + '<label class="reg-label">Ticket Quantity</label>'
-                + '<select class="reg-input" id="ticketQtyMobile" style="margin-bottom:4px;">'
-                + '<option value="1">1 Ticket</option>'
-                + '<option value="2">2 Tickets</option>'
-                + '<option value="3">3 Tickets</option>'
-                + '<option value="4">4 Tickets</option>'
-                + '<option value="5">5 Tickets</option>'
-                + '<option value="6">6 Tickets</option>'
-                + '<option value="7">7 Tickets</option>'
-                + '<option value="8">8 Tickets</option>'
-                + '<option value="9">9 Tickets</option>'
-                + '<option value="10">10 Tickets</option>'
-                + '</select>'
-                + '</div>';
-            }
-            
             if (hasProtectedTiers) {
               html += '<div style="margin-bottom:10px;">'
                 + '<label class="reg-label" style="font-weight:normal;font-size:12px;">Have an access or promo code?</label>'
@@ -569,7 +573,20 @@
                 + (tier.description ? '<br><span style="font-size:11px;color:var(--muted);">'+esc(tier.description)+'</span>' : '')
                 + '</label>';
             });
-            html += '</div></div>';
+            html += '</div>';
+
+            if (isShowOrEvent) {
+              html += '<div style="margin-top:14px;">'
+                + '<label class="reg-label">Ticket Quantity</label>'
+                + '<div class="qty-control-wrapper">'
+                + '<button type="button" class="qty-btn" id="qtyMinusBtn">−</button>'
+                + '<input type="number" class="qty-input" id="ticketQtyMobile" value="1" min="1" step="1">'
+                + '<button type="button" class="qty-btn" id="qtyPlusBtn">+</button>'
+                + '</div>'
+                + '</div>';
+            }
+
+            html += '</div>';
           }
 
           html += '<div id="extraContributionBlock" style="margin-top:10px;">'
@@ -776,6 +793,10 @@
       var extraInput=document.getElementById('extraContributionMobile');
       var promoInput=document.getElementById('promoCodeInput');
       var promoMsg=document.getElementById('promoCodeMsg');
+      var qtyInput = document.getElementById('ticketQtyMobile');
+      var qtyMinusBtn = document.getElementById('qtyMinusBtn');
+      var qtyPlusBtn = document.getElementById('qtyPlusBtn');
+
       var emailTimer=null;
       var lastFetchedEmail = "";
       var existingRegIdForCancel = "";
@@ -795,6 +816,24 @@
         singleInput.addEventListener('input', updateItemizedSummary);
       }
       if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
+
+      if (qtyInput) {
+        qtyInput.addEventListener('input', updateItemizedSummary);
+        if (qtyMinusBtn) {
+          qtyMinusBtn.addEventListener('click', function(){
+            var cur = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
+            qtyInput.value = cur;
+            updateItemizedSummary();
+          });
+        }
+        if (qtyPlusBtn) {
+          qtyPlusBtn.addEventListener('click', function(){
+            var cur = (parseInt(qtyInput.value, 10) || 1) + 1;
+            qtyInput.value = cur;
+            updateItemizedSummary();
+          });
+        }
+      }
 
       if (promoInput) {
         promoInput.addEventListener('input', function(){
@@ -832,11 +871,6 @@
       document.querySelectorAll('input[name="ticketTierMobile"]').forEach(function(r){
         r.addEventListener('change', updateItemizedSummary);
       });
-
-      var qtyInput = document.getElementById('ticketQtyMobile');
-      if (qtyInput) {
-        qtyInput.addEventListener('change', updateItemizedSummary);
-      }
 
       function updateItemizedSummary(){
         var sumType = document.getElementById('sumType');
@@ -1145,7 +1179,6 @@
         var selectedAmount = basePrice;
         var payTypeVal = 'single';
         var selectedTierName = '';
-        var qtyInput = document.getElementById('ticketQtyMobile'); 
         var ticketQty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
 
         if (hasTiers) {

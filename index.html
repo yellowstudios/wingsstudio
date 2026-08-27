@@ -291,7 +291,14 @@
     }
 
     function render(){document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; document.getElementById('tabClasses').classList.toggle('active',S.showClasses); document.getElementById('tabShows').classList.toggle('active',S.showShows); var events=filteredEvents(); if(S.view==='week') renderWeek(events); else renderMonth(events); broadcastHeight();}
-    function filteredEvents(){var evs=[]; if(S.showClasses) evs=evs.concat(S.data.classes||[]); if(S.showShows) evs=evs.concat(S.data.shows||[]); evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); return evs;}
+function filteredEvents(){
+  var evs=[]; 
+  if(!S.data) return evs;
+  if(S.showClasses && S.data.classes && Array.isArray(S.data.classes)) evs=evs.concat(S.data.classes); 
+  if(S.showShows && S.data.shows && Array.isArray(S.data.shows)) evs=evs.concat(S.data.shows); 
+  evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); 
+  return evs;
+}
 
     function parseDurationMinutes(durRaw) {
       if(!durRaw) return 60;
@@ -312,56 +319,66 @@
       return 'Reserve Space';
     }
 
-    function renderWeek(events){
-      var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];});
-      events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } });
-      var html='<div class="week-grid">';
-      S.data.days.forEach(function(d){
-        var isToday=d.key===S.data.todayKey;
-        var dayEvs=byDay[d.key];
-        var evHtml='';
-        if(!dayEvs.length){evHtml='<div class="no-events">—</div>';}
-        else{
-          dayEvs.forEach(function(ev){
-            var k=registerEvent(ev);
-            var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
-            var btnText = getReserveButtonText(ev);
-            var statusBadge = ev.statusLabel
-              ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
-              : '';
-            
-            var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
-            var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
-            
-            var btnHtml = '';
-            if (canRegister) {
-              btnHtml = '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>';
-            } else if (ev.isPast) {
-              btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
-            } else if (!isUpcoming) {
-              btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Registration Closed</div>';
-            }
-
-            evHtml += '<div class="event-card" data-evcard="1" style="'+cardStyle+'">'
-              + statusBadge
-              + '<div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
-              + '<div class="event-title">'+esc(ev.title)+'</div>'
-              + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
-              + '<div class="event-meta">'
-              + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
-              + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
-              + '</div>'
-              + btnHtml
-              + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
-              + '</div>';
-          });
+function renderWeek(events){
+  events = events || []; // Safety guard against undefined
+  var daysList = (S.data && S.data.days && Array.isArray(S.data.days)) ? S.data.days : [];
+  var byDay={}; 
+  daysList.forEach(function(d){byDay[d.key]=[];});
+  
+  (events || []).forEach(function(ev){ 
+    if(ev && ev.dayKey && byDay[ev.dayKey]) { 
+      registerEvent(ev); 
+      byDay[ev.dayKey].push(ev); 
+    } 
+  });
+  
+  var html='<div class="week-grid">';
+  daysList.forEach(function(d){
+    var isToday=d.key===(S.data ? S.data.todayKey : '');
+    var dayEvs=byDay[d.key] || [];
+    var evHtml='';
+    if(!dayEvs.length){evHtml='<div class="no-events">—</div>';}
+    else{
+      dayEvs.forEach(function(ev){
+        var k=registerEvent(ev);
+        var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
+        var btnText = getReserveButtonText(ev);
+        var statusBadge = ev.statusLabel
+          ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
+          : '';
+        
+        var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+        var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+        
+        var btnHtml = '';
+        if (canRegister) {
+          btnHtml = '<button class="btn-register" data-id="'+esc(k)+'">'+btnText+'</button>';
+        } else if (ev.isPast) {
+          btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
+        } else if (!isUpcoming) {
+          btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Registration Closed</div>';
         }
-        html += '<div class="day-column'+(isToday?' today':'')+'"><div class="day-header"><span class="day-name">'+d.name+'</span><span class="day-num">'+d.num+'</span></div><div class="day-events">'+evHtml+'</div></div>';
+
+        evHtml += '<div class="event-card" data-evcard="1" style="'+cardStyle+'">'
+          + statusBadge
+          + '<div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
+          + '<div class="event-title">'+esc(ev.title)+'</div>'
+          + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
+          + '<div class="event-meta">'
+          + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
+          + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
+          + '</div>'
+          + btnHtml
+          + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
+          + '</div>';
       });
-      html += '</div>';
-      document.getElementById('calendarArea').innerHTML = html;
-      attachCalendarListeners();
     }
+    html += '<div class="day-column'+(isToday?' today':'')+'"><div class="day-header"><span class="day-name">'+d.name+'</span><span class="day-num">'+d.num+'</span></div><div class="day-events">'+evHtml+'</div></div>';
+  });
+  html += '</div>';
+  document.getElementById('calendarArea').innerHTML = html;
+  attachCalendarListeners();
+}
 
     function renderMonth(events){
       var byDay={}; S.data.days.forEach(function(d){byDay[d.key]=[];});

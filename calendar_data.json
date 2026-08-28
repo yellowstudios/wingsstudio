@@ -2555,6 +2555,35 @@
       "tiers": []
     },
     {
+      "instanceId": "OI_155",
+      "title": "Wings Company Rehearsal",
+      "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
+      "startTime": "4:30 PM",
+      "endTime": "5:00 PM",
+      "start": "2026-09-07T20:30:00.000Z",
+      "end": "2026-09-07T21:00:00.000Z",
+      "startMs": 1788813000000,
+      "dateLabel": "Mon, Sep 7, 2026",
+      "costText": "$0.00",
+      "spotsText": "",
+      "dayKey": "2026-09-07",
+      "duration": "Sat Dec 30 1899 00:30:00 GMT-0500 (Eastern Standard Time)",
+      "category": "C_004",
+      "type": "T_001",
+      "inclusion": true,
+      "participantNotes": "Practice session in preparation for a performance",
+      "imageUrl": "https://lirp.cdn-website.com/f6547041/dms3rep/multi/opt/Screenshot-1920w.jpg",
+      "status": "upcoming",
+      "statusLabel": "Upcoming",
+      "statusColor": "#1b5e20",
+      "borderColor": "#a5d6a7",
+      "isPast": false,
+      "isPublic": false,
+      "isFull": false,
+      "isCancelled": false,
+      "tiers": []
+    },
+    {
       "instanceId": "OI_112",
       "title": "Progressive Ballet Technique",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
@@ -6032,6 +6061,45 @@
                 "passcode": ""
               }
             ]
+          }
+        ]
+      },
+      {
+        "sessionId": "O_008",
+        "title": "Wings Company Rehearsal",
+        "category": "C_004",
+        "type": "T_001",
+        "cost": "0",
+        "description": "Practice session in preparation for a performance",
+        "imageUrl": "https://lirp.cdn-website.com/f6547041/dms3rep/multi/opt/Screenshot-1920w.jpg",
+        "videoUrl": "",
+        "inclusion": true,
+        "instances": [
+          {
+            "instanceId": "OI_155",
+            "title": "Wings Company Rehearsal",
+            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
+            "start": "2026-09-07T20:30:00.000Z",
+            "end": "2026-09-07T21:00:00.000Z",
+            "cost": "0.00",
+            "category": "C_004",
+            "type": "T_001",
+            "inclusion": true,
+            "spotsText": "",
+            "isFull": false,
+            "isCancelled": false,
+            "status": "upcoming",
+            "statusLabel": "Upcoming",
+            "statusColor": "#1b5e20",
+            "borderColor": "#a5d6a7",
+            "dayKey": "2026-09-07",
+            "duration": "1899-12-30T05:30:00.000Z",
+            "participantNotes": "Practice session in preparation for a performance",
+            "imageUrl": "https://lirp.cdn-website.com/f6547041/dms3rep/multi/opt/Screenshot-1920w.jpg",
+            "isPublic": false,
+            "sessionId": "O_008",
+            "_calType": "class",
+            "tiers": []
           }
         ]
       },

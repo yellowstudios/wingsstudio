@@ -36,6 +36,8 @@
     body.standalone-mode .modal-container { max-width:650px; box-shadow:none; border:1px solid var(--line); }
     body.standalone-mode .modal-close { display:none; }
 
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
     .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
     .toolbar .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
     .toolbar button.nav-btn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:14px;background:#fff;cursor:pointer;}
@@ -577,9 +579,11 @@
         html += '<div class="reg-section active" id="regSectionModal">'
           + '<div class="reg-title">Reserve for this session</div>'
           + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
-          + '<div style="position:relative; margin-bottom:8px;">'
-          + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email" style="padding-right:36px; margin-bottom:0;">'
-          + '<span id="emailCheckSpinner" style="display:none; position:absolute; right:10px; top:10px; font-size:14px;">⏳</span>'
+          + '<div style="margin-bottom:8px;">'
+          + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email" style="margin-bottom:4px;">'
+          + '<div id="emailCheckSpinner" style="display:none; background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:600; text-align:center;">'
+          + '<span style="display:inline-block; animation:spin 1s infinite linear; margin-right:6px;">⚙️</span> Checking participant records...'
+          + '</div>'
           + '</div>'
           + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
 
@@ -860,41 +864,38 @@
     }
 
     function wireMobileForm(ev){
-function updateAttendeeRoster() {
+      function updateAttendeeRoster() {
         var container = document.getElementById('attendeeRosterBlock');
         if (!container) return;
 
-        // 1. Get Ticket Quantity input value
         var qtyInput = document.getElementById('ticketQtyMobile');
         var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
 
-        // 2. Determine Tier Multiplier from selected Ticket Option
         var tierMultiplier = 1;
         var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
         
         if (selectedTier) {
           var tierName = (selectedTier.getAttribute('data-name') || '').toLowerCase();
-          var passcodeCount = parseInt(selectedTier.getAttribute('data-count'), 10);
+          var tierParentLabel = (selectedTier.parentElement ? selectedTier.parentElement.textContent : '').toLowerCase();
+          var explicitCount = parseInt(selectedTier.getAttribute('data-count'), 10);
 
-          if (!isNaN(passcodeCount) && passcodeCount > 0) {
-            tierMultiplier = passcodeCount;
+          if (!isNaN(explicitCount) && explicitCount > 1) {
+            tierMultiplier = explicitCount;
           } else {
-            // Intelligent regex parsing: Extracts numbers from "Table for 8", "Table of 8", "Group of 4", "8 Tickets", etc.
-            var match = tierName.match(/\b(for|of|table of|group of)\s*(\d+)\b/) || tierName.match(/(\d+)\s*(pack|table|tickets|seats)/);
-            if (match && match[2]) {
-              tierMultiplier = parseInt(match[2], 10);
-            } else if (tierName.indexOf('table for 8') !== -1 || tierName.indexOf('table of 8') !== -1) {
-              tierMultiplier = 8;
-            } else if (tierName.indexOf('table for 10') !== -1 || tierName.indexOf('table of 10') !== -1) {
-              tierMultiplier = 10;
+            var combinedText = tierName + ' ' + tierParentLabel;
+            var match = combinedText.match(/(\d+)\s*(single tickets|tickets|seats|guests|people|person|pack|table)/i) 
+                     || combinedText.match(/\b(table for|table of|group of|party of)\s*(\d+)\b/i);
+            
+            if (match) {
+              var extracted = parseInt(match[1] || match[2], 10);
+              if (!isNaN(extracted) && extracted > 0) tierMultiplier = extracted;
             }
           }
         }
 
         var totalTickets = qty * tierMultiplier;
-        var extraGuestsNeeded = totalTickets - 1; // Assuming 1 ticket is used by primary booker
+        var extraGuestsNeeded = totalTickets - 1;
 
-        // Clear container immediately if extra guests drops to 0 (Prevents saving abandoned data)
         if (extraGuestsNeeded <= 0) {
           container.innerHTML = '';
           container.style.display = 'none';
@@ -911,7 +912,7 @@ function updateAttendeeRoster() {
 
         for (var i = 1; i <= extraGuestsNeeded; i++) {
           html += '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
-            + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + (i + 1) + '</div>'
+            + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + i + '</div>'
             + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
             + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
             + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
@@ -933,6 +934,7 @@ function updateAttendeeRoster() {
           });
         }
       }
+
       var email=document.getElementById('regEmailMobile');
       var firstNameInput=document.getElementById('regFirstNameMobile');
       var lastNameInput=document.getElementById('regLastNameMobile');
@@ -969,12 +971,16 @@ function updateAttendeeRoster() {
       if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
 
       if (qtyInput) {
-        qtyInput.addEventListener('input', updateItemizedSummary);
+        qtyInput.addEventListener('input', function(){
+          updateItemizedSummary();
+          updateAttendeeRoster();
+        });
         if (qtyMinusBtn) {
           qtyMinusBtn.addEventListener('click', function(){
             var cur = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
             qtyInput.value = cur;
             updateItemizedSummary();
+            updateAttendeeRoster();
           });
         }
         if (qtyPlusBtn) {
@@ -982,6 +988,7 @@ function updateAttendeeRoster() {
             var cur = (parseInt(qtyInput.value, 10) || 1) + 1;
             qtyInput.value = cur;
             updateItemizedSummary();
+            updateAttendeeRoster();
           });
         }
       }
@@ -1016,6 +1023,7 @@ function updateAttendeeRoster() {
             }
           }
           updateItemizedSummary();
+          updateAttendeeRoster();
         });
       }
 
@@ -1098,7 +1106,7 @@ function updateAttendeeRoster() {
           }
           emailTimer=setTimeout(function(){
             var spinner = document.getElementById('emailCheckSpinner');
-            if (spinner) spinner.style.display = 'inline';
+            if (spinner) spinner.style.display = 'block';
 
             apiPost({action:'checkParticipant', email:v, instanceId:ev.instanceId}).then(function(r){
               if (spinner) spinner.style.display = 'none';
@@ -1375,7 +1383,6 @@ function updateAttendeeRoster() {
           inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
         }
 
-        // Collect additional guest roster data
         var guestList = [];
         var chkSkip = document.getElementById('chkSkipAttendees');
         var isSkipped = chkSkip ? chkSkip.checked : false;
@@ -1480,7 +1487,7 @@ function updateAttendeeRoster() {
       broadcastHeight();
     }
 
-function buildInstanceRows(instances){
+    function buildInstanceRows(instances){
       if(!instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
       return instances.map(function(ev){
         var k=registerEvent(ev);

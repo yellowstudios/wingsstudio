@@ -281,7 +281,16 @@
     function pad(n){return String(n).padStart(2,'0');}
     function formatDuration(min){if(!min||isNaN(Number(min))) return ''; var m=Number(min); if(m<60) return m+' min'; if(m%60===0) return (m/60)+(m/60===1?' hour':' hours'); return Math.floor(m/60)+' hr '+(m%60)+' min';}
     function esc(str){var d=document.createElement('div'); d.textContent=String(str==null?'':str); return d.innerHTML;}
-    function evKey(ev){return String(ev.instanceId||ev.id||'');}
+    function evKey(ev){
+  if (ev.instanceId) return String(ev.instanceId);
+  if (ev.id) return String(ev.id);
+
+  return [
+    ev.sessionId || '',
+    ev.startMs || ev.start || '',
+    ev.title || ''
+  ].join('|');
+}
     function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
 
     function formatFriendlyTime(startRaw, endRaw) {
@@ -566,7 +575,23 @@
             var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
             var btnText = getReserveButtonText(ev);
             var timeStr = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
-            var statusBadge = ev.statusLabel
+
+var sessionDateLabel = ev.dateLabel || '';
+if (!sessionDateLabel) {
+  var startValue = ev.startMs || ev.start || '';
+  var startDate = startValue ? new Date(startValue) : null;
+
+  if (startDate && !isNaN(startDate.getTime())) {
+    sessionDateLabel = startDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
+}
+
+var statusBadge = ev.statusLabel
               ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
               : '';
             
@@ -1631,7 +1656,7 @@
         return '<div class="session-instance-row" style="padding:10px 0; border-bottom:1px solid var(--line);' + (ev.isCancelled ? ' opacity:0.6;' : '') + '">'+
           '<div style="margin-bottom:8px;">'+
             statusBadge +
-            (ev.dateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(ev.dateLabel) + '</div>' : '') +
+(sessionDateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(sessionDateLabel) + '</div>' : '') +
             (timeStr ? '<div class="session-instance-time" style="font-size:12px; color:var(--muted);">' + esc(timeStr) + '</div>' : '') +
             (ev.location ? '<div class="session-instance-spots" style="font-size:11px; color:var(--muted); margin-top:2px;">' + esc(ev.location) + '</div>' : '') +
             (ev.spotsText ? '<div class="session-instance-spots" style="font-size:11px; font-style:italic; color:var(--muted);">' + esc(ev.spotsText) + '</div>' : '') +

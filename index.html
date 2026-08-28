@@ -95,10 +95,6 @@
       backdrop-filter: blur(2px);
     }
 
-.modal-overlay.active {
-  display: flex;
-}
-
     .modal-container {
       background: #fff;
       border-radius: 12px;
@@ -358,23 +354,10 @@
       }
     }
 
-   function sliceClientCalendarData() {
+    // 0ms Instant Client-Side Slice from 1-Year Master Data
+    function sliceClientCalendarData() {
       if (!S.masterData) return;
       var todayK = S.masterData.todayKey || dateKey(new Date());
-
-      // Reset map
-      eventMap = {};
-
-      // Helper to register all events into eventMap
-      var prepList = function(list) {
-        return (list || []).map(function(ev) {
-          registerEvent(ev);
-          return ev;
-        });
-      };
-
-      var masterClasses = prepList(S.masterData.classes);
-      var masterShows = prepList(S.masterData.shows);
 
       if (S.view === 'week') {
         var mon = S.currentMonday;
@@ -398,7 +381,7 @@
         var endMs = addDays(mon, 7).getTime();
 
         var filterList = function(list) {
-          return list.filter(function(ev) {
+          return (list || []).filter(function(ev) {
             var ms = ev.startMs || (ev.start ? new Date(ev.start).getTime() : 0);
             return ms >= startMs && ms < endMs;
           });
@@ -409,8 +392,8 @@
           weekLabel: monStr + ' – ' + sunStr,
           todayKey: todayK,
           days: daysList,
-          classes: filterList(masterClasses),
-          shows: filterList(masterShows)
+          classes: filterList(S.masterData.classes),
+          shows: filterList(S.masterData.shows)
         };
 
       } else { // Month View
@@ -425,11 +408,12 @@
         var totalDays = Math.round((gridEnd.getTime() - gridStart.getTime()) / 86400000) + 1;
 
         var daysList = [];
+        var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
         for (var i = 0; i < totalDays; i++) {
           var curD = addDays(gridStart, i);
           daysList.push({
             key: dateKey(curD),
-            name: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][curD.getDay() === 0 ? 6 : curD.getDay() - 1],
+            name: DOW[curD.getDay() === 0 ? 6 : curD.getDay() - 1],
             num: String(curD.getDate()),
             monthNum: String(curD.getMonth() + 1)
           });
@@ -440,7 +424,7 @@
         var endMs = addDays(gridEnd, 1).getTime();
 
         var filterList = function(list) {
-          return list.filter(function(ev) {
+          return (list || []).filter(function(ev) {
             var ms = ev.startMs || (ev.start ? new Date(ev.start).getTime() : 0);
             return ms >= startMs && ms < endMs;
           });
@@ -451,8 +435,8 @@
           monthLabel: monthLabelStr,
           todayKey: todayK,
           days: daysList,
-          classes: filterList(masterClasses),
-          shows: filterList(masterShows)
+          classes: filterList(S.masterData.classes),
+          shows: filterList(S.masterData.shows)
         };
       }
 
@@ -640,26 +624,6 @@
       document.getElementById('calendarArea').innerHTML = html;
       attachCalendarListeners();
     }
-
-function attachCalendarListeners() {
-  var area = document.getElementById('calendarArea');
-
-  if (!area || area.dataset.listenersAttached) return;
-
-  area.dataset.listenersAttached = '1';
-
-  area.addEventListener('click', function(e) {
-    var monthCell = e.target.closest('.month-cell');
-
-    if (!monthCell) return;
-
-    var dayKey = monthCell.getAttribute('data-key');
-
-    if (!dayKey) return;
-
-    openDayPanel(dayKey, monthByDay[dayKey] || []);
-  });
-}
 
     function openModal(ev, openReg){
       S.activeEv = ev;
@@ -902,23 +866,23 @@ function attachCalendarListeners() {
       wireMobileForm(ev);
     }
 
-// Universal Global Click Delegate for "More Info" Buttons
-    document.addEventListener('click', function(e) {
-      var btnInfo = e.target.closest('.btn-info');
-      if (btnInfo) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        var id = btnInfo.getAttribute('data-id');
-        var ev = eventMap[id];
-        
-        if (ev) {
+    function attachCalendarListeners(){
+      var area=document.getElementById('calendarArea');
+      if(!area || area.dataset.listenersAttached) return;
+      area.dataset.listenersAttached='1';
+      area.addEventListener('click', function(e){
+        var btnInfo = e.target.closest('.btn-info');
+        if(btnInfo){
+          var ev = eventMap[btnInfo.getAttribute('data-id')];
+          if(!ev) return;
           openModal(ev, false);
-        } else {
-          console.warn('Event not found in eventMap for ID:', id);
+          return;
         }
-      }
-    });
+        var cell=e.target.closest('.month-cell');
+        if(!cell) return;
+        openDayPanel(cell.getAttribute('data-key'), monthByDay[cell.getAttribute('data-key')] || []);
+      });
+    }
 
     function attachSessionListeners(){
       var area=document.getElementById('sessionsArea');

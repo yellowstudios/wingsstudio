@@ -354,10 +354,17 @@
       }
     }
 
-    // 0ms Instant Client-Side Slice from 1-Year Master Data
+   // 0ms Instant Client-Side Slice from 1-Year Master Data
     function sliceClientCalendarData() {
       if (!S.masterData) return;
       var todayK = S.masterData.todayKey || dateKey(new Date());
+      
+      // RESET MAP so "More Info" buttons can locate event details
+      eventMap = {};
+
+      // Register all master events into the lookup map immediately
+      (S.masterData.classes || []).forEach(function(ev){ registerEvent(ev); });
+      (S.masterData.shows || []).forEach(function(ev){ registerEvent(ev); });
 
       if (S.view === 'week') {
         var mon = S.currentMonday;

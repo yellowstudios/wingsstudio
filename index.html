@@ -527,7 +527,7 @@
       S.activeEv = null;
     }
 
-    function fillModalContent(bodyId, ev, openReg){
+function fillModalContent(bodyId, ev, openReg){
       var body = document.getElementById(bodyId);
       var btnActionText = getReserveButtonText(ev);
       var hasTiers = ev.tiers && ev.tiers.length > 0;
@@ -548,7 +548,7 @@
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
-      if(ev.duration) html += '<div class="modal-row"><span class="modal-label">Duration</span><span class="modal-value">'+esc(formatDuration(ev.duration))+'</span></div>';
+      
       if(ev.costText && !hasTiers) html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
       if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
       if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
@@ -595,7 +595,6 @@
           + '</div>'
 
           + '<div id="mainFormFields">'
-          + '<div id="attendeeRosterBlock" style="display:none;"></div>'
           + '<div style="display:flex;gap:8px;margin-bottom:0;">'
           + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
           + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
@@ -642,8 +641,11 @@
               var isChecked = !isProtected && !firstChecked;
               if (isChecked) firstChecked = true;
 
+              // Pass tier ticket quantity (default to 1 if empty/unspecified)
+              var tierQty = Number(tier.ticketCount || tier.quantity || 1);
+
               html += '<label class="pay-option ' + (isProtected ? 'protected-tier' : '') + '" data-passcode="' + esc(tier.passcode || '') + '">'
-                + '<input type="radio" name="ticketTierMobile" value="'+esc(tier.price)+'" data-name="'+esc(tier.name)+'" '+(isChecked ? 'checked' : '')+'> '
+                + '<input type="radio" name="ticketTierMobile" value="'+esc(tier.price)+'" data-name="'+esc(tier.name)+'" data-count="'+tierQty+'" '+(isChecked ? 'checked' : '')+'> '
                 + '<strong>'+esc(tier.name)+'</strong> — '+esc(tier.priceText)
                 + (tier.description ? '<br><span style="font-size:11px;color:var(--muted);">'+esc(tier.description)+'</span>' : '')
                 + '</label>';
@@ -664,7 +666,10 @@
             html += '</div>';
           }
 
-          html += '<div id="extraContributionBlock" style="margin-top:10px;">'
+          /* ATTENDEE ROSTER IS PLACED HERE: ABOVE OPTIONAL CONTRIBUTION */
+          html += '<div id="attendeeRosterBlock" style="display:none;"></div>'
+
+          + '<div id="extraContributionBlock" style="margin-top:10px;">'
           + '<label class="reg-label">Optional Additional Contribution ($)</label>'
           + '<input type="number" class="reg-input" id="extraContributionMobile" min="0" step="1" placeholder="0.00">'
           + '<div class="reg-note">Add an optional tax-deductible contribution to support our programs.</div>'
@@ -856,25 +861,41 @@
       });
     }
 
-    function wireMobileForm(ev){
-      function updateAttendeeRoster(qty) {
+function wireMobileForm(ev){
+      function updateAttendeeRoster() {
         var container = document.getElementById('attendeeRosterBlock');
         if (!container) return;
-        if (qty <= 1) {
+
+        var qtyInput = document.getElementById('ticketQtyMobile');
+        var selectQty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+        
+        var multiplier = 1;
+        if (ev.tiers && ev.tiers.length > 0) {
+          var selectedTierEl = document.querySelector('input[name="ticketTierMobile"]:checked');
+          if (selectedTierEl) {
+            multiplier = Math.max(1, parseInt(selectedTierEl.getAttribute('data-count'), 10) || 1);
+          }
+        }
+
+        var totalGuests = selectQty * multiplier;
+
+        // If total tickets = 1, purchaser is the only attendee (no extra fields needed)
+        if (totalGuests <= 1) {
           container.innerHTML = '';
           container.style.display = 'none';
           return;
         }
-        
+
         var html = '<div style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">'
-          + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Guest Details</div>'
-          + '<p class="reg-note">Please provide contact details for each additional attendee in your party.</p>'
+          + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Additional Guest Details (' + (totalGuests - 1) + ' additional ' + (totalGuests - 1 === 1 ? 'guest' : 'guests') + ')</div>'
+          + '<p class="reg-note">Please provide details for the rest of your party (Guest #1 is auto-set to your details above).</p>'
           + '<label style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; cursor:pointer;">'
-          + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be in this group, click here to skip</em></span>'
+          + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be attending, click here to skip guest names</em></span>'
           + '</label>'
           + '<div id="attendeeRows">';
 
-        for (var i = 1; i <= qty; i++) {
+        // Offsets roster to start at Guest #2
+        for (var i = 2; i <= totalGuests; i++) {
           html += '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
             + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + i + '</div>'
             + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
@@ -898,7 +919,6 @@
           });
         }
       }
-
       var email=document.getElementById('regEmailMobile');
       var firstNameInput=document.getElementById('regFirstNameMobile');
       var lastNameInput=document.getElementById('regLastNameMobile');
@@ -1009,7 +1029,7 @@
           sumBreakoutRow.style.display = 'none';
           var tot = (tierPrice * qty) + extraVal;
           sumTotal.textContent = '$' + tot.toFixed(2);
-          updateAttendeeRoster(qty);
+         updateAttendeeRoster();
           return;
         }
 

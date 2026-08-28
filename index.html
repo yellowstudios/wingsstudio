@@ -1459,7 +1459,7 @@ function updateAttendeeRoster() {
         filtered.forEach(function(s){
           var hasImg=s.imageUrl && s.imageUrl.trim();
           var sid=esc(s.sessionId);
-          var catLabel = (s.category && !s.category.match(/^[A-Z]_\d+/)) ? s.category : (s.type || 'Session');
+          var catLabel = s.category || s.type || 'Session';
           
           html += '<div class="session-card">'
             + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy">' : '')

@@ -527,7 +527,7 @@
       S.activeEv = null;
     }
 
-function fillModalContent(bodyId, ev, openReg){
+    function fillModalContent(bodyId, ev, openReg){
       var body = document.getElementById(bodyId);
       var btnActionText = getReserveButtonText(ev);
       var hasTiers = ev.tiers && ev.tiers.length > 0;
@@ -641,7 +641,6 @@ function fillModalContent(bodyId, ev, openReg){
               var isChecked = !isProtected && !firstChecked;
               if (isChecked) firstChecked = true;
 
-              // Pass tier ticket quantity (default to 1 if empty/unspecified)
               var tierQty = Number(tier.ticketCount || tier.quantity || 1);
 
               html += '<label class="pay-option ' + (isProtected ? 'protected-tier' : '') + '" data-passcode="' + esc(tier.passcode || '') + '">'
@@ -666,7 +665,6 @@ function fillModalContent(bodyId, ev, openReg){
             html += '</div>';
           }
 
-          /* ATTENDEE ROSTER IS PLACED HERE: ABOVE OPTIONAL CONTRIBUTION */
           html += '<div id="attendeeRosterBlock" style="display:none;"></div>'
 
           + '<div id="extraContributionBlock" style="margin-top:10px;">'
@@ -861,43 +859,55 @@ function fillModalContent(bodyId, ev, openReg){
       });
     }
 
-function wireMobileForm(ev){
+    function wireMobileForm(ev){
       function updateAttendeeRoster() {
         var container = document.getElementById('attendeeRosterBlock');
         if (!container) return;
 
         var qtyInput = document.getElementById('ticketQtyMobile');
-        var selectQty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+        var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+
+        var tierMultiplier = 1;
+        var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
         
-        var multiplier = 1;
-        if (ev.tiers && ev.tiers.length > 0) {
-          var selectedTierEl = document.querySelector('input[name="ticketTierMobile"]:checked');
-          if (selectedTierEl) {
-            multiplier = Math.max(1, parseInt(selectedTierEl.getAttribute('data-count'), 10) || 1);
+        if (selectedTier) {
+          var tierName = (selectedTier.getAttribute('data-name') || '').toLowerCase();
+          var passcodeCount = parseInt(selectedTier.getAttribute('data-count'), 10);
+
+          if (!isNaN(passcodeCount) && passcodeCount > 0) {
+            tierMultiplier = passcodeCount;
+          } else {
+            var match = tierName.match(/\b(for|of|table of|group of)\s*(\d+)\b/) || tierName.match(/(\d+)\s*(pack|table|tickets|seats)/);
+            if (match && match[2]) {
+              tierMultiplier = parseInt(match[2], 10);
+            } else if (tierName.indexOf('table for 8') !== -1 || tierName.indexOf('table of 8') !== -1) {
+              tierMultiplier = 8;
+            } else if (tierName.indexOf('table for 10') !== -1 || tierName.indexOf('table of 10') !== -1) {
+              tierMultiplier = 10;
+            }
           }
         }
 
-        var totalGuests = selectQty * multiplier;
+        var totalTickets = qty * tierMultiplier;
+        var extraGuestsNeeded = totalTickets - 1;
 
-        // If total tickets = 1, purchaser is the only attendee (no extra fields needed)
-        if (totalGuests <= 1) {
+        if (extraGuestsNeeded <= 0) {
           container.innerHTML = '';
           container.style.display = 'none';
           return;
         }
 
         var html = '<div style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">'
-          + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Additional Guest Details (' + (totalGuests - 1) + ' additional ' + (totalGuests - 1 === 1 ? 'guest' : 'guests') + ')</div>'
-          + '<p class="reg-note">Please provide details for the rest of your party (Guest #1 is auto-set to your details above).</p>'
+          + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Additional Guest Details (' + extraGuestsNeeded + ' additional ' + (extraGuestsNeeded === 1 ? 'guest' : 'guests') + ')</div>'
+          + '<p class="reg-note">Please provide details for the rest of your party (your details are recorded above).</p>'
           + '<label style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; cursor:pointer;">'
           + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be attending, click here to skip guest names</em></span>'
           + '</label>'
           + '<div id="attendeeRows">';
 
-        // Offsets roster to start at Guest #2
-        for (var i = 2; i <= totalGuests; i++) {
+        for (var i = 1; i <= extraGuestsNeeded; i++) {
           html += '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
-            + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + i + '</div>'
+            + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + (i + 1) + '</div>'
             + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
             + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
             + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
@@ -919,6 +929,7 @@ function wireMobileForm(ev){
           });
         }
       }
+
       var email=document.getElementById('regEmailMobile');
       var firstNameInput=document.getElementById('regFirstNameMobile');
       var lastNameInput=document.getElementById('regLastNameMobile');
@@ -1006,7 +1017,10 @@ function wireMobileForm(ev){
       }
 
       document.querySelectorAll('input[name="ticketTierMobile"]').forEach(function(r){
-        r.addEventListener('change', updateItemizedSummary);
+        r.addEventListener('change', function(){
+          updateItemizedSummary();
+          updateAttendeeRoster();
+        });
       });
 
       function updateItemizedSummary(){
@@ -1029,7 +1043,7 @@ function wireMobileForm(ev){
           sumBreakoutRow.style.display = 'none';
           var tot = (tierPrice * qty) + extraVal;
           sumTotal.textContent = '$' + tot.toFixed(2);
-         updateAttendeeRoster();
+          updateAttendeeRoster();
           return;
         }
 
@@ -1059,7 +1073,7 @@ function wireMobileForm(ev){
           sumTotal.textContent = '$' + tot.toFixed(2);
         }
 
-        updateAttendeeRoster(qty);
+        updateAttendeeRoster();
       }
 
       if(email){
@@ -1358,6 +1372,30 @@ function wireMobileForm(ev){
           inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
         }
 
+        // Collect additional guest roster data
+        var guestList = [];
+        var chkSkip = document.getElementById('chkSkipAttendees');
+        var isSkipped = chkSkip ? chkSkip.checked : false;
+
+        if (!isSkipped) {
+          var rows = document.querySelectorAll('#attendeeRows > div');
+          rows.forEach(function(row) {
+            var fn = (row.querySelector('.att-fn') ? row.querySelector('.att-fn').value : '').trim();
+            var ln = (row.querySelector('.att-ln') ? row.querySelector('.att-ln').value : '').trim();
+            var em = (row.querySelector('.att-em') ? row.querySelector('.att-em').value : '').trim();
+            var ph = (row.querySelector('.att-ph') ? row.querySelector('.att-ph').value : '').trim();
+
+            if (fn) {
+              guestList.push({
+                firstName: fn,
+                lastName: ln,
+                email: em,
+                phone: ph
+              });
+            }
+          });
+        }
+
         var btn=this; btn.disabled=true; btn.textContent='Submitting…';
         apiPost({
           action:'register', 
@@ -1371,7 +1409,8 @@ function wireMobileForm(ev){
           ticketQuantity: ticketQty,
           planTier: document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : '',
           extraContribution: extraVal,
-          inclusionData:inclusionData
+          inclusionData:inclusionData,
+          guests: guestList
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
           if(r && r.success){

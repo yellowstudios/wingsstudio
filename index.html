@@ -253,7 +253,7 @@
     var API = "https://script.google.com/macros/s/AKfycbxx7VLSm4Yib4MCuRAgBOnLIj2-BnE_GPNVsw0cgVqWNh3jDhvB94914DGxNTa9v7IU/exec";
     var STATIC_JSON_URL = "./calendar_data.json"; 
     
-    var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),data:null,sessionsData:null,activeEv:null,cache:{}};
+    var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),masterData:null,data:null,sessionsData:null,activeEv:null};
     var monthByDay = {}, eventMap = {};
 
     var ALL_TIERS = [
@@ -354,80 +354,146 @@
       }
     }
 
-    function processPayloadData(data, cacheKey) {
-      S.data = data; 
-      S.cache[cacheKey] = data;
-      try { localStorage.setItem(cacheKey, JSON.stringify(data)); } catch(e) {}
+    // 0ms Instant Client-Side Slice from 1-Year Master Data
+    function sliceClientCalendarData() {
+      if (!S.masterData) return;
+      var todayK = S.masterData.todayKey || dateKey(new Date());
 
-      if (data.sessionsPayload) {
-        S.sessionsData = data.sessionsPayload;
-        S.cache['sessions'] = data.sessionsPayload;
+      if (S.view === 'week') {
+        var mon = S.currentMonday;
+        var sun = addDays(mon, 6);
+        var daysList = [];
+        var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        for (var i = 0; i < 7; i++) {
+          var curD = addDays(mon, i);
+          daysList.push({
+            key: dateKey(curD),
+            name: DOW[i],
+            num: String(curD.getDate()),
+            monthNum: String(curD.getMonth() + 1)
+          });
+        }
+
+        var monStr = mon.toLocaleDateString("en-US", {month:"short", day:"numeric"});
+        var sunStr = sun.toLocaleDateString("en-US", {month:"short", day:"numeric", year:"numeric"});
+
+        var startMs = mon.getTime();
+        var endMs = addDays(mon, 7).getTime();
+
+        var filterList = function(list) {
+          return (list || []).filter(function(ev) {
+            var ms = ev.startMs || (ev.start ? new Date(ev.start).getTime() : 0);
+            return ms >= startMs && ms < endMs;
+          });
+        };
+
+        S.data = {
+          view: 'week',
+          weekLabel: monStr + ' – ' + sunStr,
+          todayKey: todayK,
+          days: daysList,
+          classes: filterList(S.masterData.classes),
+          shows: filterList(S.masterData.shows)
+        };
+
+      } else { // Month View
+        var parts = S.currentMonth.split('-');
+        var year = parseInt(parts[0], 10);
+        var monthIdx = parseInt(parts[1], 10) - 1;
+        var firstDay = new Date(year, monthIdx, 1);
+        var lastDay = new Date(year, monthIdx + 1, 0);
+
+        var gridStart = mondayOf(firstDay);
+        var gridEnd = addDays(mondayOf(lastDay), 6);
+        var totalDays = Math.round((gridEnd.getTime() - gridStart.getTime()) / 86400000) + 1;
+
+        var daysList = [];
+        var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        for (var i = 0; i < totalDays; i++) {
+          var curD = addDays(gridStart, i);
+          daysList.push({
+            key: dateKey(curD),
+            name: DOW[curD.getDay() === 0 ? 6 : curD.getDay() - 1],
+            num: String(curD.getDate()),
+            monthNum: String(curD.getMonth() + 1)
+          });
+        }
+
+        var monthLabelStr = firstDay.toLocaleDateString("en-US", {month:"long", year:"numeric"});
+        var startMs = gridStart.getTime();
+        var endMs = addDays(gridEnd, 1).getTime();
+
+        var filterList = function(list) {
+          return (list || []).filter(function(ev) {
+            var ms = ev.startMs || (ev.start ? new Date(ev.start).getTime() : 0);
+            return ms >= startMs && ms < endMs;
+          });
+        };
+
+        S.data = {
+          view: 'month',
+          monthLabel: monthLabelStr,
+          todayKey: todayK,
+          days: daysList,
+          classes: filterList(S.masterData.classes),
+          shows: filterList(S.masterData.shows)
+        };
       }
 
-      render(); 
-      renderSessions();
-      setLoading(false); 
+      render();
+      setLoading(false);
       checkDeepLink();
     }
 
     function load(forceFresh){
-      var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
-      
-      // 1. Memory cache hit
-      if (S.cache[cacheKey] && !forceFresh) {
-        S.data = S.cache[cacheKey];
-        render();
-        setLoading(false);
-        checkDeepLink();
+      // 1. If master GitHub data is already in memory, slice instantly in 0ms!
+      if (S.masterData && !forceFresh) {
+        sliceClientCalendarData();
         return;
       }
 
-      // 2. Local storage cache hit
-      var localData = localStorage.getItem(cacheKey);
-      if (localData && !forceFresh) {
+      // 2. Try loading full year JSON from LocalStorage
+      var localMaster = localStorage.getItem('wings_master_year_json');
+      if (localMaster && !forceFresh) {
         try {
-          S.data = JSON.parse(localData);
-          S.cache[cacheKey] = S.data;
-          render();
-          setLoading(false);
-          checkDeepLink();
+          S.masterData = JSON.parse(localMaster);
+          sliceClientCalendarData();
+          fetchStaticJson(); // background update
           return;
         } catch(e) {}
       }
 
-      setLoading(true); 
-
-      // 3. Fallback to static JSON or live fetch
-      if (!forceFresh && S.view === 'week' && dateKey(S.currentMonday) === dateKey(mondayOf(new Date()))) {
-        fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
-          .then(function(r){ if (!r.ok) throw new Error('Static file error'); return r.json(); })
-          .then(function(data){ processPayloadData(data, cacheKey); })
-          .catch(function(){ fetchLiveApi(cacheKey); });
-      } else {
-        fetchLiveApi(cacheKey);
-      }
+      setLoading(true);
+      fetchStaticJson();
     }
 
-    function fetchLiveApi(cacheKey) {
-      var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
-      apiGet(params).then(function(data){
-        if(!data || data.error){ setLoading(false); return; }
-        processPayloadData(data, cacheKey);
-      }).catch(function(err){ setLoading(false); });
+    function fetchStaticJson() {
+      fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
+        .then(function(r){ if (!r.ok) throw new Error('Static file error'); return r.json(); })
+        .then(function(data){
+          S.masterData = data;
+          try { localStorage.setItem('wings_master_year_json', JSON.stringify(data)); } catch(e) {}
+          if (data.sessionsPayload) {
+            S.sessionsData = data.sessionsPayload;
+            renderSessions();
+          }
+          sliceClientCalendarData();
+        })
+        .catch(function(){
+          fetchLiveApi();
+        });
     }
 
-    function loadSessions(){
-      if(S.cache['sessions']){
-        S.sessionsData = S.cache['sessions'];
-        renderSessions();
-        return;
-      }
-      apiGet({view:'sessions'}).then(function(data){
-        S.sessionsData=data; 
-        S.cache['sessions']=data;
-        renderSessions();
-        checkDeepLink();
-      }).catch(function(){});
+    function fetchLiveApi() {
+      apiGet({view:'upcoming', includeSessions:'true'}).then(function(data){
+        if (!data || data.error) { setLoading(false); return; }
+        S.masterData = data;
+        if (data.sessionsPayload) {
+          S.sessionsData = data.sessionsPayload;
+          renderSessions();
+        }
+        sliceClientCalendarData();
+      }).catch(function(){ setLoading(false); });
     }
 
     function render(){
@@ -1234,7 +1300,7 @@
           .then(function(r){
             btn.disabled = false; btn.textContent = 'Confirm Cancellation';
             if(r && r.success){
-              S.cache = {};
+              S.masterData = null; // Invalidate cache on cancel
               var bodyHost = document.getElementById('modalBody');
               bodyHost.innerHTML = '<div class="confirmation-view">'
                 + '<div class="confirm-icon" style="color:#c0392b;">✓</div>'
@@ -1246,7 +1312,7 @@
                 + '</div>';
               
               document.getElementById('btnConfirmCal').addEventListener('click', function(){
-                closeModal(); load(true); loadSessions();
+                closeModal(); load(true);
               });
             } else {
               alert(r.message || 'Could not cancel reservation.');
@@ -1475,7 +1541,7 @@
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
           if(r && r.success){
-            S.cache = {};
+            S.masterData = null; // Clear local cache on successful booking
             var bodyHost = document.getElementById('modalBody');
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
@@ -1488,7 +1554,7 @@
               + '</div>';
             
             document.getElementById('btnConfirmCal').addEventListener('click', function(){
-              closeModal(); load(true); loadSessions();
+              closeModal(); load(true);
             });
           }
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
@@ -1586,48 +1652,48 @@
       if (e.target === this) closeModal();
     });
 
-    // Navigation listeners
+    // 0ms Instant Client-Side Navigation
     document.getElementById('prevBtn').addEventListener('click', function(){
       if(S.view==='week'){
-        S.currentMonday=addDays(S.currentMonday, -7); 
+        S.currentMonday = addDays(S.currentMonday, -7); 
       } else {
-        var p=S.currentMonth.split('-'); 
-        S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1));
+        var parts = S.currentMonth.split('-'); 
+        S.currentMonth = monthKey(new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 2, 1));
       }
       load();
     });
 
     document.getElementById('nextBtn').addEventListener('click', function(){
       if(S.view==='week'){
-        S.currentMonday=addDays(S.currentMonday, 7); 
+        S.currentMonday = addDays(S.currentMonday, 7); 
       } else {
-        var p=S.currentMonth.split('-'); 
-        S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10), 1));
+        var parts = S.currentMonth.split('-'); 
+        S.currentMonth = monthKey(new Date(parseInt(parts[0],10), parseInt(parts[1],10), 1));
       }
       load();
     });
 
     document.getElementById('viewWeek').addEventListener('click', function(){
-      if(S.view==='week') return; 
-      S.view='week'; 
+      if(S.view === 'week') return; 
+      S.view = 'week'; 
       load();
     });
 
     document.getElementById('viewMonth').addEventListener('click', function(){
-      if(S.view==='month') return; 
-      S.view='month'; 
-      S.currentMonth=monthKey(S.currentMonday); 
+      if(S.view === 'month') return; 
+      S.view = 'month'; 
+      S.currentMonth = monthKey(S.currentMonday); 
       load();
     });
 
     document.getElementById('tabClasses').addEventListener('click', function(){
-      S.showClasses=!S.showClasses; 
+      S.showClasses = !S.showClasses; 
       render(); 
       renderSessions();
     });
 
     document.getElementById('tabShows').addEventListener('click', function(){
-      S.showShows=!S.showShows; 
+      S.showShows = !S.showShows; 
       render(); 
       renderSessions();
     });

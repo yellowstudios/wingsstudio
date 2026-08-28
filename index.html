@@ -253,6 +253,29 @@
     function esc(str){var d=document.createElement('div'); d.textContent=String(str==null?'':str); return d.innerHTML;}
     function evKey(ev){return String(ev.instanceId||ev.id||'');}
     function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
+
+    function formatFriendlyTime(startRaw, endRaw) {
+      if (!startRaw) return '';
+      if (typeof startRaw === 'string' && startRaw.indexOf('M') !== -1 && !startRaw.includes('T')) {
+        return endRaw ? startRaw + ' – ' + endRaw : startRaw;
+      }
+      try {
+        var startDate = new Date(startRaw);
+        if (isNaN(startDate.getTime())) return startRaw || '';
+        var options = { hour: 'numeric', minute: '2-digit', hour12: true };
+        var startStr = startDate.toLocaleTimeString('en-US', options);
+        if (endRaw) {
+          var endDate = new Date(endRaw);
+          if (!isNaN(endDate.getTime())) {
+            var endStr = endDate.toLocaleTimeString('en-US', options);
+            return startStr + ' – ' + endStr;
+          }
+        }
+        return startStr;
+      } catch (e) {
+        return startRaw || '';
+      }
+    }
     
     function apiGet(params){
       var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); 
@@ -447,6 +470,7 @@
             var k=registerEvent(ev);
             var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
             var btnText = getReserveButtonText(ev);
+            var timeStr = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
             var statusBadge = ev.statusLabel
               ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
               : '';
@@ -466,7 +490,7 @@
 
             evHtml += '<div class="event-card" data-evcard="1" style="'+cardStyle+'">'
               + statusBadge
-              + '<div class="event-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
+              + '<div class="event-time">'+esc(timeStr)+'</div>'
               + '<div class="event-title">'+esc(ev.title)+'</div>'
               + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
               + '<div class="event-meta">'
@@ -501,7 +525,7 @@
         var dayEvs=byDay[d.key] || [];
         var pillsHtml='';
         var MAX=3;
-        dayEvs.slice(0,MAX).forEach(function(ev){pillsHtml += '<div class="month-event-pill">'+esc(ev.startTime+' '+ev.title)+'</div>';});
+        dayEvs.slice(0,MAX).forEach(function(ev){pillsHtml += '<div class="month-event-pill">'+esc((ev.startTime||'')+' '+ev.title)+'</div>';});
         if(dayEvs.length>MAX) pillsHtml += '<div class="month-more">+'+(dayEvs.length-MAX)+' more</div>';
         html += '<div class="month-cell'+(isToday?' today':'')+(otherMonth?' other-month':'')+'" data-key="'+esc(d.key)+'"><div class="month-cell-num">'+d.num+'</div>'+pillsHtml+'</div>';
       });
@@ -542,16 +566,14 @@
         return typeLC === 'show' || typeLC === 'event' || catLC === 'performance';
       })();
 
+      var timeDisplay = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
+
       if (ev.dateLabel) {
         html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
       }
-      var timeDisplay = (ev.startTime && ev.endTime) 
-  ? (ev.startTime + ' – ' + ev.endTime) 
-  : (ev.start && ev.end ? ev.start + ' – ' + ev.end : '');
-
-if (timeDisplay) {
-  html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(timeDisplay) + '</div>';
-}
+      if (timeDisplay) {
+        html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(timeDisplay) + '</div>';
+      }
 
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
@@ -570,7 +592,7 @@ if (timeDisplay) {
       if (!document.body.classList.contains('standalone-mode')) {
         html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
           + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; padding:12px 14px; border-radius:6px; text-decoration:none; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
-          + '↗ Open Full Standalone Registration Page'
+          + '↗ Open Full Registration Page'
           + '</a>'
           + '</div>';
       }
@@ -811,7 +833,7 @@ if (timeDisplay) {
           var k=registerEvent(ev);
           var btnText = getReserveButtonText(ev);
           html += '<div class="panel-event" style="border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;">'
-            + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'
+            + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(formatFriendlyTime(ev.startTime||ev.start, ev.endTime||ev.end))+'</div>'
             + '<div class="panel-event-title" style="font-weight:600;font-size:14px;margin-bottom:6px;">'+esc(ev.title)+'</div>'
             + '<div class="panel-btns" style="display:flex;gap:6px;flex-wrap:wrap;">'
             + (ev.isPublic && !ev.isFull ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')
@@ -1451,7 +1473,7 @@ if (timeDisplay) {
       });
     }
 
-function renderSessions(){
+    function renderSessions(){
       var area=document.getElementById('sessionsArea');
       if (!area) return;
       
@@ -1472,8 +1494,6 @@ function renderSessions(){
         filtered.forEach(function(s){
           var hasImg=s.imageUrl && s.imageUrl.trim();
           var sid=esc(s.sessionId);
-          
-          // COLUMN V (Category) directly displayed above title
           var catLabel = s.category || s.type || 'Session';
           
           html += '<div class="session-card">'
@@ -1495,18 +1515,15 @@ function renderSessions(){
       broadcastHeight();
     }
 
-function buildInstanceRows(instances){
+    function buildInstanceRows(instances){
       if(!instances || !instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
-      
       return instances.map(function(ev){
-        var k = registerEvent(ev);
+        var k=registerEvent(ev);
         var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
         var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
         var btnText = getReserveButtonText(ev);
         
-        var timeStr = (ev.startTime && ev.endTime) 
-          ? (ev.startTime + ' – ' + ev.endTime) 
-          : (ev.start && ev.end ? ev.start + ' – ' + ev.end : '');
+        var timeStr = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
 
         var statusBadge = ev.statusLabel
           ? '<div style="margin-bottom:4px;">'

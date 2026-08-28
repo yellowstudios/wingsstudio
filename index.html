@@ -81,35 +81,9 @@
     .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
 
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
-      display: none;
-      align-items: flex-start;
-      justify-content: center;
-      z-index: 99999;
-      padding: 40px 16px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      backdrop-filter: blur(2px);
-    }
-
-    .modal-container {
-      background: #fff;
-      border-radius: 12px;
-      max-width: 620px;
-      width: 100%;
-      max-height: 92vh;
-      overflow-y: auto;
-      padding: 24px;
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
-      position: relative;
-      margin: 0 auto;
-      transform: translateY(0);
-      transition: transform 0.15s ease-out;
-    }
-
+    .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:99999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+    .modal-overlay.active{display:flex;}
+    .modal-container{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.25);position:relative;margin:auto;touch-action:pan-y;}
     .modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
     .modal-title{font-size:18px;font-weight:800;color:var(--ink);margin:0;}
     .modal-close{font-size:26px;line-height:1;cursor:pointer;color:var(--muted);border:none;background:none;padding:0;}
@@ -373,7 +347,7 @@
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       
-      // Fast path 1: In-memory cache
+      // Fast Direct Cache Restore
       if (S.cache[cacheKey] && !forceFresh) {
         S.data = S.cache[cacheKey];
         render();
@@ -382,7 +356,6 @@
         return;
       }
 
-      // Fast path 2: LocalStorage cache
       var localData = localStorage.getItem(cacheKey);
       if (localData && !forceFresh) {
         try {
@@ -391,47 +364,28 @@
           render();
           setLoading(false);
           checkDeepLink();
-          fetchLiveApi(cacheKey, true);
           return;
         } catch(e) {}
       }
 
       setLoading(true); 
 
-      // Fast path 3: Static JSON fallback for current week
       if (!forceFresh && S.view === 'week' && dateKey(S.currentMonday) === dateKey(mondayOf(new Date()))) {
-        var controller = new AbortController();
-        var timeoutId = setTimeout(function() { controller.abort(); }, 2500);
-
-        fetch(STATIC_JSON_URL + '?t=' + new Date().getTime(), { signal: controller.signal })
-          .then(function(r){
-            clearTimeout(timeoutId);
-            if (!r.ok) throw new Error('Static file error');
-            return r.json();
-          })
-          .then(function(data){
-            processPayloadData(data, cacheKey);
-          })
-          .catch(function(){
-            clearTimeout(timeoutId);
-            fetchLiveApi(cacheKey);
-          });
+        fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
+          .then(function(r){ if (!r.ok) throw new Error('Static file error'); return r.json(); })
+          .then(function(data){ processPayloadData(data, cacheKey); })
+          .catch(function(){ fetchLiveApi(cacheKey); });
       } else {
         fetchLiveApi(cacheKey);
       }
     }
 
-    function fetchLiveApi(cacheKey, quiet) {
+    function fetchLiveApi(cacheKey) {
       var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
       apiGet(params).then(function(data){
-        if(!data || data.error){
-          if (!quiet) setLoading(false);
-          return;
-        }
+        if(!data || data.error){ setLoading(false); return; }
         processPayloadData(data, cacheKey);
-      }).catch(function(err){
-        if (!quiet) setLoading(false); 
-      });
+      }).catch(function(err){ setLoading(false); });
     }
 
     function loadSessions(){
@@ -581,12 +535,9 @@
       S.activeEv = ev;
       var overlay = document.getElementById('modalOverlay');
       document.getElementById('modalTitle').textContent = ev.title;
-      
       fillModalContent('modalBody', ev, openReg);
-      
       overlay.classList.add('active');
       document.body.classList.add('modal-open');
-      
       var container = overlay.querySelector('.modal-container');
       if (container) container.scrollTop = 0;
     }
@@ -1607,7 +1558,7 @@
       if (e.target === this) closeModal();
     });
 
-    // Fast-navigation listeners
+    // Direct Fast Navigation Handlers
     document.getElementById('prevBtn').addEventListener('click', function(){
       if(S.view==='week'){
         S.currentMonday=addDays(S.currentMonday, -7); 

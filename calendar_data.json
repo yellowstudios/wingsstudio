@@ -3166,7 +3166,7 @@
     {
       "instanceId": "OI_297",
       "title": "Edgeworks Movement Lab with Crystal",
-      "location": "",
+      "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "2:00 PM",
       "endTime": "4:00 PM",
       "start": "2026-09-12T18:00:00.000Z",
@@ -3190,7 +3190,30 @@
       "isPublic": true,
       "isFull": false,
       "isCancelled": false,
-      "tiers": []
+      "tiers": [
+        {
+          "name": "Company",
+          "qty": 1,
+          "ticketCount": 1,
+          "quantity": 1,
+          "price": 20,
+          "priceText": "$20.00",
+          "description": "Discounted workshop rate for company members",
+          "requiresPasscode": true,
+          "passcode": "wingsandworkshops2027"
+        },
+        {
+          "name": "Individual Workshop Access",
+          "qty": 1,
+          "ticketCount": 1,
+          "quantity": 1,
+          "price": 35,
+          "priceText": "$35.00",
+          "description": "",
+          "requiresPasscode": false,
+          "passcode": ""
+        }
+      ]
     },
     {
       "instanceId": "OI_059",
@@ -5051,7 +5074,7 @@
     {
       "instanceId": "OI_299",
       "title": "Edgeworks Movement Lab with Crystal",
-      "location": "",
+      "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "2:00 PM",
       "endTime": "4:00 PM",
       "start": "2026-10-10T18:00:00.000Z",
@@ -11359,7 +11382,7 @@
           {
             "instanceId": "OI_297",
             "title": "Edgeworks Movement Lab with Crystal",
-            "location": "",
+            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-09-12T18:00:00.000Z",
             "end": "2026-09-12T20:00:00.000Z",
             "cost": "35.00",
@@ -11380,7 +11403,30 @@
             "isPublic": true,
             "sessionId": "O_007",
             "_calType": "class",
-            "tiers": []
+            "tiers": [
+              {
+                "name": "Company",
+                "qty": 1,
+                "ticketCount": 1,
+                "quantity": 1,
+                "price": 20,
+                "priceText": "$20.00",
+                "description": "Discounted workshop rate for company members",
+                "requiresPasscode": true,
+                "passcode": "wingsandworkshops2027"
+              },
+              {
+                "name": "Individual Workshop Access",
+                "qty": 1,
+                "ticketCount": 1,
+                "quantity": 1,
+                "price": 35,
+                "priceText": "$35.00",
+                "description": "",
+                "requiresPasscode": false,
+                "passcode": ""
+              }
+            ]
           },
           {
             "instanceId": "OI_298",
@@ -11411,7 +11457,7 @@
           {
             "instanceId": "OI_299",
             "title": "Edgeworks Movement Lab with Crystal",
-            "location": "",
+            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-10-10T18:00:00.000Z",
             "end": "2026-10-10T20:00:00.000Z",
             "cost": "35.00",

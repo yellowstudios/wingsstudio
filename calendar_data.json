@@ -129,7 +129,7 @@
             "category": "Performance",
             "type": "Event",
             "inclusion": true,
-            "spotsText": "99 spots left",
+            "spotsText": "98 spots left",
             "isFull": false,
             "isCancelled": false,
             "status": "upcoming",

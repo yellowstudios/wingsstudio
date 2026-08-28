@@ -83,7 +83,7 @@
 
     .modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:99999;padding:12px;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
     .modal-overlay.active{display:flex;}
-.modal-container{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.25);position:relative;margin:auto;touch-action:pan-y;}
+    .modal-container{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.25);position:relative;margin:auto;touch-action:pan-y;}
     .modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
     .modal-title{font-size:18px;font-weight:800;color:var(--ink);margin:0;}
     .modal-close{font-size:26px;line-height:1;cursor:pointer;color:var(--muted);border:none;background:none;padding:0;}
@@ -166,7 +166,7 @@
     .session-card-cost{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;}
     .session-card-toggle{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:7px 12px;cursor:pointer;width:100%;}
     .session-card-toggle:hover{background:#fdf9f0;}
-.session-instances{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;max-height:none;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+    .session-instances{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;max-height:none;overflow-y:auto;-webkit-overflow-scrolling:touch;}
     .session-instances.open{display:block;}
     .session-instance-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);gap:8px;flex-wrap:wrap;}
     .session-instance-row:last-child{border-bottom:none;}
@@ -286,14 +286,16 @@
       return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});
     }
 
-    function setLoading(on){document.getElementById('loadingOverlay').classList.toggle('active',!!on);document.getElementById('prevBtn').disabled=!!on;document.getElementById('nextBtn').disabled=!!on;}
+    function setLoading(on){
+      document.getElementById('loadingOverlay').classList.toggle('active',!!on);
+      document.getElementById('prevBtn').disabled=!!on;
+      document.getElementById('nextBtn').disabled=!!on;
+    }
     
     function getQueryParam(param) {
       var search = window.location.search || '';
       if (window.parent && window.parent !== window) {
-        try { 
-          search = window.parent.location.search || search; 
-        } catch(e) {}
+        try { search = window.parent.location.search || search; } catch(e) {}
       }
       var match = RegExp('[?&]' + param + '=([^&]*)').exec(search);
       return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
@@ -305,15 +307,12 @@
       
       if (isStandalone) {
         document.body.classList.add('standalone-mode');
-        
         var modalContainer = document.querySelector('.modal-container');
         if (modalContainer && !document.getElementById('standaloneBackBtn')) {
           var navDiv = document.createElement('div');
           navDiv.id = 'standaloneBackBtn';
           navDiv.style.cssText = 'margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between;';
-          navDiv.innerHTML = '<a href="https://wtfdc.org/UpcomingEvents" target="_top" style="display:inline-flex; align-items:center; gap:6px; background:#fff; color:var(--ink); border:1px solid var(--line); padding:8px 14px; border-radius:6px; font-size:13px; font-weight:600; text-decoration:none; cursor:pointer;">'
-            + '‹ Back to Full Calendar'
-            + '</a>';
+          navDiv.innerHTML = '<a href="https://wtfdc.org/UpcomingEvents" target="_top" style="display:inline-flex; align-items:center; gap:6px; background:#fff; color:var(--ink); border:1px solid var(--line); padding:8px 14px; border-radius:6px; font-size:13px; font-weight:600; text-decoration:none; cursor:pointer;">‹ Back to Full Calendar</a>';
           modalContainer.insertBefore(navDiv, modalContainer.firstChild);
         }
       }
@@ -325,7 +324,6 @@
             openModal(eventMap[reserveId], true);
           }
         }, 50);
-        
         setTimeout(function(){ clearInterval(checkTimer); }, 5000);
       }
     }
@@ -349,19 +347,36 @@
     function load(forceFresh){
       var cacheKey = S.view === 'month' ? 'month_' + S.currentMonth : 'week_' + dateKey(S.currentMonday);
       
+      // Fast path 1: In-memory cache
+      if (S.cache[cacheKey] && !forceFresh) {
+        S.data = S.cache[cacheKey];
+        render();
+        setLoading(false);
+        checkDeepLink();
+        return;
+      }
+
+      // Fast path 2: LocalStorage cache
       var localData = localStorage.getItem(cacheKey);
-      if (localData && !forceFresh && !S.data) {
+      if (localData && !forceFresh) {
         try {
           S.data = JSON.parse(localData);
+          S.cache[cacheKey] = S.data;
           render();
+          setLoading(false);
+          checkDeepLink();
+          // Quiet background update if needed
+          fetchLiveApi(cacheKey, true);
+          return;
         } catch(e) {}
       }
 
-      if (!S.data) setLoading(true); 
+      setLoading(true); 
 
+      // Fast path 3: Static JSON fallback for current week
       if (!forceFresh && S.view === 'week' && dateKey(S.currentMonday) === dateKey(mondayOf(new Date()))) {
         var controller = new AbortController();
-        var timeoutId = setTimeout(function() { controller.abort(); }, 3000);
+        var timeoutId = setTimeout(function() { controller.abort(); }, 2500);
 
         fetch(STATIC_JSON_URL + '?t=' + new Date().getTime(), { signal: controller.signal })
           .then(function(r){
@@ -381,16 +396,16 @@
       }
     }
 
-    function fetchLiveApi(cacheKey) {
+    function fetchLiveApi(cacheKey, quiet) {
       var params = S.view === 'month' ? {month:S.currentMonth, includeSessions:'true'} : {week:dateKey(S.currentMonday), includeSessions:'true'}; 
       apiGet(params).then(function(data){
         if(!data || data.error){
-          setLoading(false);
+          if (!quiet) setLoading(false);
           return;
         }
         processPayloadData(data, cacheKey);
       }).catch(function(err){
-        setLoading(false); 
+        if (!quiet) setLoading(false); 
       });
     }
 
@@ -413,6 +428,9 @@
       document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; 
       document.getElementById('tabClasses').classList.toggle('active',S.showClasses); 
       document.getElementById('tabShows').classList.toggle('active',S.showShows); 
+      document.getElementById('viewWeek').classList.toggle('active', S.view === 'week');
+      document.getElementById('viewMonth').classList.toggle('active', S.view === 'month');
+
       var events=filteredEvents(); 
       if(S.view==='week') renderWeek(events); else renderMonth(events); 
       broadcastHeight();
@@ -1563,12 +1581,51 @@
       if (e.target === this) closeModal();
     });
 
-    document.getElementById('prevBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, -7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1)); load();}});
-    document.getElementById('nextBtn').addEventListener('click', function(){if(S.view==='week'){S.currentMonday=addDays(S.currentMonday, 7); load();} else {var p=S.currentMonth.split('-'); S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10), 1)); load();}});
-    document.getElementById('viewWeek').addEventListener('click', function(){if(S.view==='week') return; S.view='week'; document.getElementById('viewWeek').classList.add('active'); document.getElementById('viewMonth').classList.remove('active'); load();});
-    document.getElementById('viewMonth').addEventListener('click', function(){if(S.view==='month') return; S.view='month'; S.currentMonth=monthKey(S.currentMonday); document.getElementById('viewMonth').classList.add('active'); document.getElementById('viewWeek').classList.remove('active'); load();});
-    document.getElementById('tabClasses').addEventListener('click', function(){S.showClasses=!S.showClasses; this.classList.toggle('active',S.showClasses); if(S.data) render(); if(S.sessionsData) renderSessions();});
-    document.getElementById('tabShows').addEventListener('click', function(){S.showShows=!S.showShows; this.classList.toggle('active',S.showShows); if(S.data) render(); if(S.sessionsData) renderSessions();});
+    // Fast-navigation listeners
+    document.getElementById('prevBtn').addEventListener('click', function(){
+      if(S.view==='week'){
+        S.currentMonday=addDays(S.currentMonday, -7); 
+      } else {
+        var p=S.currentMonth.split('-'); 
+        S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10)-2, 1));
+      }
+      load();
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function(){
+      if(S.view==='week'){
+        S.currentMonday=addDays(S.currentMonday, 7); 
+      } else {
+        var p=S.currentMonth.split('-'); 
+        S.currentMonth=monthKey(new Date(parseInt(p[0],10), parseInt(p[1],10), 1));
+      }
+      load();
+    });
+
+    document.getElementById('viewWeek').addEventListener('click', function(){
+      if(S.view==='week') return; 
+      S.view='week'; 
+      load();
+    });
+
+    document.getElementById('viewMonth').addEventListener('click', function(){
+      if(S.view==='month') return; 
+      S.view='month'; 
+      S.currentMonth=monthKey(S.currentMonday); 
+      load();
+    });
+
+    document.getElementById('tabClasses').addEventListener('click', function(){
+      S.showClasses=!S.showClasses; 
+      render(); 
+      renderSessions();
+    });
+
+    document.getElementById('tabShows').addEventListener('click', function(){
+      S.showShows=!S.showShows; 
+      render(); 
+      renderSessions();
+    });
 
     attachCalendarListeners();
     load();

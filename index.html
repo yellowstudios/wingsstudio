@@ -545,7 +545,13 @@
       if (ev.dateLabel) {
         html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
       }
-      html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(ev.startTime + ' – ' + ev.endTime) + '</div>';
+      var timeDisplay = (ev.startTime && ev.endTime) 
+  ? (ev.startTime + ' – ' + ev.endTime) 
+  : (ev.start && ev.end ? ev.start + ' – ' + ev.end : '');
+
+if (timeDisplay) {
+  html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(timeDisplay) + '</div>';
+}
 
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'">';
@@ -1489,14 +1495,19 @@ function renderSessions(){
       broadcastHeight();
     }
 
-    function buildInstanceRows(instances){
-      if(!instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
+function buildInstanceRows(instances){
+      if(!instances || !instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
+      
       return instances.map(function(ev){
-        var k=registerEvent(ev);
+        var k = registerEvent(ev);
         var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
         var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
         var btnText = getReserveButtonText(ev);
         
+        var timeStr = (ev.startTime && ev.endTime) 
+          ? (ev.startTime + ' – ' + ev.endTime) 
+          : (ev.start && ev.end ? ev.start + ' – ' + ev.end : '');
+
         var statusBadge = ev.statusLabel
           ? '<div style="margin-bottom:4px;">'
             + '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;'
@@ -1507,18 +1518,17 @@ function renderSessions(){
             + '</span></div>'
           : '';
 
-        // Correct order: 1. Status Badge -> 2. Date Label -> 3. Start DateTime - End DateTime
-        return '<div class="session-instance-row"'+(ev.isCancelled?' style="opacity:0.6;"':'')+'>'+
-          '<div>'+
+        return '<div class="session-instance-row" style="padding:10px 0; border-bottom:1px solid var(--line);' + (ev.isCancelled ? ' opacity:0.6;' : '') + '">'+
+          '<div style="margin-bottom:8px;">'+
             statusBadge +
-            '<div class="session-instance-date">'+esc(ev.dateLabel)+'</div>'+
-            '<div class="session-instance-time">'+esc(ev.startTime)+' – '+esc(ev.endTime)+'</div>'+
-            (ev.location ? '<div class="session-instance-spots">'+esc(ev.location)+'</div>' : '')+
-            (ev.spotsText ? '<div class="session-instance-spots">'+esc(ev.spotsText)+'</div>' : '')+
+            (ev.dateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(ev.dateLabel) + '</div>' : '') +
+            (timeStr ? '<div class="session-instance-time" style="font-size:12px; color:var(--muted);">' + esc(timeStr) + '</div>' : '') +
+            (ev.location ? '<div class="session-instance-spots" style="font-size:11px; color:var(--muted); margin-top:2px;">' + esc(ev.location) + '</div>' : '') +
+            (ev.spotsText ? '<div class="session-instance-spots" style="font-size:11px; font-style:italic; color:var(--muted);">' + esc(ev.spotsText) + '</div>' : '') +
           '</div>'+
-          '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">'+
-            (canReg ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="session-instance-btn primary" style="text-decoration:none;display:inline-block;text-align:center;">'+btnText+'</a>' : '')+
-            '<button class="session-instance-btn btn-info" data-id="'+esc(k)+'">More Info</button>'+
+          '<div style="display:flex; flex-direction:column; gap:6px; width:100%;">'+
+            (canReg ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="session-instance-btn primary" style="display:block; width:100%; text-align:center; box-sizing:border-box; padding:8px 12px; font-size:12px; font-weight:600; text-decoration:none;">' + btnText + '</a>' : '') +
+            '<button type="button" class="session-instance-btn btn-info" data-id="' + esc(k) + '" style="display:block; width:100%; text-align:center; box-sizing:border-box; padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer;">More Info</button>'+
           '</div>'+
         '</div>';
       }).join('');

@@ -277,19 +277,8 @@
     function pad(n){return String(n).padStart(2,'0');}
     function formatDuration(min){if(!min||isNaN(Number(min))) return ''; var m=Number(min); if(m<60) return m+' min'; if(m%60===0) return (m/60)+(m/60===1?' hour':' hours'); return Math.floor(m/60)+' hr '+(m%60)+' min';}
     function esc(str){var d=document.createElement('div'); d.textContent=String(str==null?'':str); return d.innerHTML;}
-    
-    function evKey(ev){
-      if(!ev) return '';
-      return String(ev.instanceId || ev.id || '');
-    }
-
-    function registerEvent(ev){
-      if(!ev) return '';
-      var k = evKey(ev);
-      if(k) eventMap[k] = ev;
-      if(ev.instanceId) eventMap[String(ev.instanceId)] = ev;
-      return k;
-    }
+    function evKey(ev){return String(ev.instanceId||ev.id||'');}
+    function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
 
     function formatFriendlyTime(startRaw, endRaw) {
       if (!startRaw) return '';
@@ -309,20 +298,6 @@
           }
         }
         return startStr;
-      } catch (e) {
-        return startRaw || '';
-      }
-    }
-
-    function formatFriendlyDateTime(startRaw, endRaw) {
-      if (!startRaw) return '';
-      try {
-        var startDate = new Date(startRaw);
-        if (isNaN(startDate.getTime())) return startRaw || '';
-        var dateOpts = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-        var dateStr = startDate.toLocaleDateString('en-US', dateOpts);
-        var timeStr = formatFriendlyTime(startRaw, endRaw);
-        return dateStr + (timeStr ? ' • ' + timeStr : '');
       } catch (e) {
         return startRaw || '';
       }
@@ -379,10 +354,14 @@
       }
     }
 
-    function sliceClientCalendarData() {
+   function sliceClientCalendarData() {
       if (!S.masterData) return;
       var todayK = S.masterData.todayKey || dateKey(new Date());
 
+      // Reset map
+      eventMap = {};
+
+      // Helper to register all events into eventMap
       var prepList = function(list) {
         return (list || []).map(function(ev) {
           registerEvent(ev);
@@ -430,7 +409,7 @@
           shows: filterList(masterShows)
         };
 
-      } else {
+      } else { // Month View
         var parts = S.currentMonth.split('-');
         var year = parseInt(parts[0], 10);
         var monthIdx = parseInt(parts[1], 10) - 1;
@@ -442,12 +421,11 @@
         var totalDays = Math.round((gridEnd.getTime() - gridStart.getTime()) / 86400000) + 1;
 
         var daysList = [];
-        var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
         for (var i = 0; i < totalDays; i++) {
           var curD = addDays(gridStart, i);
           daysList.push({
             key: dateKey(curD),
-            name: DOW[curD.getDay() === 0 ? 6 : curD.getDay() - 1],
+            name: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][curD.getDay() === 0 ? 6 : curD.getDay() - 1],
             num: String(curD.getDate()),
             monthNum: String(curD.getMonth() + 1)
           });
@@ -480,17 +458,19 @@
     }
 
     function load(forceFresh){
+      // 1. If master GitHub data is already in memory, slice instantly in 0ms!
       if (S.masterData && !forceFresh) {
         sliceClientCalendarData();
         return;
       }
 
+      // 2. Try loading full year JSON from LocalStorage
       var localMaster = localStorage.getItem('wings_master_year_json');
       if (localMaster && !forceFresh) {
         try {
           S.masterData = JSON.parse(localMaster);
           sliceClientCalendarData();
-          fetchStaticJson();
+          fetchStaticJson(); // background update
           return;
         } catch(e) {}
       }
@@ -658,10 +638,9 @@
     }
 
     function openModal(ev, openReg){
-      if(!ev) return;
       S.activeEv = ev;
       var overlay = document.getElementById('modalOverlay');
-      document.getElementById('modalTitle').textContent = ev.title || 'Event Details';
+      document.getElementById('modalTitle').textContent = ev.title;
       fillModalContent('modalBody', ev, openReg);
       overlay.classList.add('active');
       document.body.classList.add('modal-open');
@@ -698,7 +677,7 @@
       }
 
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
-      if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy">';
+      if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy" crossorigin="anonymous">';;
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       
       if(ev.costText && !hasTiers) html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
@@ -899,6 +878,48 @@
       wireMobileForm(ev);
     }
 
+// Universal Global Click Delegate for "More Info" Buttons
+    document.addEventListener('click', function(e) {
+      var btnInfo = e.target.closest('.btn-info');
+      if (btnInfo) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var id = btnInfo.getAttribute('data-id');
+        var ev = eventMap[id];
+        
+        if (ev) {
+          openModal(ev, false);
+        } else {
+          console.warn('Event not found in eventMap for ID:', id);
+        }
+      }
+    });
+
+    function attachSessionListeners(){
+      var area=document.getElementById('sessionsArea');
+      if(!area || area.dataset.listenersAttached) return;
+      area.dataset.listenersAttached='1';
+      area.addEventListener('click', function(e){
+        var toggle=e.target.closest('.session-card-toggle');
+        if(toggle){
+          var sid=toggle.getAttribute('data-sid');
+          var panel=document.getElementById('si-'+sid);
+          if(!panel) return;
+          var open=panel.classList.toggle('open');
+          var count=panel.querySelectorAll('.session-instance-row').length;
+          toggle.textContent=open?'Hide dates':count+(count===1?' upcoming date':' upcoming dates')+' — view all';
+          broadcastHeight();
+          return;
+        }
+        var btnInfo=e.target.closest('.btn-info');
+        if(!btnInfo) return;
+        var ev=eventMap[btnInfo.getAttribute('data-id')];
+        if(!ev) return;
+        openModal(ev, false);
+      });
+    }
+
     function openDayPanel(dayKey, events){
       var parts=dayKey.split('-');
       var d=new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
@@ -923,6 +944,17 @@
       }
       body.innerHTML = html;
       document.getElementById('modalOverlay').classList.add('active');
+      attachModalDelegates(body);
+    }
+
+    function attachModalDelegates(root){
+      root.addEventListener('click', function(e){
+        var btnInfo=e.target.closest('.btn-info');
+        if(!btnInfo) return;
+        var ev=eventMap[btnInfo.getAttribute('data-id')];
+        if(!ev) return;
+        openModal(ev, false);
+      });
     }
 
     function dobMonthOptions(){
@@ -1280,7 +1312,7 @@
           .then(function(r){
             btn.disabled = false; btn.textContent = 'Confirm Cancellation';
             if(r && r.success){
-              S.masterData = null;
+              S.masterData = null; // Invalidate cache on cancel
               var bodyHost = document.getElementById('modalBody');
               bodyHost.innerHTML = '<div class="confirmation-view">'
                 + '<div class="confirm-icon" style="color:#c0392b;">✓</div>'
@@ -1566,7 +1598,7 @@
           var catLabel = s.category || s.type || 'Session';
           
           html += '<div class="session-card">'
-            + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy">' : '')
+            + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy" crossorigin="anonymous">' : '')
             + '<div class="session-card-body">'
             + '<div class="session-card-category">'+esc(catLabel)+'</div>'
             + '<div class="session-card-title">'+esc(s.title)+'</div>'
@@ -1592,7 +1624,7 @@
         var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
         var btnText = getReserveButtonText(ev);
         
-        var dateTimeStr = formatFriendlyDateTime(ev.startTime || ev.start, ev.endTime || ev.end);
+        var timeStr = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
 
         var statusBadge = ev.statusLabel
           ? '<div style="margin-bottom:4px;">'
@@ -1607,13 +1639,14 @@
         return '<div class="session-instance-row" style="padding:10px 0; border-bottom:1px solid var(--line);' + (ev.isCancelled ? ' opacity:0.6;' : '') + '">'+
           '<div style="margin-bottom:8px;">'+
             statusBadge +
-            (dateTimeStr ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(dateTimeStr) + '</div>' : '') +
+            (ev.dateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(ev.dateLabel) + '</div>' : '') +
+            (timeStr ? '<div class="session-instance-time" style="font-size:12px; color:var(--muted);">' + esc(timeStr) + '</div>' : '') +
             (ev.location ? '<div class="session-instance-spots" style="font-size:11px; color:var(--muted); margin-top:2px;">' + esc(ev.location) + '</div>' : '') +
             (ev.spotsText ? '<div class="session-instance-spots" style="font-size:11px; font-style:italic; color:var(--muted);">' + esc(ev.spotsText) + '</div>' : '') +
           '</div>'+
           '<div style="display:flex; flex-direction:column; gap:6px; width:100%;">'+
             (canReg ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="session-instance-btn primary" style="display:block; width:100%; text-align:center; box-sizing:border-box; padding:8px 12px; font-size:12px; font-weight:600; text-decoration:none;">' + btnText + '</a>' : '') +
-            '<button type="button" class="session-instance-btn btn-info" data-id="' + esc(k) + '">More Info</button>'+
+            '<button type="button" class="session-instance-btn btn-info" data-id="' + esc(k) + '" style="display:block; width:100%; text-align:center; box-sizing:border-box; padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer;">More Info</button>'+
           '</div>'+
         '</div>';
       }).join('');
@@ -1626,55 +1659,12 @@
       }catch(e){}
     }
 
-    function attachCalendarListeners(){
-      var area=document.getElementById('calendarArea');
-      if(!area || area.dataset.listenersAttached) return;
-      area.dataset.listenersAttached='1';
-      area.addEventListener('click', function(e){
-        var btnInfo = e.target.closest('.btn-info');
-        if(btnInfo){
-          var id = btnInfo.getAttribute('data-id');
-          var ev = eventMap[id];
-          if(!ev) return;
-          openModal(ev, false);
-          return;
-        }
-        var cell=e.target.closest('.month-cell');
-        if(!cell) return;
-        openDayPanel(cell.getAttribute('data-key'), monthByDay[cell.getAttribute('data-key')] || []);
-      });
-    }
-
-    function attachSessionListeners(){
-      var area=document.getElementById('sessionsArea');
-      if(!area || area.dataset.listenersAttached) return;
-      area.dataset.listenersAttached='1';
-      area.addEventListener('click', function(e){
-        var toggle=e.target.closest('.session-card-toggle');
-        if(toggle){
-          var sid=toggle.getAttribute('data-sid');
-          var panel=document.getElementById('si-'+sid);
-          if(!panel) return;
-          var open=panel.classList.toggle('open');
-          var count=panel.querySelectorAll('.session-instance-row').length;
-          toggle.textContent=open?'Hide dates':count+(count===1?' upcoming date':' upcoming dates')+' — view all';
-          broadcastHeight();
-          return;
-        }
-        var btnInfo=e.target.closest('.btn-info');
-        if(!btnInfo) return;
-        var id = btnInfo.getAttribute('data-id');
-        var ev = eventMap[id];
-        if(!ev) return;
-        openModal(ev, false);
-      });
-    }
-
     document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
     document.getElementById('modalOverlay').addEventListener('click', function(e){
       if (e.target === this) closeModal();
     });
 
+    // 0ms Instant Client-Side Navigation
     document.getElementById('prevBtn').addEventListener('click', function(){
       if(S.view==='week'){
         S.currentMonday = addDays(S.currentMonday, -7); 

@@ -95,10 +95,6 @@
       backdrop-filter: blur(2px);
     }
 
-.modal-overlay.active {
-  display: flex;
-}
-
     .modal-container {
       background: #fff;
       border-radius: 12px;
@@ -640,26 +636,6 @@
       document.getElementById('calendarArea').innerHTML = html;
       attachCalendarListeners();
     }
-
-function attachCalendarListeners() {
-  var area = document.getElementById('calendarArea');
-
-  if (!area || area.dataset.listenersAttached) return;
-
-  area.dataset.listenersAttached = '1';
-
-  area.addEventListener('click', function(e) {
-    var monthCell = e.target.closest('.month-cell');
-
-    if (!monthCell) return;
-
-    var dayKey = monthCell.getAttribute('data-key');
-
-    if (!dayKey) return;
-
-    openDayPanel(dayKey, monthByDay[dayKey] || []);
-  });
-}
 
     function openModal(ev, openReg){
       S.activeEv = ev;

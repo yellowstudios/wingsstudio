@@ -1445,7 +1445,7 @@
       });
     }
 
-    function renderSessions(){
+function renderSessions(){
       var area=document.getElementById('sessionsArea');
       if (!area) return;
       
@@ -1466,6 +1466,8 @@
         filtered.forEach(function(s){
           var hasImg=s.imageUrl && s.imageUrl.trim();
           var sid=esc(s.sessionId);
+          
+          // COLUMN V (Category) directly displayed above title
           var catLabel = s.category || s.type || 'Session';
           
           html += '<div class="session-card">'
@@ -1494,6 +1496,7 @@
         var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
         var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
         var btnText = getReserveButtonText(ev);
+        
         var statusBadge = ev.statusLabel
           ? '<div style="margin-bottom:4px;">'
             + '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;'
@@ -1503,6 +1506,8 @@
             + esc(ev.statusLabel) 
             + '</span></div>'
           : '';
+
+        // Correct order: 1. Status Badge -> 2. Date Label -> 3. Start DateTime - End DateTime
         return '<div class="session-instance-row"'+(ev.isCancelled?' style="opacity:0.6;"':'')+'>'+
           '<div>'+
             statusBadge +

@@ -471,22 +471,44 @@
       fetchStaticJson();
     }
 
-    function fetchStaticJson() {
-      fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
-        .then(function(r){ if (!r.ok) throw new Error('Static file error'); return r.json(); })
-        .then(function(data){
-          S.masterData = data;
-          try { localStorage.setItem('wings_master_year_json', JSON.stringify(data)); } catch(e) {}
-          if (data.sessionsPayload) {
-            S.sessionsData = data.sessionsPayload;
-            renderSessions();
-          }
-          sliceClientCalendarData();
-        })
-        .catch(function(){
-          fetchLiveApi();
-        });
-    }
+function fetchStaticJson() {
+  fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
+    .then(function(r) {
+      if (!r.ok) {
+        throw new Error('Static calendar file returned HTTP ' + r.status);
+      }
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data || (!Array.isArray(data.classes) && !Array.isArray(data.shows))) {
+        throw new Error('Static calendar file does not contain classes or shows arrays.');
+      }
+
+      S.masterData = data;
+
+      try {
+        localStorage.setItem('wings_master_year_json', JSON.stringify(data));
+      } catch(e) {}
+
+      if (data.sessionsPayload) {
+        S.sessionsData = data.sessionsPayload;
+        renderSessions();
+      }
+
+      sliceClientCalendarData();
+    })
+    .catch(function(err) {
+      console.error('Static calendar load failed:', err);
+
+      fetchLiveApi().catch(function(apiErr) {
+        console.error('Live calendar API load failed:', apiErr);
+        setLoading(false);
+
+        document.getElementById('periodLabel').textContent =
+          'Calendar could not load. Please refresh.';
+      });
+    });
+}
 
     function fetchLiveApi() {
       apiGet({view:'upcoming', includeSessions:'true'}).then(function(data){

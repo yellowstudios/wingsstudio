@@ -596,6 +596,7 @@ function fetchStaticJson() {
             var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
             
             var btnHtml = '';
+
             if (canRegister) {
               var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
               btnHtml = '<a href="' + directUrl + '" target="_top" rel="noopener" class="btn-register" style="text-decoration:none;">' + btnText + '</a>';
@@ -716,6 +717,19 @@ function fetchStaticJson() {
 
       var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
       var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+
+var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+
+if (!canRegister && !ev.isFull && !ev.isCancelled) {
+  html += '<div class="modal-row">'
+    + '<span class="modal-value" style="font-style:italic;">'
+    + 'Registration is not currently available for this event.'
+    + '</span>'
+    + '</div>';
+}
+
+if (canRegister) {
 
       if (canRegister) {
         html += '<hr class="modal-divider">';
@@ -897,13 +911,23 @@ function fetchStaticJson() {
       if(!area || area.dataset.listenersAttached) return;
       area.dataset.listenersAttached='1';
       area.addEventListener('click', function(e){
-        var btnInfo = e.target.closest('.btn-info');
-        if(btnInfo){
-          var ev = eventMap[btnInfo.getAttribute('data-id')];
-          if(!ev) return;
-          openModal(ev, false);
-          return;
-        }
+       var btnInfo = e.target.closest('.btn-info');
+
+if (btnInfo) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  var eventId = btnInfo.getAttribute('data-id');
+  var ev = eventMap[eventId];
+
+  if (ev) {
+    openModal(ev, false);
+  } else {
+    console.warn('More Info event was not found:', eventId);
+  }
+
+  return;
+}
         var cell=e.target.closest('.month-cell');
         if(!cell) return;
         openDayPanel(cell.getAttribute('data-key'), monthByDay[cell.getAttribute('data-key')] || []);
@@ -926,11 +950,21 @@ function fetchStaticJson() {
           broadcastHeight();
           return;
         }
-        var btnInfo=e.target.closest('.btn-info');
-        if(!btnInfo) return;
-        var ev=eventMap[btnInfo.getAttribute('data-id')];
-        if(!ev) return;
-        openModal(ev, false);
+       var btnInfo = e.target.closest('.btn-info');
+
+if (!btnInfo) return;
+
+e.preventDefault();
+e.stopPropagation();
+
+var eventId = btnInfo.getAttribute('data-id');
+var ev = eventMap[eventId];
+
+if (ev) {
+  openModal(ev, false);
+} else {
+  console.warn('More Info event was not found:', eventId);
+}
       });
     }
 

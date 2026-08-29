@@ -566,24 +566,6 @@
             var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
             var btnText = getReserveButtonText(ev);
             var timeStr = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
-var sessionDateLabel = ev.dateLabel || '';
-
-if (!sessionDateLabel) {
-  var dateSource = ev.start || ev.startMs || '';
-
-  if (dateSource) {
-    var sessionStartDate = new Date(dateSource);
-
-    if (!isNaN(sessionStartDate.getTime())) {
-      sessionDateLabel = sessionStartDate.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      });
-    }
-  }
-}
             var statusBadge = ev.statusLabel
               ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
               : '';
@@ -1649,7 +1631,7 @@ if (!sessionDateLabel) {
         return '<div class="session-instance-row" style="padding:10px 0; border-bottom:1px solid var(--line);' + (ev.isCancelled ? ' opacity:0.6;' : '') + '">'+
           '<div style="margin-bottom:8px;">'+
             statusBadge +
-(sessionDateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(sessionDateLabel) + '</div>' : '') +
+            (ev.dateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(ev.dateLabel) + '</div>' : '') +
             (timeStr ? '<div class="session-instance-time" style="font-size:12px; color:var(--muted);">' + esc(timeStr) + '</div>' : '') +
             (ev.location ? '<div class="session-instance-spots" style="font-size:11px; color:var(--muted); margin-top:2px;">' + esc(ev.location) + '</div>' : '') +
             (ev.spotsText ? '<div class="session-instance-spots" style="font-size:11px; font-style:italic; color:var(--muted);">' + esc(ev.spotsText) + '</div>' : '') +

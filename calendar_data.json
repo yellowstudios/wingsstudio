@@ -3192,7 +3192,7 @@
       "isCancelled": false,
       "tiers": [
         {
-          "name": "Company Members",
+          "name": "Company",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
@@ -3200,16 +3200,16 @@
           "priceText": "$20.00",
           "description": "Discounted workshop rate for company members",
           "requiresPasscode": true,
-          "passcode": "wings123"
+          "passcode": "wingsandworkshops2027"
         },
         {
-          "name": "Individual Workshop Access Pre-Register",
+          "name": "Individual Workshop Access",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
           "price": 35,
           "priceText": "$35.00",
-          "description": "Pre-register for the workshop for a discounted rate.",
+          "description": "",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -4141,19 +4141,7 @@
       "isPublic": true,
       "isFull": false,
       "isCancelled": false,
-      "tiers": [
-        {
-          "name": "Individual Workshop Access - At the Door",
-          "qty": 1,
-          "ticketCount": 1,
-          "quantity": 1,
-          "price": 40,
-          "priceText": "$40.00",
-          "description": "Register for the workshop the day of the event.",
-          "requiresPasscode": false,
-          "passcode": ""
-        }
-      ]
+      "tiers": []
     },
     {
       "instanceId": "OI_061",
@@ -11429,7 +11417,7 @@
             "_calType": "class",
             "tiers": [
               {
-                "name": "Company Members",
+                "name": "Company",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
@@ -11437,16 +11425,16 @@
                 "priceText": "$20.00",
                 "description": "Discounted workshop rate for company members",
                 "requiresPasscode": true,
-                "passcode": "wings123"
+                "passcode": "wingsandworkshops2027"
               },
               {
-                "name": "Individual Workshop Access Pre-Register",
+                "name": "Individual Workshop Access",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
                 "price": 35,
                 "priceText": "$35.00",
-                "description": "Pre-register for the workshop for a discounted rate.",
+                "description": "",
                 "requiresPasscode": false,
                 "passcode": ""
               }
@@ -11461,7 +11449,7 @@
             "cost": "35.00",
             "category": "Movement",
             "type": "T_003",
-            "inclusion": false,
+            "inclusion": "",
             "spotsText": "12 spots left",
             "isFull": false,
             "isCancelled": false,
@@ -11476,19 +11464,7 @@
             "isPublic": true,
             "sessionId": "O_007",
             "_calType": "class",
-            "tiers": [
-              {
-                "name": "Individual Workshop Access - At the Door",
-                "qty": 1,
-                "ticketCount": 1,
-                "quantity": 1,
-                "price": 40,
-                "priceText": "$40.00",
-                "description": "Register for the workshop the day of the event.",
-                "requiresPasscode": false,
-                "passcode": ""
-              }
-            ]
+            "tiers": []
           },
           {
             "instanceId": "OI_299",
@@ -11499,7 +11475,7 @@
             "cost": "35.00",
             "category": "C_004",
             "type": "T_003",
-            "inclusion": false,
+            "inclusion": "",
             "spotsText": "12 spots left",
             "isFull": false,
             "isCancelled": false,

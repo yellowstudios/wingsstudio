@@ -2440,7 +2440,7 @@
     },
     {
       "instanceId": "OI_156",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -2875,7 +2875,7 @@
     },
     {
       "instanceId": "OI_188",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -3192,7 +3192,7 @@
       "isCancelled": false,
       "tiers": [
         {
-          "name": "Company",
+          "name": "Company Members",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
@@ -3200,16 +3200,16 @@
           "priceText": "$20.00",
           "description": "Discounted workshop rate for company members",
           "requiresPasscode": true,
-          "passcode": "wingsandworkshops2027"
+          "passcode": "wings123"
         },
         {
-          "name": "Individual Workshop Access",
+          "name": "Individual Workshop Access Pre-Register",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
           "price": 35,
           "priceText": "$35.00",
-          "description": "",
+          "description": "Pre-register for the workshop for a discounted rate.",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -3362,7 +3362,7 @@
     },
     {
       "instanceId": "OI_189",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -3826,7 +3826,7 @@
     },
     {
       "instanceId": "OI_190",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -4141,7 +4141,19 @@
       "isPublic": true,
       "isFull": false,
       "isCancelled": false,
-      "tiers": []
+      "tiers": [
+        {
+          "name": "Individual Workshop Access - At the Door",
+          "qty": 1,
+          "ticketCount": 1,
+          "quantity": 1,
+          "price": 40,
+          "priceText": "$40.00",
+          "description": "Register for the workshop the day of the event.",
+          "requiresPasscode": false,
+          "passcode": ""
+        }
+      ]
     },
     {
       "instanceId": "OI_061",
@@ -4319,7 +4331,7 @@
     },
     {
       "instanceId": "OI_191",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -4783,7 +4795,7 @@
     },
     {
       "instanceId": "OI_192",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -5288,7 +5300,7 @@
     },
     {
       "instanceId": "OI_193",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -5752,7 +5764,7 @@
     },
     {
       "instanceId": "OI_194",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -6216,7 +6228,7 @@
     },
     {
       "instanceId": "OI_195",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -6680,7 +6692,7 @@
     },
     {
       "instanceId": "OI_196",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -7144,7 +7156,7 @@
     },
     {
       "instanceId": "OI_197",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -7608,7 +7620,7 @@
     },
     {
       "instanceId": "OI_198",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -8124,7 +8136,7 @@
     },
     {
       "instanceId": "OI_199",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -8588,7 +8600,7 @@
     },
     {
       "instanceId": "OI_200",
-      "title": "Wheel-Dancer & Caregiver",
+      "title": "WheelDancer & Caregiver",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
       "startTime": "5:00 PM",
       "endTime": "6:00 PM",
@@ -11417,7 +11429,7 @@
             "_calType": "class",
             "tiers": [
               {
-                "name": "Company",
+                "name": "Company Members",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
@@ -11425,16 +11437,16 @@
                 "priceText": "$20.00",
                 "description": "Discounted workshop rate for company members",
                 "requiresPasscode": true,
-                "passcode": "wingsandworkshops2027"
+                "passcode": "wings123"
               },
               {
-                "name": "Individual Workshop Access",
+                "name": "Individual Workshop Access Pre-Register",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
                 "price": 35,
                 "priceText": "$35.00",
-                "description": "",
+                "description": "Pre-register for the workshop for a discounted rate.",
                 "requiresPasscode": false,
                 "passcode": ""
               }
@@ -11449,7 +11461,7 @@
             "cost": "35.00",
             "category": "Movement",
             "type": "T_003",
-            "inclusion": "",
+            "inclusion": false,
             "spotsText": "12 spots left",
             "isFull": false,
             "isCancelled": false,
@@ -11464,7 +11476,19 @@
             "isPublic": true,
             "sessionId": "O_007",
             "_calType": "class",
-            "tiers": []
+            "tiers": [
+              {
+                "name": "Individual Workshop Access - At the Door",
+                "qty": 1,
+                "ticketCount": 1,
+                "quantity": 1,
+                "price": 40,
+                "priceText": "$40.00",
+                "description": "Register for the workshop the day of the event.",
+                "requiresPasscode": false,
+                "passcode": ""
+              }
+            ]
           },
           {
             "instanceId": "OI_299",
@@ -11475,7 +11499,7 @@
             "cost": "35.00",
             "category": "C_004",
             "type": "T_003",
-            "inclusion": "",
+            "inclusion": false,
             "spotsText": "12 spots left",
             "isFull": false,
             "isCancelled": false,
@@ -14600,7 +14624,7 @@
         "instances": [
           {
             "instanceId": "OI_156",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-09-01T21:00:00.000Z",
             "end": "2026-09-01T22:00:00.000Z",
@@ -14626,7 +14650,7 @@
           },
           {
             "instanceId": "OI_188",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-09-08T21:00:00.000Z",
             "end": "2026-09-08T22:00:00.000Z",
@@ -14652,7 +14676,7 @@
           },
           {
             "instanceId": "OI_189",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-09-15T21:00:00.000Z",
             "end": "2026-09-15T22:00:00.000Z",
@@ -14678,7 +14702,7 @@
           },
           {
             "instanceId": "OI_190",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-09-22T21:00:00.000Z",
             "end": "2026-09-22T22:00:00.000Z",
@@ -14704,7 +14728,7 @@
           },
           {
             "instanceId": "OI_191",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-09-29T21:00:00.000Z",
             "end": "2026-09-29T22:00:00.000Z",
@@ -14730,7 +14754,7 @@
           },
           {
             "instanceId": "OI_192",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-10-06T21:00:00.000Z",
             "end": "2026-10-06T22:00:00.000Z",
@@ -14756,7 +14780,7 @@
           },
           {
             "instanceId": "OI_193",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-10-13T21:00:00.000Z",
             "end": "2026-10-13T22:00:00.000Z",
@@ -14782,7 +14806,7 @@
           },
           {
             "instanceId": "OI_194",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-10-20T21:00:00.000Z",
             "end": "2026-10-20T22:00:00.000Z",
@@ -14808,7 +14832,7 @@
           },
           {
             "instanceId": "OI_195",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-10-27T21:00:00.000Z",
             "end": "2026-10-27T22:00:00.000Z",
@@ -14834,7 +14858,7 @@
           },
           {
             "instanceId": "OI_196",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-11-03T22:00:00.000Z",
             "end": "2026-11-03T23:00:00.000Z",
@@ -14860,7 +14884,7 @@
           },
           {
             "instanceId": "OI_197",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-11-10T22:00:00.000Z",
             "end": "2026-11-10T23:00:00.000Z",
@@ -14886,7 +14910,7 @@
           },
           {
             "instanceId": "OI_198",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-11-17T22:00:00.000Z",
             "end": "2026-11-17T23:00:00.000Z",
@@ -14912,7 +14936,7 @@
           },
           {
             "instanceId": "OI_199",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-11-24T22:00:00.000Z",
             "end": "2026-11-24T23:00:00.000Z",
@@ -14938,7 +14962,7 @@
           },
           {
             "instanceId": "OI_200",
-            "title": "Wheel-Dancer & Caregiver",
+            "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
             "start": "2026-12-01T22:00:00.000Z",
             "end": "2026-12-01T23:00:00.000Z",

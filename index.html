@@ -1117,7 +1117,15 @@ if (!ev.costText && hasTiers) {
       populateTierDropdown('', classMins);
 
       var hasTiers = ev.tiers && ev.tiers.length > 0;
-      var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
+      var basePrice = Number(
+  ev.costText
+    ? String(ev.costText).replace(/[^0-9.]/g, '')
+    : (ev.cost !== undefined && ev.cost !== null ? ev.cost : 0)
+);
+
+if (isNaN(basePrice) || basePrice < 0) {
+  basePrice = 0;
+}
       var singleInput = document.getElementById('singleAmountMobile');
       if (singleInput) {
         singleInput.value = basePrice;

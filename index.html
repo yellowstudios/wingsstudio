@@ -1355,24 +1355,47 @@ if (!ev.costText && hasTiers) {
           });
       });
 
-      document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
-        r.addEventListener('change', function(){
-          var val = this.value;
-          document.getElementById('singlePayBlock').style.display = (val === 'single') ? 'block' : 'none';
-          document.getElementById('monthlyPayBlock').style.display = (val === 'monthly') ? 'block' : 'none';
-          document.getElementById('methodSection').style.display = (val === 'current') ? 'none' : 'block';
-          document.getElementById('planStatusBanner').style.display = 'none';
-          document.getElementById('exceededOptions').style.display = 'none';
+document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
+  r.addEventListener('change', function(){
+    var val = this.value;
 
-          if (val === 'monthly') {
-            populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins || classMins);
-            calculateFees();
-          } else if (val === 'current') {
-            validateCurrentPlan();
-          }
-          updateItemizedSummary();
-        });
-      });
+    var singlePayBlock = document.getElementById('singlePayBlock');
+    var monthlyPayBlock = document.getElementById('monthlyPayBlock');
+    var methodSection = document.getElementById('methodSection');
+    var planStatusBanner = document.getElementById('planStatusBanner');
+    var exceededOptions = document.getElementById('exceededOptions');
+
+    if (singlePayBlock) {
+      singlePayBlock.style.display = val === 'single' ? 'block' : 'none';
+    }
+
+    if (monthlyPayBlock) {
+      monthlyPayBlock.style.display = val === 'monthly' ? 'block' : 'none';
+    }
+
+    if (methodSection) {
+      methodSection.style.display = 'block';
+    }
+
+    if (planStatusBanner) {
+      planStatusBanner.style.display = 'none';
+    }
+
+    if (exceededOptions) {
+      exceededOptions.style.display = 'none';
+    }
+
+    if (val === 'monthly') {
+      populateTierDropdown(
+        currentUserCurrentTier,
+        currentUserRequiredMins || classMins
+      );
+      calculateFees();
+    }
+
+    updateItemizedSummary();
+  });
+});
 
       var tierSelect = document.getElementById('planTierMobile');
       if (tierSelect) tierSelect.addEventListener('change', function(){

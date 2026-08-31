@@ -1409,13 +1409,15 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
       exceededOptions.style.display = 'none';
     }
 
-    if (val === 'monthly') {
-      populateTierDropdown(
-        currentUserCurrentTier,
-        currentUserRequiredMins || classMins
-      );
-      calculateFees();
-    }
+if (val === 'monthly') {
+  populateTierDropdown(
+    currentUserCurrentTier,
+    currentUserRequiredMins || classMins
+  );
+
+  validateCurrentPlan();
+  calculateFees();
+}
 
     updateItemizedSummary();
   });

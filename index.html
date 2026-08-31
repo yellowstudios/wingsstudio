@@ -1403,28 +1403,66 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
         updateItemizedSummary();
       });
 
-      function calculateFees(){
-        var emailV = email.value.trim();
-        var tierSelect = document.getElementById('planTierMobile');
-        var tier = tierSelect && tierSelect.value ? tierSelect.value : '';
-        if(!tier) return;
+     function calculateFees() {
+  var emailV = email.value.trim();
+  var tierSelect = document.getElementById('planTierMobile');
+  var tier = tierSelect && tierSelect.value ? tierSelect.value : '';
 
-        apiPost({ action: 'calculateRegistrationFee', email: emailV, paymentType: 'monthly', planTier: tier, baseClassPrice: basePrice })
-          .then(function(res){
-            if (res && res.success) {
-              var breakout = "";
-              if (res.isUpgrade) {
-                breakout = "Upgrade from " + (res.currentTier || 'current plan') + " → " + tier + ". Total Due Today: $" + res.totalDue.toFixed(2);
-              } else {
-                breakout = "Total Due Today: $" + res.totalDue.toFixed(2);
-                if (res.planStartDate) breakout += " (Plan Effective: " + res.planStartDate + ")";
-                if (res.isFirstTime) breakout += " + $25 One-Time Registration Fee";
-              }
-              document.getElementById('feeBreakout').textContent = breakout;
-              updateItemizedSummary();
-            }
-          }).catch(function(){});
-      }
+  if (!tier) {
+    return;
+  }
+
+  apiPost({
+    action: 'calculateRegistrationFee',
+    email: emailV,
+    paymentType: 'monthly',
+    planTier: tier,
+    baseClassPrice: basePrice
+  }).then(function(res){
+    if (!res || !res.success) {
+      return;
+    }
+
+    var breakout =
+      'Monthly Plan: $' +
+      Number(res.fullTierRate || 0).toFixed(2) +
+      ' per month.';
+
+    if (res.isFirstTime) {
+      breakout +=
+        ' One-time registration fee: $' +
+        Number(res.registrationFee || 25).toFixed(2) +
+        '.';
+    }
+
+    if (res.planStartDate) {
+      breakout +=
+        ' Your Monthly Class Plan will begin ' +
+        res.planStartDate +
+        '. This class is not covered by that plan.';
+    }
+
+    breakout +=
+      ' Plan purchase total: $' +
+      Number(res.totalDue || 0).toFixed(2) +
+      '.';
+
+    var feeBreakout = document.getElementById('feeBreakout');
+
+    if (feeBreakout) {
+      feeBreakout.textContent = breakout;
+    }
+
+    updateItemizedSummary();
+  }).catch(function(){
+    var feeBreakout = document.getElementById('feeBreakout');
+
+    if (feeBreakout) {
+      feeBreakout.textContent =
+        'Unable to calculate Monthly Plan pricing. Please try again.';
+    }
+  });
+}
 
       function validateCurrentPlan(){
         var emailV = email.value.trim();

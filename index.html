@@ -1224,17 +1224,41 @@ if (!ev.costText && hasTiers) {
           if(amt < basePrice) amt = basePrice;
           var tot = (amt * qty) + extraVal;
           sumTotal.textContent = '$' + tot.toFixed(2);
-          } else if(val === 'monthly'){
-          var tierSelect = document.getElementById('planTierMobile');
-          var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
-          sumType.textContent = 'Monthly Class Plan (' + tierVal + ')';
-          sumBreakoutRow.style.display = 'flex';
-          sumBreakout.textContent = document.getElementById('feeBreakout').textContent || 'Calculating...';
-          var parsedTotal = document.getElementById('feeBreakout').textContent.match(/\$([0-9.]+)/);
-          var baseTierAmt = parsedTotal ? Number(parsedTotal[1]) : 0;
-          var tot = baseTierAmt + extraVal;
-          sumTotal.textContent = '$' + tot.toFixed(2);
-        }
+} else if(val === 'monthly'){
+  var tierSelect = document.getElementById('planTierMobile');
+  var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
+  var feeText = document.getElementById('feeBreakout')
+    ? document.getElementById('feeBreakout').textContent
+    : '';
+
+  sumType.textContent = 'Monthly Class Plan (' + tierVal + ')';
+  sumBreakoutRow.style.display = 'flex';
+  sumBreakout.textContent = feeText || 'Select a plan tier to calculate pricing.';
+
+  var rateMap = {
+    '1 hour/week': 65,
+    '1.5 hours/week': 85,
+    '2 hours/week': 100,
+    '2.5 hours/week': 120,
+    '3 hours/week': 135,
+    '3.5 hours/week': 150,
+    '4 hours/week': 160,
+    '4.5 hours/week': 170,
+    '5 hours/week': 185,
+    '5.5 hours/week': 200,
+    '6 hours/week': 215
+  };
+
+  var planPrice = rateMap[tierVal] || 0;
+  var firstTimeFee = feeText.indexOf('One-time registration fee') !== -1
+    ? 25
+    : 0;
+
+  var totalPlanPurchase = planPrice + firstTimeFee;
+  var totalDueNow = totalPlanPurchase + extraVal;
+
+  sumTotal.textContent = '$' + totalDueNow.toFixed(2);
+}
 
         updateAttendeeRoster();
       }

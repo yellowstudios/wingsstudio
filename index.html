@@ -694,7 +694,21 @@ function fetchStaticJson() {
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy" crossorigin="anonymous">';;
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       
-      if(ev.costText && !hasTiers) html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
+     if (!ev.costText && hasTiers) {
+  html += '<div class="modal-row">'
+    + '<span class="modal-label">Price</span>'
+    + '<span class="modal-value">Select a ticket option below.</span>'
+    + '</div>';
+}
+
+if (!ev.costText && hasTiers) {
+  html += '<div class="modal-row">'
+    + '<span class="modal-label">Price</span>'
+    + '<span class="modal-value">Select a ticket option below.</span>'
+    + '</div>';
+}
+
+ html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
       if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
       if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
       if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>';
@@ -754,7 +768,6 @@ function fetchStaticJson() {
               + '<div class="pay-options">'
               + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" id="payTypeSingle" checked> Single Class (Drop-In)</label>'
               + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="monthly" id="payTypeMonthly"> Monthly Class Plan</label>'
-              + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="current" id="payTypeCurrent"> Already Paid / Current Plan</label>'
               + '</div>'
               + '</div>'
 
@@ -1211,11 +1224,7 @@ function fetchStaticJson() {
           if(amt < basePrice) amt = basePrice;
           var tot = (amt * qty) + extraVal;
           sumTotal.textContent = '$' + tot.toFixed(2);
-        } else if(val === 'current'){
-          sumType.textContent = 'Already Paid / Current Plan';
-          sumBreakoutRow.style.display = 'none';
-          sumTotal.textContent = extraVal > 0 ? '$' + extraVal.toFixed(2) + ' (Contribution)' : '$0.00 (Covered by Plan)';
-        } else if(val === 'monthly'){
+          } else if(val === 'monthly'){
           var tierSelect = document.getElementById('planTierMobile');
           var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
           sumType.textContent = 'Monthly Class Plan (' + tierVal + ')';

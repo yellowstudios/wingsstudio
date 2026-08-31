@@ -1289,14 +1289,7 @@ if (!ev.costText && hasTiers) {
                   mainFields.style.display = 'block';
                 }
 
-                if(r.hasActivePlan && !hasTiers){
-                  var rCurrent = document.getElementById('payTypeCurrent');
-                  if(rCurrent){
-                    rCurrent.checked = true;
-                    rCurrent.dispatchEvent(new Event('change'));
-                  }
-                }
-              } else if (lastFetchedEmail) {
+                           } else if (lastFetchedEmail) {
                 firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
                 tooltip.style.display = 'none';
                 dupBlock.style.display = 'none';
@@ -1315,7 +1308,6 @@ if (!ev.costText && hasTiers) {
         email.addEventListener('blur', function(){
           var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
           var val = payTypeEl ? payTypeEl.value : 'single';
-          if (val === 'current' && !hasTiers) validateCurrentPlan();
           if (val === 'monthly' && !hasTiers) calculateFees();
           updateItemizedSummary();
         });
@@ -1390,12 +1382,29 @@ if (!ev.costText && hasTiers) {
           .then(function(res){
             if (res && res.success) {
               var breakout = "";
-              if (res.isUpgrade) {
-                breakout = "Upgrade from " + (res.currentTier || 'current plan') + " → " + tier + ". Total Due Today: $" + res.totalDue.toFixed(2);
-              } else {
-                breakout = "Total Due Today: $" + res.totalDue.toFixed(2);
-                if (res.planStartDate) breakout += " (Plan Effective: " + res.planStartDate + ")";
-                if (res.isFirstTime) breakout += " + $25 One-Time Registration Fee";
+             breakout =
+  'Monthly Plan: $' +
+  Number(res.fullTierRate || 0).toFixed(2) +
+  ' per month.';
+
+if (res.isFirstTime) {
+  breakout +=
+    ' One-time registration fee: $' +
+    Number(res.registrationFee || 25).toFixed(2) +
+    '.';
+}
+
+if (res.planStartDate) {
+  breakout +=
+    ' Your Monthly Class Plan will begin ' +
+    res.planStartDate +
+    '. This class is not covered by that plan.';
+}
+
+breakout +=
+  ' Plan purchase total: $' +
+  Number(res.totalDue || 0).toFixed(2) +
+  '.';
               }
               document.getElementById('feeBreakout').textContent = breakout;
               updateItemizedSummary();
@@ -1425,26 +1434,58 @@ if (!ev.costText && hasTiers) {
 
         apiPost({ action: 'checkPlanStatus', email: emailV, instanceId: ev.instanceId })
           .then(function(res){
-            banner.textContent = res.message;
-            if (res && res.valid) {
-              banner.style.background = '#d4edda';
-              banner.style.color = '#155724';
-              currentPlanValidStatus = true;
-            } else if (res && res.status === 'EXCEEDED') {
-              banner.style.background = '#f8d7da';
-              banner.style.color = '#721c24';
-              exceededBlock.style.display = 'block';
-              currentPlanValidStatus = false;
-              currentUserRequiredMins = res.requiredMins || classMins;
-              currentUserCurrentTier = res.currentTier || '';
-              
-              populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);
-            } else {
-              banner.style.background = '#f8d7da';
-              banner.style.color = '#721c24';
-              currentPlanValidStatus = false;
-            }
-          }).catch(function(){
+banner.style.display = 'block';
+banner.textContent = (res && res.message)
+  ? res.message
+  : 'Unable to confirm Monthly Plan coverage.';
+
+exceededBlock.style.display = 'none';
+
+if (res && res.status === 'OK') {
+  banner.style.background = '#d4edda';
+  banner.style.color = '#155724';
+  currentPlanValidStatus = true;
+
+} else if (res && res.status === 'PARTIAL') {
+  banner.style.background = '#fff3cd';
+  banner.style.color = '#856404';
+  currentPlanValidStatus = true;
+
+  banner.textContent =
+    'Your Monthly Class Plan covers ' +
+    Number(res.coveredMinutes || 0) +
+    ' of ' +
+    Number(
+      (res.coveredMinutes || 0) +
+      (res.remainingMinutes || 0)
+    ) +
+    ' minutes. Remaining class balance: $' +
+    Number(res.remainingValue || 0).toFixed(2) +
+    '.';
+
+} else if (res && res.status === 'EXCEEDED') {
+  banner.style.background = '#f8d7da';
+  banner.style.color = '#721c24';
+  currentPlanValidStatus = false;
+
+  banner.textContent =
+    'Your Monthly Class Plan has no remaining minutes for this week. ' +
+    'This class will be charged as a Drop-In.';
+
+  if (exceededBlock) {
+    exceededBlock.style.display = 'block';
+  }
+
+} else {
+  banner.style.background = '#e2e3e5';
+  banner.style.color = '#383d41';
+  currentPlanValidStatus = false;
+
+  banner.textContent =
+    'No active Monthly Class Plan covers this class date. ' +
+    'If you purchase a new plan, it will begin next month and this class remains a Drop-In.';
+}
+                      }).catch(function(){
             banner.style.background = '#f8d7da';
             banner.style.color = '#721c24';
             banner.textContent = 'Server validation failed. Please try again.';
@@ -1517,11 +1558,6 @@ if (!ev.costText && hasTiers) {
 
         errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
         
-        if(!hasTiers && payTypeVal === 'current' && !currentPlanValidStatus){
-          errEl.textContent = 'You do not have an active monthly plan with available hours. Please select Single Class or Monthly Plan to reserve.';
-          return;
-        }
-
         if(!emailV || !fNameV || !lNameV){errEl.textContent='Please enter your email, first name, and last name.'; return;}
         if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
 

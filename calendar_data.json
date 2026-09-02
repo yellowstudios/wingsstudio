@@ -2519,7 +2519,7 @@
       "statusLabel": "In Progress",
       "statusColor": "#1b5e20",
       "borderColor": "#a5d6a7",
-      "isPast": false,
+      "isPast": true,
       "isPublic": true,
       "isFull": false,
       "isCancelled": false,

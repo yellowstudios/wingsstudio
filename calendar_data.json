@@ -2548,7 +2548,7 @@
       "statusLabel": "Canceled",
       "statusColor": "#c0392b",
       "borderColor": "#ef9a9a",
-      "isPast": false,
+      "isPast": true,
       "isPublic": true,
       "isFull": false,
       "isCancelled": true,

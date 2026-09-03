@@ -1,13 +1,7 @@
 {
   "view": "year",
-  "todayKey": "2026-09-02",
+  "todayKey": "2026-09-03",
   "days": [
-    {
-      "key": "2026-08-03",
-      "name": "Mon",
-      "num": "3",
-      "monthNum": "8"
-    },
     {
       "key": "2026-08-04",
       "name": "Tue",
@@ -2376,6 +2370,12 @@
       "key": "2027-09-02",
       "name": "Thu",
       "num": "2",
+      "monthNum": "9"
+    },
+    {
+      "key": "2027-09-03",
+      "name": "Fri",
+      "num": "3",
       "monthNum": "9"
     }
   ],

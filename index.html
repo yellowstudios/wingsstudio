@@ -1331,6 +1331,52 @@ if (!ev.costText && hasTiers) {
                     rMonthly.checked = true;
                     rMonthly.dispatchEvent(new Event('change'));
                   }
+                  var tierSel    = document.getElementById('planTierMobile');
+                  var feeBreakout = document.getElementById('feeBreakout');
+                  var banner     = document.getElementById('planStatusBanner');
+
+                  if(r.planCovered){
+                    // Plan fully covers this class — disable tier, show covered message
+                    currentPlanValidStatus = true;
+                    currentUserCurrentTier = r.currentTier || '';
+                    if(tierSel){ tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
+                    if(banner){
+                      banner.style.display = 'block';
+                      banner.style.background = '#d4edda';
+                      banner.style.color = '#155724';
+                      banner.textContent = r.planMessage || 'This class is covered by your active Monthly Class Plan.';
+                    }
+                    if(feeBreakout){
+                      feeBreakout.textContent = 'This class is covered by your active Monthly Class Plan. No payment required for this class.';
+                      feeBreakout.style.color = '#155724';
+                    }
+                  } else if(r.planStatus === 'INSUFFICIENT_MINUTES'){
+                    // Has plan but not enough hours this week — show exceeded options
+                    currentPlanValidStatus = false;
+                    currentUserCurrentTier = r.currentTier || '';
+                    currentUserRequiredMins = r.requiredMins || classMins;
+                    if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
+                    if(banner){
+                      banner.style.display = 'block';
+                      banner.style.background = '#f8d7da';
+                      banner.style.color = '#721c24';
+                      banner.textContent = r.planMessage || 'Your plan does not have enough hours remaining this week.';
+                    }
+                    var exceededBlock = document.getElementById('exceededOptions');
+                    if(exceededBlock) exceededBlock.style.display = 'block';
+                    populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);
+                  } else {
+                    // Has a plan but it doesn't cover this class date — treat as new plan purchase
+                    currentPlanValidStatus = false;
+                    currentUserCurrentTier = r.currentTier || '';
+                    if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
+                    populateTierDropdown(currentUserCurrentTier, classMins);
+                    calculateFees();
+                  }
+                } else if(!hasTiers) {
+                  currentPlanValidStatus = false;
+                  var tierSel = document.getElementById('planTierMobile');
+                  if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
                 }
               } else if (lastFetchedEmail) {
                 firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
@@ -1422,12 +1468,35 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
     }
 
 if (val === 'monthly') {
-  populateTierDropdown(
-    currentUserCurrentTier,
-    currentUserRequiredMins || classMins
-  );
+  // Re-enable tier dropdown in case it was disabled by active plan detection
+  var tierSel = document.getElementById('planTierMobile');
+  if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
 
-  calculateFees();
+  // Reset feeBreakout style
+  var feeBreakout = document.getElementById('feeBreakout');
+  if(feeBreakout){ feeBreakout.style.color = 'var(--ink)'; }
+
+  // If user has active plan coverage, show banner and disable tier
+  if(currentPlanValidStatus){
+    var banner = document.getElementById('planStatusBanner');
+    if(banner){
+      banner.style.display = 'block';
+      banner.style.background = '#d4edda';
+      banner.style.color = '#155724';
+      banner.textContent = 'This class is covered by your active Monthly Class Plan. No additional payment required for this class.';
+    }
+    if(tierSel){ tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
+    if(feeBreakout){
+      feeBreakout.textContent = 'This class is covered by your active Monthly Class Plan. No payment required for this class.';
+      feeBreakout.style.color = '#155724';
+    }
+  } else {
+    populateTierDropdown(
+      currentUserCurrentTier,
+      currentUserRequiredMins || classMins
+    );
+    calculateFees();
+  }
 }
 
     updateItemizedSummary();
@@ -1493,9 +1562,9 @@ if (val === 'monthly') {
 
     if (res.planStartDate) {
       breakout +=
-        ' Your Monthly Class Plan will begin ' +
+        ' ⚠️ Note: Your Monthly Class Plan will begin ' +
         res.planStartDate +
-        '. This class is not covered by that plan.';
+        '. This class is not covered by that plan and will be charged as a drop-in.';
     }
 
     breakout +=

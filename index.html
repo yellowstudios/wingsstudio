@@ -1326,10 +1326,10 @@ if (!ev.costText && hasTiers) {
                 }
 
                 if(r.hasActivePlan && !hasTiers){
-                  var rCurrent = document.getElementById('payTypeCurrent');
-                  if(rCurrent){
-                    rCurrent.checked = true;
-                    rCurrent.dispatchEvent(new Event('change'));
+                  var rMonthly = document.getElementById('payTypeMonthly');
+                  if(rMonthly){
+                    rMonthly.checked = true;
+                    rMonthly.dispatchEvent(new Event('change'));
                   }
                 }
               } else if (lastFetchedEmail) {

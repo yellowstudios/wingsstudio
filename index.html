@@ -136,6 +136,13 @@
     .reg-input:focus{outline:none;border-color:var(--accent);}
     .reg-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:2px;}
     .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
+    .release-ack-section{margin:14px 0 10px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px;}
+    .release-ack-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink);line-height:1.5;cursor:pointer;}
+    .release-ack-label input[type="checkbox"]{margin-top:2px;width:16px;height:16px;flex-shrink:0;accent-color:var(--accent);cursor:pointer;}
+    .release-ack-label a{color:var(--accent);text-decoration:underline;font-weight:600;}
+    .release-ack-label a:hover{opacity:.8;}
+    .release-ack-note{font-size:11px;color:var(--muted);margin:0;}
+    .req-star{color:#dc2626;font-weight:700;}
     .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
     .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
 
@@ -888,6 +895,11 @@ if (!ev.costText && hasTiers) {
           + '<textarea class="reg-input" id="regAccommodationsMobile" rows="3" placeholder="Please share anything that would help us support you." style="resize:vertical;"></textarea>'
           + '</div>'
           + '</div>'
+          + '<div class="release-ack-section">'
+          + '<label class="release-ack-label"><input type="checkbox" id="chkParticipantRelease"> I acknowledge that I have read and agree to the terms of the <a href="https://docs.google.com/document/d/e/2PACX-1vR6-EBPzR_vE_VmG6f5BO2NXcF9hZ6pKx06QMsoyEZTXCP4GCBZ20q1jJKEq6MdvQ/pub" target="_blank" rel="noopener">Wings to Fly Dance Company Participant Release Form</a>. <span class="req-star">*</span></label>'
+          + '<label class="release-ack-label"><input type="checkbox" id="chkPhotoRelease"> I acknowledge that I have read and agree to the terms of the <a href="https://docs.google.com/document/d/e/2PACX-1vTPIuwHJnzE2TspakzXKSUxHnxFvvR7SkigIMXUnmtTkAzD7bLZsEg1490SVbu02g/pub" target="_blank" rel="noopener">Wings to Fly Dance Company Photo Release Form</a>. <span class="req-star">*</span></label>'
+          + '<p class="release-ack-note">Both acknowledgments are required to complete your reservation.</p>'
+          + '</div>'
           + '<button class="reg-submit" id="regSubmitMobile">'+btnActionText+'</button>'
           + '</div>'
 
@@ -1622,6 +1634,20 @@ if (val === 'monthly') {
 
         errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
         
+        // Release form acknowledgment validation
+        var chkParticipant = document.getElementById('chkParticipantRelease');
+        var chkPhoto       = document.getElementById('chkPhotoRelease');
+        if (!chkParticipant || !chkParticipant.checked) {
+          errEl.textContent = 'Please acknowledge the Participant Release Form to continue.';
+          chkParticipant && chkParticipant.closest('.release-ack-label') && (chkParticipant.closest('.release-ack-label').style.color = '#dc2626');
+          return;
+        }
+        if (!chkPhoto || !chkPhoto.checked) {
+          errEl.textContent = 'Please acknowledge the Photo Release Form to continue.';
+          chkPhoto && chkPhoto.closest('.release-ack-label') && (chkPhoto.closest('.release-ack-label').style.color = '#dc2626');
+          return;
+        }
+        
         if(!hasTiers && payTypeVal === 'current' && !currentPlanValidStatus){
           errEl.textContent = 'You do not have an active monthly plan with available hours. Please select Single Class or Monthly Plan to reserve.';
           return;
@@ -1677,7 +1703,9 @@ if (val === 'monthly') {
           planTier: document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : '',
           extraContribution: extraVal,
           inclusionData:inclusionData,
-          guests: guestList
+          guests: guestList,
+          participantReleaseAck: true,
+          photoReleaseAck: true
         }).then(function(r){
           btn.disabled=false; btn.textContent=getReserveButtonText(ev);
           if(r && r.success){

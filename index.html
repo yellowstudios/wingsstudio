@@ -1326,36 +1326,22 @@ if (!ev.costText && hasTiers) {
                 }
 
                 if(r.hasActivePlan && !hasTiers){
+                  // Set status variables BEFORE firing change event so handler sees correct state
+                  currentPlanValidStatus  = r.planCovered || false;
+                  currentUserCurrentTier  = r.currentTier || '';
+                  currentUserRequiredMins = r.requiredMins || classMins;
+
+                  // For INSUFFICIENT_MINUTES, pre-set exceeded options after change fires
                   var rMonthly = document.getElementById('payTypeMonthly');
                   if(rMonthly){
                     rMonthly.checked = true;
                     rMonthly.dispatchEvent(new Event('change'));
                   }
-                  var tierSel    = document.getElementById('planTierMobile');
-                  var feeBreakout = document.getElementById('feeBreakout');
-                  var banner     = document.getElementById('planStatusBanner');
 
-                  if(r.planCovered){
-                    // Plan fully covers this class — disable tier, show covered message
-                    currentPlanValidStatus = true;
-                    currentUserCurrentTier = r.currentTier || '';
-                    if(tierSel){ tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
-                    if(banner){
-                      banner.style.display = 'block';
-                      banner.style.background = '#d4edda';
-                      banner.style.color = '#155724';
-                      banner.textContent = r.planMessage || 'This class is covered by your active Monthly Class Plan.';
-                    }
-                    if(feeBreakout){
-                      feeBreakout.textContent = 'This class is covered by your active Monthly Class Plan. No payment required for this class.';
-                      feeBreakout.style.color = '#155724';
-                    }
-                  } else if(r.planStatus === 'INSUFFICIENT_MINUTES'){
-                    // Has plan but not enough hours this week — show exceeded options
-                    currentPlanValidStatus = false;
-                    currentUserCurrentTier = r.currentTier || '';
-                    currentUserRequiredMins = r.requiredMins || classMins;
-                    if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
+                  // Handle INSUFFICIENT_MINUTES specifically — change handler shows
+                  // purchase flow, but we also need to show the exceeded block and message
+                  if(r.planStatus === 'INSUFFICIENT_MINUTES'){
+                    var banner = document.getElementById('planStatusBanner');
                     if(banner){
                       banner.style.display = 'block';
                       banner.style.background = '#f8d7da';
@@ -1365,13 +1351,6 @@ if (!ev.costText && hasTiers) {
                     var exceededBlock = document.getElementById('exceededOptions');
                     if(exceededBlock) exceededBlock.style.display = 'block';
                     populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);
-                  } else {
-                    // Has a plan but it doesn't cover this class date — treat as new plan purchase
-                    currentPlanValidStatus = false;
-                    currentUserCurrentTier = r.currentTier || '';
-                    if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
-                    populateTierDropdown(currentUserCurrentTier, classMins);
-                    calculateFees();
                   }
                 } else if(!hasTiers) {
                   currentPlanValidStatus = false;
@@ -1459,42 +1438,36 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
       methodSection.style.display = 'block';
     }
 
-    if (planStatusBanner) {
-      planStatusBanner.style.display = 'none';
-    }
-
-    if (exceededOptions) {
-      exceededOptions.style.display = 'none';
+    // Only reset banner and exceeded block when switching AWAY from monthly
+    // or when monthly is selected but plan is NOT already confirmed covered.
+    // If plan is confirmed covered (currentPlanValidStatus = true), preserve the green banner.
+    if (val !== 'monthly' || !currentPlanValidStatus) {
+      if (planStatusBanner) planStatusBanner.style.display = 'none';
+      if (exceededOptions)  exceededOptions.style.display  = 'none';
     }
 
 if (val === 'monthly') {
-  // Re-enable tier dropdown in case it was disabled by active plan detection
-  var tierSel = document.getElementById('planTierMobile');
-  if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
-
-  // Reset feeBreakout style
+  var tierSel     = document.getElementById('planTierMobile');
   var feeBreakout = document.getElementById('feeBreakout');
-  if(feeBreakout){ feeBreakout.style.color = 'var(--ink)'; }
 
-  // If user has active plan coverage, show banner and disable tier
-  if(currentPlanValidStatus){
-    var banner = document.getElementById('planStatusBanner');
-    if(banner){
-      banner.style.display = 'block';
-      banner.style.background = '#d4edda';
-      banner.style.color = '#155724';
-      banner.textContent = 'This class is covered by your active Monthly Class Plan. No additional payment required for this class.';
+  if (currentPlanValidStatus) {
+    // Plan already confirmed covered — show covered state, keep tier disabled
+    if (tierSel)     { tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
+    if (planStatusBanner) {
+      planStatusBanner.style.display = 'block';
+      planStatusBanner.style.background = '#d4edda';
+      planStatusBanner.style.color = '#155724';
+      planStatusBanner.textContent = 'This class is covered by your active Monthly Class Plan. No additional payment required for this class.';
     }
-    if(tierSel){ tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
-    if(feeBreakout){
+    if (feeBreakout) {
       feeBreakout.textContent = 'This class is covered by your active Monthly Class Plan. No payment required for this class.';
       feeBreakout.style.color = '#155724';
     }
   } else {
-    populateTierDropdown(
-      currentUserCurrentTier,
-      currentUserRequiredMins || classMins
-    );
+    // No confirmed coverage — enable tier for new plan purchase
+    if (tierSel) { tierSel.disabled = false; tierSel.style.opacity = '1'; }
+    if (feeBreakout) { feeBreakout.style.color = 'var(--ink)'; }
+    populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins || classMins);
     calculateFees();
   }
 }

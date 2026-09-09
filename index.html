@@ -786,7 +786,7 @@ if (!ev.costText && hasTiers) {
 
               + '<div id="singlePayBlock" style="margin-top:10px;">'
               + '<label class="reg-label">Payment Amount ($)</label>'
-              + '<input type="number" class="reg-input" id="singleAmountMobile" min="' + (basePrice || 0) + '" step="1" value="' + (basePrice || 0) + '">'
+              + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1">'
               + '<div class="reg-note">Defaulted to minimum rate. You may add an optional contribution.</div>'
               + '</div>'
 
@@ -1145,9 +1145,6 @@ if (!ev.costText && hasTiers) {
       }
       if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
 
-      // Trigger initial summary render now that basePrice and singleInput are set
-      updateItemizedSummary();
-
       if (qtyInput) {
         qtyInput.addEventListener('input', function(){
           updateItemizedSummary();
@@ -1453,8 +1450,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
 
     if (singlePayBlock)  singlePayBlock.style.display  = val === 'single'  ? 'block' : 'none';
     if (monthlyPayBlock) monthlyPayBlock.style.display = val === 'monthly' ? 'block' : 'none';
-    // Show method section for single always; for monthly only when NOT covered by plan
-    if (methodSection)   methodSection.style.display   = (val === 'single' || (val === 'monthly' && !currentPlanValidStatus)) ? 'block' : 'none';
+    if (methodSection)   methodSection.style.display   = 'block';
 
     // Only reset banner when switching away from monthly OR when monthly is not covered
     if (val !== 'monthly' || !currentPlanValidStatus) {

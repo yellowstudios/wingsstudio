@@ -1138,7 +1138,6 @@ if (!ev.costText && hasTiers) {
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
       if (singleInput) {
-        // Always set the value and minimum regardless of which payment type is active
         singleInput.value = basePrice || 0;
         singleInput.min   = basePrice || 0;
         singleInput.addEventListener('input', updateItemizedSummary);
@@ -1450,7 +1449,8 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
 
     if (singlePayBlock)  singlePayBlock.style.display  = val === 'single'  ? 'block' : 'none';
     if (monthlyPayBlock) monthlyPayBlock.style.display = val === 'monthly' ? 'block' : 'none';
-    if (methodSection)   methodSection.style.display   = 'block';
+    // Hide payment method when plan covers class — nothing to pay
+    if (methodSection)   methodSection.style.display   = (val === 'single' || (val === 'monthly' && !currentPlanValidStatus)) ? 'block' : 'none';
 
     // Only reset banner when switching away from monthly OR when monthly is not covered
     if (val !== 'monthly' || !currentPlanValidStatus) {

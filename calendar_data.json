@@ -1,13 +1,7 @@
 {
   "view": "year",
-  "todayKey": "2026-09-08",
+  "todayKey": "2026-09-09",
   "days": [
-    {
-      "key": "2026-08-09",
-      "name": "Sun",
-      "num": "9",
-      "monthNum": "8"
-    },
     {
       "key": "2026-08-10",
       "name": "Mon",
@@ -2376,6 +2370,12 @@
       "key": "2027-09-08",
       "name": "Wed",
       "num": "8",
+      "monthNum": "9"
+    },
+    {
+      "key": "2027-09-09",
+      "name": "Thu",
+      "num": "9",
       "monthNum": "9"
     }
   ],
@@ -11057,32 +11057,6 @@
         "inclusion": true,
         "instances": [
           {
-            "instanceId": "OI_201",
-            "title": "Adult Progressive Ballet Technique",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "start": "2026-09-08T22:15:00.000Z",
-            "end": "2026-09-08T23:15:00.000Z",
-            "cost": 20,
-            "category": "Conditioning",
-            "type": "Class",
-            "inclusion": true,
-            "spotsText": "12 spots left",
-            "isFull": false,
-            "isCancelled": false,
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "dayKey": "2026-09-08",
-            "duration": "1899-12-30T06:00:00.000Z",
-            "participantNotes": "Progressing Ballet Technique (PBT) is an innovative body-conditioning and strengthening program that has been designed to enhance students’ technique by focusing on training the muscle memory required in each exercise in all forms of dance. The program helps with injury prevention and rehabilitation and enhances the ability of athletes to perform at their best. With the use of an exercise ball, the students gain a great sense of posture and weight-placement whilst feeling each correct muscle group working throughout each exercise, which then stays with them when whilst performing in dance or their chosen field of sport. PBT focuses on core strength, weight placement and alignment of the body with a gradual approach of carefully designed exercises and repetitions of these exercises that trigger their muscle memory. ﻿ PBT is not only a program to improve technique in ballet dancers, but also now being appreciated and incorporated in training by all forms of dancers, athletes, physiotherapists and even footballers! Great class for horseback riders to strengthen core.",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_004.Image.143054.png",
-            "isPublic": true,
-            "sessionId": "O_004",
-            "_calType": "class",
-            "tiers": []
-          },
-          {
             "instanceId": "OI_074",
             "title": "Progressive Ballet Technique",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
@@ -15547,32 +15521,6 @@
         "inclusion": true,
         "instances": [
           {
-            "instanceId": "OI_188",
-            "title": "WheelDancer & Caregiver",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "start": "2026-09-08T21:00:00.000Z",
-            "end": "2026-09-08T22:00:00.000Z",
-            "cost": 20,
-            "category": "Movement",
-            "type": "Class",
-            "inclusion": true,
-            "spotsText": "5 spots left",
-            "isFull": false,
-            "isCancelled": false,
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "dayKey": "2026-09-08",
-            "duration": "1899-12-30T06:00:00.000Z",
-            "participantNotes": "",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_013.Image.155617.jpg",
-            "isPublic": true,
-            "sessionId": "O_013",
-            "_calType": "class",
-            "tiers": []
-          },
-          {
             "instanceId": "OI_300",
             "title": "WheelDancer & Caregiver",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
@@ -16989,32 +16937,6 @@
         "videoUrl": "https://www.youtube.com/embed/HB7oJdXWcGs",
         "inclusion": false,
         "instances": [
-          {
-            "instanceId": "OI_266",
-            "title": "Adult Ballet",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "start": "2026-09-08T23:30:00.000Z",
-            "end": "2026-09-09T00:30:00.000Z",
-            "cost": 20,
-            "category": "Movement",
-            "type": "Class",
-            "inclusion": true,
-            "spotsText": "12 spots left",
-            "isFull": false,
-            "isCancelled": false,
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "dayKey": "2026-09-08",
-            "duration": "1899-12-30T06:00:00.000Z",
-            "participantNotes": "",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_014.Image.212745.jpg",
-            "isPublic": true,
-            "sessionId": "O_014",
-            "_calType": "class",
-            "tiers": []
-          },
           {
             "instanceId": "OI_267",
             "title": "Adult Ballet",

@@ -692,6 +692,12 @@ function fetchStaticJson() {
 
       if (ev.dateLabel) {
         html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
+      } else if (ev.startTime) {
+        // Fallback: build date from startMs if dateLabel somehow missing
+        var fallbackDate = ev.startMs ? new Date(ev.startMs) : null;
+        if (fallbackDate) {
+          html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(fallbackDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})) + '</div>';
+        }
       }
       if (timeDisplay) {
         html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(timeDisplay) + '</div>';
@@ -1132,8 +1138,9 @@ if (!ev.costText && hasTiers) {
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
       if (singleInput) {
-        singleInput.value = basePrice;
-        singleInput.min = basePrice;
+        // Always set the value and minimum regardless of which payment type is active
+        singleInput.value = basePrice || 0;
+        singleInput.min   = basePrice || 0;
         singleInput.addEventListener('input', updateItemizedSummary);
       }
       if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
@@ -1230,15 +1237,32 @@ if (!ev.costText && hasTiers) {
         var val = payTypeEl ? payTypeEl.value : 'single';
 
         if(val === 'single'){
+          // Restore total row visibility in case it was hidden by monthly covered state
+          var sumTotalRow = document.querySelector('.summary-total');
+          if(sumTotalRow) sumTotalRow.style.display = '';
           sumType.textContent = (qty > 1 ? qty + 'x Tickets ' : '') + 'Single Class (Drop-In)';
           sumBreakoutRow.style.display = 'none';
           var amt = singleInput ? Number(singleInput.value) : basePrice;
-          if(amt < basePrice) amt = basePrice;
+          if(!amt || amt < basePrice) amt = basePrice;
           var tot = (amt * qty) + extraVal;
           sumTotal.textContent = '$' + tot.toFixed(2);
-} else if(val === 'monthly'){
+        } else if(val === 'monthly'){
   var tierSelect = document.getElementById('planTierMobile');
   var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
+  var sumTotalRow = document.querySelector('.summary-total');
+
+  // If plan covers this class, show $0 and hide the total row
+  if(currentPlanValidStatus){
+    sumType.textContent = 'Monthly Class Plan — Covered';
+    sumBreakoutRow.style.display = 'none';
+    sumTotal.textContent = '$0.00';
+    if(sumTotalRow) sumTotalRow.style.display = 'none';
+    return;
+  }
+
+  // Restore total row visibility for purchase flow
+  if(sumTotalRow) sumTotalRow.style.display = '';
+
   var feeText = document.getElementById('feeBreakout')
     ? document.getElementById('feeBreakout').textContent
     : '';
@@ -1331,15 +1355,13 @@ if (!ev.costText && hasTiers) {
                   currentUserCurrentTier  = r.currentTier || '';
                   currentUserRequiredMins = r.requiredMins || classMins;
 
-                  // For INSUFFICIENT_MINUTES, pre-set exceeded options after change fires
                   var rMonthly = document.getElementById('payTypeMonthly');
                   if(rMonthly){
                     rMonthly.checked = true;
                     rMonthly.dispatchEvent(new Event('change'));
                   }
 
-                  // Handle INSUFFICIENT_MINUTES specifically — change handler shows
-                  // purchase flow, but we also need to show the exceeded block and message
+                  // Handle INSUFFICIENT_MINUTES — show exceeded block and message
                   if(r.planStatus === 'INSUFFICIENT_MINUTES'){
                     var banner = document.getElementById('planStatusBanner');
                     if(banner){
@@ -1420,57 +1442,47 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
   r.addEventListener('change', function(){
     var val = this.value;
 
-    var singlePayBlock = document.getElementById('singlePayBlock');
+    var singlePayBlock  = document.getElementById('singlePayBlock');
     var monthlyPayBlock = document.getElementById('monthlyPayBlock');
-    var methodSection = document.getElementById('methodSection');
+    var methodSection   = document.getElementById('methodSection');
     var planStatusBanner = document.getElementById('planStatusBanner');
     var exceededOptions = document.getElementById('exceededOptions');
 
-    if (singlePayBlock) {
-      singlePayBlock.style.display = val === 'single' ? 'block' : 'none';
-    }
+    if (singlePayBlock)  singlePayBlock.style.display  = val === 'single'  ? 'block' : 'none';
+    if (monthlyPayBlock) monthlyPayBlock.style.display = val === 'monthly' ? 'block' : 'none';
+    if (methodSection)   methodSection.style.display   = 'block';
 
-    if (monthlyPayBlock) {
-      monthlyPayBlock.style.display = val === 'monthly' ? 'block' : 'none';
-    }
-
-    if (methodSection) {
-      methodSection.style.display = 'block';
-    }
-
-    // Only reset banner and exceeded block when switching AWAY from monthly
-    // or when monthly is selected but plan is NOT already confirmed covered.
-    // If plan is confirmed covered (currentPlanValidStatus = true), preserve the green banner.
+    // Only reset banner when switching away from monthly OR when monthly is not covered
     if (val !== 'monthly' || !currentPlanValidStatus) {
       if (planStatusBanner) planStatusBanner.style.display = 'none';
       if (exceededOptions)  exceededOptions.style.display  = 'none';
     }
 
-if (val === 'monthly') {
-  var tierSel     = document.getElementById('planTierMobile');
-  var feeBreakout = document.getElementById('feeBreakout');
+    if (val === 'monthly') {
+      var tierSel     = document.getElementById('planTierMobile');
+      var feeBreakout = document.getElementById('feeBreakout');
 
-  if (currentPlanValidStatus) {
-    // Plan already confirmed covered — show covered state, keep tier disabled
-    if (tierSel)     { tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
-    if (planStatusBanner) {
-      planStatusBanner.style.display = 'block';
-      planStatusBanner.style.background = '#d4edda';
-      planStatusBanner.style.color = '#155724';
-      planStatusBanner.textContent = 'This class is covered by your active Monthly Class Plan. No additional payment required for this class.';
+      if (currentPlanValidStatus) {
+        // Plan confirmed covered — disable tier, show green message
+        if (tierSel)     { tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
+        if (planStatusBanner) {
+          planStatusBanner.style.display = 'block';
+          planStatusBanner.style.background = '#d4edda';
+          planStatusBanner.style.color = '#155724';
+          planStatusBanner.textContent = 'This class is covered by your active Monthly Class Plan. No additional payment required for this class.';
+        }
+        if (feeBreakout) {
+          feeBreakout.textContent = 'This class is covered by your active Monthly Class Plan. No payment required for this class.';
+          feeBreakout.style.color = '#155724';
+        }
+      } else {
+        // No coverage — enable tier for new plan purchase
+        if (tierSel) { tierSel.disabled = false; tierSel.style.opacity = '1'; }
+        if (feeBreakout) feeBreakout.style.color = 'var(--ink)';
+        populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins || classMins);
+        calculateFees();
+      }
     }
-    if (feeBreakout) {
-      feeBreakout.textContent = 'This class is covered by your active Monthly Class Plan. No payment required for this class.';
-      feeBreakout.style.color = '#155724';
-    }
-  } else {
-    // No confirmed coverage — enable tier for new plan purchase
-    if (tierSel) { tierSel.disabled = false; tierSel.style.opacity = '1'; }
-    if (feeBreakout) { feeBreakout.style.color = 'var(--ink)'; }
-    populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins || classMins);
-    calculateFees();
-  }
-}
 
     updateItemizedSummary();
   });
@@ -1535,9 +1547,9 @@ if (val === 'monthly') {
 
     if (res.planStartDate) {
       breakout +=
-        ' ⚠️ Note: Your Monthly Class Plan will begin ' +
+        ' Your Monthly Class Plan will begin ' +
         res.planStartDate +
-        '. This class is not covered by that plan and will be charged as a drop-in.';
+        '. This class is not covered by that plan.';
     }
 
     breakout +=

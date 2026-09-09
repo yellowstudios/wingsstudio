@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wings to Fly — Schedule</title>
+
+  <script>
+    (function() {
+      var search = window.location.search || '';
+      if (search.indexOf('standalone=true') !== -1) {
+        document.documentElement.classList.add('is-standalone-preload');
+      }
+    })();
+  </script>
+  <style>
+    html.is-standalone-preload .toolbar,
+    html.is-standalone-preload .page-section,
+    html.is-standalone-preload .calendar-sessions-spacer {
+      display: none !important;
+    }
+  </style>
+
+  <link rel="preconnect" href="https://script.google.com" crossorigin />
+  <link rel="dns-prefetch" href="https://script.google.com" />
+  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <style>
+    :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
+    *{box-sizing:border-box;}
+    html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+    body{overflow:auto;}
+    body.modal-open{overflow:hidden !important;}
+    body.standalone-mode .toolbar, body.standalone-mode .page-section, body.standalone-mode .calendar-sessions-spacer { display:none !important; }
+    body.standalone-mode .modal-overlay { position:static; background:none; display:block; padding:20px 12px; }
+    body.standalone-mode .modal-container { max-width:650px; box-shadow:none; border:1px solid var(--line); }
+    body.standalone-mode .modal-close { display:none; }
+
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:8px;}
+    .toolbar .nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .toolbar button.nav-btn{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 12px;font-size:14px;background:#fff;cursor:pointer;}
+    .toolbar button.nav-btn:hover{background:#f0f0f0;}
+    .toolbar button.nav-btn:disabled{opacity:.5;cursor:default;}
+    .toolbar .week-label{font-weight:600;font-size:15px;}
+    .toolbar .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .toolbar .view-toggle button,.toolbar .tabs button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:none;cursor:pointer;color:var(--muted);}
+    .toolbar .view-toggle button.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+    .toolbar .tabs button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+    .toolbar .divider{width:1px;height:24px;background:var(--line);}
+
+    .week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;padding:12px;}
+    .day-column{background:#fff;border:1px solid var(--line);border-radius:8px;min-height:380px;display:flex;flex-direction:column;min-width:0;}
+    .day-column.today{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+    .day-header{padding:8px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;align-items:center;background:#fcfaf5;border-radius:8px 8px 0 0;}
+    .day-name{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+    .day-num{font-size:18px;font-weight:600;}
+    .day-events{padding:8px;display:flex;flex-direction:column;gap:8px;flex:1;min-width:0;}
+    .no-events{color:#bbb;text-align:center;font-size:13px;padding:14px 0;}
+
+    .event-card{border:1px solid var(--line);border-radius:6px;padding:8px;background:#fff;font-size:12px;min-width:0;}
+    .event-time{color:var(--muted);font-size:11px;margin-bottom:2px;}
+    .event-title{font-weight:600;font-size:13px;margin-bottom:2px;word-wrap:break-word;}
+    .event-location{color:var(--muted);font-size:11px;margin-bottom:4px;word-wrap:break-word;}
+    .event-meta{display:flex;gap:8px;font-size:11px;color:var(--muted);margin-bottom:6px;flex-wrap:wrap;}
+    .event-cost{font-weight:600;color:var(--ink);}
+    .event-spots{font-style:italic;}
+    .btn-register{display:block;width:100%;text-align:center;background:var(--accent);color:#fff;border:none;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;margin-bottom:4px;}
+    .btn-register:hover{opacity:.9;}
+    .btn-info{display:block;width:100%;text-align:center;background:#fff;color:var(--ink);border:1px solid var(--line);font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;}
+    .btn-info:hover{background:#f0f0f0;}
+
+    .month-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:12px;}
+    .month-day-header{background:#fcfaf5;text-align:center;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:6px 0;}
+    .month-cell{background:#fff;min-height:90px;padding:4px;display:flex;flex-direction:column;cursor:pointer;}
+    .month-cell:hover{background:#fdf9f0;}
+    .month-cell.today .month-cell-num{background:var(--accent);color:#fff;border-radius:50%;}
+    .month-cell.other-month .month-cell-num{color:#ccc;}
+    .month-cell-num{font-size:13px;font-weight:600;width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-bottom:2px;flex-shrink:0;}
+    .month-event-pill{font-size:10px;background:var(--accent);color:#fff;border-radius:3px;padding:1px 4px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .month-more{font-size:10px;color:var(--muted);padding:1px 4px;}
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 99999;
+      padding: 40px 16px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      backdrop-filter: blur(2px);
+    }
+
+.modal-overlay.active {
+  display: flex;
+}
+
+    .modal-container {
+      background: #fff;
+      border-radius: 12px;
+      max-width: 620px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28);
+      position: relative;
+      margin: 0 auto;
+      transform: translateY(0);
+      transition: transform 0.15s ease-out;
+    }
+
+    .modal-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+    .modal-title{font-size:18px;font-weight:800;color:var(--ink);margin:0;}
+    .modal-close{font-size:26px;line-height:1;cursor:pointer;color:var(--muted);border:none;background:none;padding:0;}
+
+    .loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,.6);display:none;align-items:center;justify-content:center;font-size:14px;color:var(--muted);z-index:9998;pointer-events:none;}
+    .loading-overlay.active{display:flex;}
+
+    .modal-img{width:100%;max-height:450px;object-fit:contain;border-radius:8px;margin-bottom:14px;display:none;background:#f5f5f5;}
+    .modal-img.show{display:block;}
+    .modal-row{display:flex;gap:8px;margin-bottom:8px;font-size:13px;}
+    .modal-label{font-weight:600;color:var(--ink);white-space:nowrap;min-width:80px;}
+    .modal-value{color:var(--muted);}
+    .modal-divider{border:none;border-top:1px solid var(--line);margin:16px 0;}
+    .modal-subtitle{font-size:13px;color:var(--muted);margin-bottom:6px;}
+    .reg-section.active{display:block;}
+    .reg-title{font-weight:600;font-size:14px;margin-bottom:6px;}
+    .reg-note{font-size:12px;color:var(--muted);margin-bottom:10px;}
+    .reg-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;display:block;}
+    .reg-input{width:100%;padding:10px;margin-bottom:8px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;}
+    .reg-input:focus{outline:none;border-color:var(--accent);}
+    .reg-submit{width:100%;background:var(--accent);color:#fff;border:none;border-radius:6px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;margin-top:2px;}
+    .reg-submit:disabled{opacity:.5;cursor:not-allowed;}
+    .release-ack-section{margin:14px 0 10px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px;}
+    .release-ack-label{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--ink);line-height:1.5;cursor:pointer;}
+    .release-ack-label input[type="checkbox"]{margin-top:2px;width:16px;height:16px;flex-shrink:0;accent-color:var(--accent);cursor:pointer;}
+    .release-ack-label a{color:var(--accent);text-decoration:underline;font-weight:600;}
+    .release-ack-label a:hover{opacity:.8;}
+    .release-ack-note{font-size:11px;color:var(--muted);margin:0;}
+    .req-star{color:#dc2626;font-weight:700;}
+    .reg-success{color:#2e7d32;font-size:13px;margin-top:10px;text-align:center;font-weight:600;}
+    .reg-error{color:#c0392b;font-size:13px;margin-top:10px;text-align:center;}
+
+    .qty-control-wrapper { display:flex; align-items:center; gap:8px; margin-top:4px; margin-bottom:12px; }
+    .qty-btn { width:38px; height:38px; background:#fff; border:1px solid var(--line); border-radius:6px; font-size:18px; font-weight:700; cursor:pointer; color:var(--ink); }
+    .qty-btn:hover { background:#f0f0f0; }
+    .qty-input { width:60px; text-align:center; padding:8px; border:1px solid var(--line); border-radius:6px; font-size:15px; font-weight:700; }
+
+    .recognized-tooltip, .duplicate-block, #planStatusBanner, #exceededOptions { transition: opacity 0.25s ease-in-out; }
+    .recognized-tooltip{display:none; background:#e8f5e9; border:1px solid #a5d6a7; color:#1b5e20; border-radius:6px; padding:8px 10px; font-size:12px; font-weight:600; margin-bottom:8px;}
+    .duplicate-block{display:none; background:#e3f2fd; border:1px solid #90caf9; color:#0d47a1; border-radius:8px; padding:12px; font-size:13px; margin-top:10px;}
+
+    .pay-section{margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
+    .pay-title{font-weight:600;font-size:14px;margin-bottom:6px;}
+    .pay-options{display:flex;flex-direction:column;gap:8px;}
+    .pay-option{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;padding:8px 10px;border:1px solid var(--line);border-radius:6px;}
+    .pay-option:hover{background:#fdf9f0;}
+    .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
+    .protected-tier{display:none;}
+    .protected-tier.unlocked{display:flex; animation:fadeIn 0.3s ease-in;}
+
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+    .summary-card{background:#fcfaf5; border:1px solid var(--accent); border-radius:8px; padding:12px; margin-top:14px;}
+    .summary-title{font-weight:700; font-size:13px; color:var(--ink); margin-bottom:6px;}
+    .summary-row{display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;}
+    .summary-total{display:flex; justify-content:space-between; font-weight:700; font-size:15px; border-top:1px solid var(--line); padding-top:6px; margin-top:6px;}
+
+    .confirmation-view{text-align:center; padding:10px 0;}
+    .confirm-icon{font-size:42px; color:#2e7d32; margin-bottom:8px;}
+    .confirm-title{font-size:20px; font-weight:800; color:var(--ink); margin-bottom:6px;}
+    .confirm-msg{font-size:14px; color:var(--muted); margin-bottom:16px;}
+    .confirm-btns{display:flex; gap:10px; flex-wrap:wrap;}
+    .confirm-btn{flex:1; padding:10px; border-radius:6px; font-weight:600; font-size:13px; cursor:pointer; border:1px solid var(--line); background:#fff;}
+    .confirm-btn.primary{background:var(--accent); color:#fff; border-color:var(--accent);}
+
+    .page-section{padding:16px 16px 0;}
+    .section-title{font-size:26px;line-height:1.15;font-weight:800;margin:0 0 6px;letter-spacing:-0.02em;}
+    .section-subtitle{font-size:14px;color:var(--muted);margin:0 0 14px;line-height:1.5;}
+    .calendar-sessions-spacer{height:24px;}
+    .sessions-block{padding-top:8px;}
+    .sessions-title{margin-top:6px;}
+
+    @media(max-width:900px){
+      .page-section{padding:14px 12px 0;}
+      .section-title{font-size:22px;}
+      .calendar-sessions-spacer{height:30px;}
+      .week-grid{grid-template-columns:1fr;}
+    }
+
+    .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+    .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
+    .session-card-img{width:100%;max-height:280px;object-fit:contain;background:#f5f5f5;display:block;}
+    .session-card-body{padding:14px;flex:1;display:flex;flex-direction:column;}
+    .session-card-category{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:600;margin-bottom:4px;}
+    .session-card-title{font-size:16px;font-weight:700;margin-bottom:6px;}
+    .session-card-desc{font-size:13px;color:var(--muted);margin-bottom:10px;flex:1;line-height:1.5;}
+    .session-card-cost{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+    .session-card-toggle{font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:none;border:1px solid var(--accent);border-radius:6px;padding:7px 12px;cursor:pointer;width:100%;}
+    .session-card-toggle:hover{background:#fdf9f0;}
+    .session-instances{display:none;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;max-height:none;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+    .session-instances.open{display:block;}
+    .session-instance-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);gap:8px;flex-wrap:wrap;}
+    .session-instance-row:last-child{border-bottom:none;}
+    .session-instance-date{font-size:13px;font-weight:600;}
+    .session-instance-time{font-size:12px;color:var(--muted);}
+    .session-instance-spots{font-size:12px;font-style:italic;color:var(--muted);}
+    .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:5px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);white-space:nowrap;}
+    .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="nav">
+      <button class="nav-btn" id="prevBtn">‹ Prev</button>
+      <span class="week-label" id="periodLabel">Loading…</span>
+      <button class="nav-btn" id="nextBtn">Next ›</button>
+    </div>
+    <div class="controls">
+      <div class="view-toggle">
+        <button id="viewWeek" class="active">Week</button>
+        <button id="viewMonth">Month</button>
+      </div>
+      <div class="divider"></div>
+      <div class="tabs">
+        <button id="tabClasses" class="active">Classes &amp; Rehearsals</button>
+        <button id="tabShows" class="active">Shows &amp; Events</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-section">
+    <h2 class="section-title">Our Calendar</h2>
+    <p class="section-subtitle">Browse our schedule and reserve your space for any upcoming date.</p>
+    <div id="calendarArea"></div>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">Loading…</div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle"></h3>
+        <button class="modal-close" id="modalCloseBtn">×</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div class="calendar-sessions-spacer"></div>
+
+  <div class="page-section sessions-block">
+    <h2 class="section-title sessions-title">Our Sessions</h2>
+    <p class="section-subtitle">Browse our full program and reserve for any upcoming date.</p>
+    <div id="sessionsArea"></div>
+  </div>
+
+  <script>
+var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3Hhuw1kW00sOdEilXh5jebe0tc-vLIakY1WX1h2c1w/exec";
+    var STATIC_JSON_URL = "./calendar_data.json"; 
+    
+    var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),masterData:null,data:null,sessionsData:null,activeEv:null};
+    var monthByDay = {}, eventMap = {};
+
+    var ALL_TIERS = [
+      { tier: '1 hour/week', mins: 60, rate: 65 },
+      { tier: '1.5 hours/week', mins: 90, rate: 85 },
+      { tier: '2 hours/week', mins: 120, rate: 100 },
+      { tier: '2.5 hours/week', mins: 150, rate: 120 },
+      { tier: '3 hours/week', mins: 180, rate: 135 },
+      { tier: '3.5 hours/week', mins: 210, rate: 150 },
+      { tier: '4 hours/week', mins: 240, rate: 160 },
+      { tier: '4.5 hours/week', mins: 270, rate: 170 },
+      { tier: '5 hours/week', mins: 300, rate: 185 },
+      { tier: '5.5 hours/week', mins: 330, rate: 200 },
+      { tier: '6 hours/week', mins: 360, rate: 215 }
+    ];
+
+    function mondayOf(date){var d=new Date(date); d.setHours(0,0,0,0); var day=d.getDay(), diff=day===0?-6:1-day; d.setDate(d.getDate()+diff); return d;}
+    function addDays(date,n){var d=new Date(date); d.setDate(d.getDate()+n); return d;}
+    function dateKey(date){var d=new Date(date); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+    function monthKey(date){var d=new Date(date); return d.getFullYear()+'-'+pad(d.getMonth()+1);}
+    function pad(n){return String(n).padStart(2,'0');}
+    function formatDuration(min){if(!min||isNaN(Number(min))) return ''; var m=Number(min); if(m<60) return m+' min'; if(m%60===0) return (m/60)+(m/60===1?' hour':' hours'); return Math.floor(m/60)+' hr '+(m%60)+' min';}
+    function esc(str){var d=document.createElement('div'); d.textContent=String(str==null?'':str); return d.innerHTML;}
+    function evKey(ev){return String(ev.instanceId||ev.id||'');}
+    function registerEvent(ev){var k=evKey(ev); if(k) eventMap[k]=ev; return k;}
+
+    function formatFriendlyTime(startRaw, endRaw) {
+      if (!startRaw) return '';
+      if (typeof startRaw === 'string' && startRaw.indexOf('M') !== -1 && !startRaw.includes('T')) {
+        return endRaw ? startRaw + ' – ' + endRaw : startRaw;
+      }
+      try {
+        var startDate = new Date(startRaw);
+        if (isNaN(startDate.getTime())) return startRaw || '';
+        var options = { hour: 'numeric', minute: '2-digit', hour12: true };
+        var startStr = startDate.toLocaleTimeString('en-US', options);
+        if (endRaw) {
+          var endDate = new Date(endRaw);
+          if (!isNaN(endDate.getTime())) {
+            var endStr = endDate.toLocaleTimeString('en-US', options);
+            return startStr + ' – ' + endStr;
+          }
+        }
+        return startStr;
+      } catch (e) {
+        return startRaw || '';
+      }
+    }
+    
+    function apiGet(params){
+      var qs=Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&'); 
+      return fetch(API+'?'+qs).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});
+    }
+
+    function apiPost(body){
+      return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});
+    }
+
+    function setLoading(on){
+      document.getElementById('loadingOverlay').classList.toggle('active',!!on);
+      document.getElementById('prevBtn').disabled=!!on;
+      document.getElementById('nextBtn').disabled=!!on;
+    }
+    
+    function getQueryParam(param) {
+      var search = window.location.search || '';
+      if (window.parent && window.parent !== window) {
+        try { search = window.parent.location.search || search; } catch(e) {}
+      }
+      var match = RegExp('[?&]' + param + '=([^&]*)').exec(search);
+      return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+    }
+
+    function checkDeepLink(){
+      var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
+      var isStandalone = getQueryParam('standalone') === 'true';
+      
+      if (isStandalone) {
+        document.body.classList.add('standalone-mode');
+        var modalContainer = document.querySelector('.modal-container');
+        if (modalContainer && !document.getElementById('standaloneBackBtn')) {
+          var navDiv = document.createElement('div');
+          navDiv.id = 'standaloneBackBtn';
+          navDiv.style.cssText = 'margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between;';
+          navDiv.innerHTML = '<a href="https://wtfdc.org/UpcomingEvents" target="_top" style="display:inline-flex; align-items:center; gap:6px; background:#fff; color:var(--ink); border:1px solid var(--line); padding:8px 14px; border-radius:6px; font-size:13px; font-weight:600; text-decoration:none; cursor:pointer;">‹ Back to Full Calendar</a>';
+          modalContainer.insertBefore(navDiv, modalContainer.firstChild);
+        }
+      }
+
+      if (reserveId) {
+        var checkTimer = setInterval(function(){
+          if (eventMap[reserveId]) {
+            clearInterval(checkTimer);
+            openModal(eventMap[reserveId], true);
+          }
+        }, 50);
+        setTimeout(function(){ clearInterval(checkTimer); }, 5000);
+      }
+    }
+
+    // 0ms Instant Client-Side Slice from 1-Year Master Data
+    function sliceClientCalendarData() {
+      if (!S.masterData) return;
+      var todayK = S.masterData.todayKey || dateKey(new Date());
+
+      if (S.view === 'week') {
+        var mon = S.currentMonday;
+        var sun = addDays(mon, 6);
+        var daysList = [];
+        var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        for (var i = 0; i < 7; i++) {
+          var curD = addDays(mon, i);
+          daysList.push({
+            key: dateKey(curD),
+            name: DOW[i],
+            num: String(curD.getDate()),
+            monthNum: String(curD.getMonth() + 1)
+          });
+        }
+
+        var monStr = mon.toLocaleDateString("en-US", {month:"short", day:"numeric"});
+        var sunStr = sun.toLocaleDateString("en-US", {month:"short", day:"numeric", year:"numeric"});
+
+        var startMs = mon.getTime();
+        var endMs = addDays(mon, 7).getTime();
+
+        var filterList = function(list) {
+          return (list || []).filter(function(ev) {
+            var ms = ev.startMs || (ev.start ? new Date(ev.start).getTime() : 0);
+            return ms >= startMs && ms < endMs;
+          });
+        };
+
+        S.data = {
+          view: 'week',
+          weekLabel: monStr + ' – ' + sunStr,
+          todayKey: todayK,
+          days: daysList,
+          classes: filterList(S.masterData.classes),
+          shows: filterList(S.masterData.shows)
+        };
+
+      } else { // Month View
+        var parts = S.currentMonth.split('-');
+        var year = parseInt(parts[0], 10);
+        var monthIdx = parseInt(parts[1], 10) - 1;
+        var firstDay = new Date(year, monthIdx, 1);
+        var lastDay = new Date(year, monthIdx + 1, 0);
+
+        var gridStart = mondayOf(firstDay);
+        var gridEnd = addDays(mondayOf(lastDay), 6);
+        var totalDays = Math.round((gridEnd.getTime() - gridStart.getTime()) / 86400000) + 1;
+
+        var daysList = [];
+        var DOW = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        for (var i = 0; i < totalDays; i++) {
+          var curD = addDays(gridStart, i);
+          daysList.push({
+            key: dateKey(curD),
+            name: DOW[curD.getDay() === 0 ? 6 : curD.getDay() - 1],
+            num: String(curD.getDate()),
+            monthNum: String(curD.getMonth() + 1)
+          });
+        }
+
+        var monthLabelStr = firstDay.toLocaleDateString("en-US", {month:"long", year:"numeric"});
+        var startMs = gridStart.getTime();
+        var endMs = addDays(gridEnd, 1).getTime();
+
+        var filterList = function(list) {
+          return (list || []).filter(function(ev) {
+            var ms = ev.startMs || (ev.start ? new Date(ev.start).getTime() : 0);
+            return ms >= startMs && ms < endMs;
+          });
+        };
+
+        S.data = {
+          view: 'month',
+          monthLabel: monthLabelStr,
+          todayKey: todayK,
+          days: daysList,
+          classes: filterList(S.masterData.classes),
+          shows: filterList(S.masterData.shows)
+        };
+      }
+
+      render();
+      setLoading(false);
+      checkDeepLink();
+    }
+
+    function load(forceFresh){
+      // 1. If master GitHub data is already in memory, slice instantly in 0ms!
+      if (S.masterData && !forceFresh) {
+        sliceClientCalendarData();
+        return;
+      }
+
+      // 2. Try loading full year JSON from LocalStorage
+      var localMaster = localStorage.getItem('wings_master_year_json');
+      if (localMaster && !forceFresh) {
+        try {
+          S.masterData = JSON.parse(localMaster);
+          sliceClientCalendarData();
+          fetchStaticJson(); // background update
+          return;
+        } catch(e) {}
+      }
+
+      setLoading(true);
+      fetchStaticJson();
+    }
+
+function fetchStaticJson() {
+  fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
+    .then(function(r) {
+      if (!r.ok) {
+        throw new Error('Static calendar file returned HTTP ' + r.status);
+      }
+      return r.json();
+    })
+    .then(function(data) {
+      if (!data || (!Array.isArray(data.classes) && !Array.isArray(data.shows))) {
+        throw new Error('Static calendar file does not contain classes or shows arrays.');
+      }
+
+      S.masterData = data;
+
+      try {
+        localStorage.setItem('wings_master_year_json', JSON.stringify(data));
+      } catch(e) {}
+
+      if (data.sessionsPayload) {
+        S.sessionsData = data.sessionsPayload;
+        renderSessions();
+      }
+
+      sliceClientCalendarData();
+    })
+    .catch(function(err) {
+      console.error('Static calendar load failed:', err);
+
+      fetchLiveApi().catch(function(apiErr) {
+        console.error('Live calendar API load failed:', apiErr);
+        setLoading(false);
+
+        document.getElementById('periodLabel').textContent =
+          'Calendar could not load. Please refresh.';
+      });
+    });
+}
+
+    function fetchLiveApi() {
+      apiGet({view:'upcoming', includeSessions:'true'}).then(function(data){
+        if (!data || data.error) { setLoading(false); return; }
+        S.masterData = data;
+        if (data.sessionsPayload) {
+          S.sessionsData = data.sessionsPayload;
+          renderSessions();
+        }
+        sliceClientCalendarData();
+      }).catch(function(){ setLoading(false); });
+    }
+
+    function render(){
+      if (!S.data) return;
+      document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; 
+      document.getElementById('tabClasses').classList.toggle('active',S.showClasses); 
+      document.getElementById('tabShows').classList.toggle('active',S.showShows); 
+      document.getElementById('viewWeek').classList.toggle('active', S.view === 'week');
+      document.getElementById('viewMonth').classList.toggle('active', S.view === 'month');
+
+      var events=filteredEvents(); 
+      if(S.view==='week') renderWeek(events); else renderMonth(events); 
+      broadcastHeight();
+    }
+
+    function filteredEvents(){
+      var evs=[]; 
+      if(!S.data) return evs;
+      if(S.showClasses && S.data.classes && Array.isArray(S.data.classes)) evs=evs.concat(S.data.classes); 
+      if(S.showShows && S.data.shows && Array.isArray(S.data.shows)) evs=evs.concat(S.data.shows); 
+      evs.sort(function(a,b){return (a.startMs||0)-(b.startMs||0);}); 
+      return evs;
+    }
+
+    function parseDurationMinutes(durRaw) {
+      if(!durRaw) return 60;
+      if(typeof durRaw === 'number') return durRaw > 10 ? durRaw : Math.round(durRaw * 1440);
+      var str = String(durRaw).trim();
+      if(str.includes(':')) {
+        var p = str.split(':');
+        return (parseInt(p[0], 10) * 60) + parseInt(p[1], 10);
+      }
+      var num = parseInt(str, 10);
+      return isNaN(num) ? 60 : num;
+    }
+
+    function getReserveButtonText(ev) {
+      var typeLC = String(ev.type || '').toLowerCase();
+      var catLC = String(ev.category || '').toLowerCase();
+      if (typeLC === 'show' || typeLC === 'event' || catLC === 'performance') return 'Reserve Tickets';
+      return 'Reserve Space';
+    }
+
+    function renderWeek(events){
+      events = events || [];
+      var daysList = (S.data && S.data.days && Array.isArray(S.data.days)) ? S.data.days : [];
+      var byDay={}; 
+      daysList.forEach(function(d){byDay[d.key]=[];});
+      
+      (events || []).forEach(function(ev){ 
+        if(ev && ev.dayKey && byDay[ev.dayKey]) { 
+          registerEvent(ev); 
+          byDay[ev.dayKey].push(ev); 
+        } 
+      });
+      
+      var html='<div class="week-grid">';
+      daysList.forEach(function(d){
+        var isToday=d.key===(S.data ? S.data.todayKey : '');
+        var dayEvs=byDay[d.key] || [];
+        var evHtml='';
+        if(!dayEvs.length){evHtml='<div class="no-events">—</div>';}
+        else{
+          dayEvs.forEach(function(ev){
+            var k=registerEvent(ev);
+            var cardStyle = ev.isCancelled ? 'opacity:0.6;' : '';
+            var btnText = getReserveButtonText(ev);
+            var timeStr = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
+            var statusBadge = ev.statusLabel
+              ? '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:4px;">'+esc(ev.statusLabel)+'</span>'
+              : '';
+            
+            var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+            var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+            
+            var btnHtml = '';
+            if (canRegister) {
+              var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
+              btnHtml = '<a href="' + directUrl + '" target="_top" rel="noopener" class="btn-register" style="text-decoration:none;">' + btnText + '</a>';
+            } else if (ev.isPast) {
+              btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Event Completed</div>';
+            } else if (!isUpcoming) {
+              btnHtml = '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:4px;text-align:center;">Registration Closed</div>';
+            }
+
+            evHtml += '<div class="event-card" data-evcard="1" style="'+cardStyle+'">'
+              + statusBadge
+              + '<div class="event-time">'+esc(timeStr)+'</div>'
+              + '<div class="event-title">'+esc(ev.title)+'</div>'
+              + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
+              + '<div class="event-meta">'
+              + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
+              + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
+              + '</div>'
+              + btnHtml
+              + '<button class="btn-info" data-id="'+esc(k)+'">More Info</button>'
+              + '</div>';
+          });
+        }
+        html += '<div class="day-column'+(isToday?' today':'')+'"><div class="day-header"><span class="day-name">'+d.name+'</span><span class="day-num">'+d.num+'</span></div><div class="day-events">'+evHtml+'</div></div>';
+      });
+      html += '</div>';
+      document.getElementById('calendarArea').innerHTML = html;
+      attachCalendarListeners();
+    }
+
+    function renderMonth(events){
+      var daysList = (S.data && S.data.days && Array.isArray(S.data.days)) ? S.data.days : [];
+      var byDay={}; 
+      daysList.forEach(function(d){byDay[d.key]=[];});
+      events.forEach(function(ev){ if(byDay[ev.dayKey]) { registerEvent(ev); byDay[ev.dayKey].push(ev); } });
+      monthByDay=byDay;
+      var currentMonthNum=parseInt(S.currentMonth.split('-')[1],10);
+      var DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      var html='<div class="month-grid">';
+      DOW.forEach(function(n){html += '<div class="month-day-header">'+n+'</div>';});
+      daysList.forEach(function(d){
+        var isToday=d.key===S.data.todayKey;
+        var otherMonth=parseInt(d.monthNum,10)!==currentMonthNum;
+        var dayEvs=byDay[d.key] || [];
+        var pillsHtml='';
+        var MAX=3;
+        dayEvs.slice(0,MAX).forEach(function(ev){pillsHtml += '<div class="month-event-pill">'+esc((ev.startTime||'')+' '+ev.title)+'</div>';});
+        if(dayEvs.length>MAX) pillsHtml += '<div class="month-more">+'+(dayEvs.length-MAX)+' more</div>';
+        html += '<div class="month-cell'+(isToday?' today':'')+(otherMonth?' other-month':'')+'" data-key="'+esc(d.key)+'"><div class="month-cell-num">'+d.num+'</div>'+pillsHtml+'</div>';
+      });
+      html += '</div>';
+      document.getElementById('calendarArea').innerHTML = html;
+      attachCalendarListeners();
+    }
+
+    function openModal(ev, openReg){
+      S.activeEv = ev;
+      var overlay = document.getElementById('modalOverlay');
+      document.getElementById('modalTitle').textContent = ev.title;
+      fillModalContent('modalBody', ev, openReg);
+      overlay.classList.add('active');
+      document.body.classList.add('modal-open');
+      var container = overlay.querySelector('.modal-container');
+      if (container) container.scrollTop = 0;
+    }
+
+    function closeModal(){
+      document.getElementById('modalOverlay').classList.remove('active');
+      document.body.classList.remove('modal-open');
+      S.activeEv = null;
+    }
+
+    function fillModalContent(bodyId, ev, openReg){
+      var body = document.getElementById(bodyId);
+      var btnActionText = getReserveButtonText(ev);
+      var hasTiers = ev.tiers && ev.tiers.length > 0;
+      var hasProtectedTiers = hasTiers && ev.tiers.some(function(t){ return t.requiresPasscode; });
+      var html = '';
+
+      var isShowOrEvent = (function(){
+        var typeLC = String(ev.type || '').toLowerCase();
+        var catLC = String(ev.category || '').toLowerCase();
+        return typeLC === 'show' || typeLC === 'event' || catLC === 'performance';
+      })();
+
+      var timeDisplay = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
+
+      if (ev.dateLabel) {
+        html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(ev.dateLabel) + '</div>';
+      } else if (ev.startTime) {
+        // Fallback: build date from startMs if dateLabel somehow missing
+        var fallbackDate = ev.startMs ? new Date(ev.startMs) : null;
+        if (fallbackDate) {
+          html += '<div class="modal-subtitle" style="font-size:15px; font-weight:700; color:var(--ink); margin-bottom:2px;">' + esc(fallbackDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})) + '</div>';
+        }
+      }
+      if (timeDisplay) {
+        html += '<div class="modal-subtitle" style="margin-bottom:12px;">' + esc(timeDisplay) + '</div>';
+      }
+
+      if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
+      if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy" crossorigin="anonymous">';;
+      html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
+      
+     if (!ev.costText && hasTiers) {
+  html += '<div class="modal-row">'
+    + '<span class="modal-label">Price</span>'
+    + '<span class="modal-value">Select a ticket option below.</span>'
+    + '</div>';
+}
+
+if (!ev.costText && hasTiers) {
+  html += '<div class="modal-row">'
+    + '<span class="modal-label">Price</span>'
+    + '<span class="modal-value">Select a ticket option below.</span>'
+    + '</div>';
+}
+
+ html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
+      if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
+      if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
+      if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>';
+      if(ev.spotsText) html += '<div class="modal-row"><span class="modal-label">Availability</span><span class="modal-value">'+esc(ev.spotsText)+'</span></div>';
+      html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
+      if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
+      
+      var directUrl = 'https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
+
+      if (!document.body.classList.contains('standalone-mode')) {
+        html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
+          + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; padding:12px 14px; border-radius:6px; text-decoration:none; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
+          + '↗ Open Full Registration Page'
+          + '</a>'
+          + '</div>';
+      }
+
+      if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
+
+      var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+      var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+
+      if (canRegister) {
+        html += '<hr class="modal-divider">';
+        html += '<div class="reg-section active" id="regSectionModal">'
+          + '<div class="reg-title">Reserve for this session</div>'
+          + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
+          + '<div style="margin-bottom:8px;">'
+          + '<input type="email" class="reg-input" id="regEmailMobile" placeholder="Email address *" autocomplete="email" style="margin-bottom:4px;">'
+          + '<div id="emailCheckSpinner" style="display:none; background:#fff3cd; border:1px solid #ffeeba; color:#856404; padding:8px 12px; border-radius:6px; font-size:12px; font-weight:600; text-align:center;">'
+          + '<span style="display:inline-block; animation:spin 1s infinite linear; margin-right:6px;">⚙️</span> Checking participant records...'
+          + '</div>'
+          + '</div>'
+          + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
+
+          + '<div class="duplicate-block" id="duplicateBlock">'
+          + '<div id="dupDetailsText" style="margin-bottom:8px; line-height:1.4;"></div>'
+          + '<button type="button" id="btnOpenCancelPrompt" style="width:100%; padding:8px; background:#c0392b; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Cancel Reservation</button>'
+          + '<div id="cancelPromptArea" style="display:none; margin-top:10px;">'
+          + '<p class="reg-note" style="color:#0d47a1;">Please share your reason for cancelling (not required, but appreciated):</p>'
+          + '<textarea class="reg-input" id="cancelReasonInput" rows="2" placeholder="Reason for cancellation..."></textarea>'
+          + '<p class="reg-note" style="font-size:11px;"><em>Per studio policy, cancellations take effect on the 1st of the following month for plan billing purposes.</em></p>'
+          + '<button type="button" id="btnSubmitCancel" style="width:100%; padding:8px; background:#c0392b; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Confirm Cancellation</button>'
+          + '</div>'
+          + '</div>'
+
+          + '<div id="mainFormFields">'
+          + '<div style="display:flex;gap:8px;margin-bottom:0;">'
+          + '<input type="text" class="reg-input" id="regFirstNameMobile" placeholder="First name *" autocomplete="given-name" style="flex:1;">'
+          + '<input type="text" class="reg-input" id="regLastNameMobile" placeholder="Last name *" autocomplete="family-name" style="flex:1;">'
+          + '</div>'
+          + '<input type="tel" class="reg-input" id="regPhoneMobile" placeholder="Phone number *" autocomplete="tel">';
+          
+          if (!hasTiers) {
+            html += '<div class="pay-section">'
+              + '<div class="pay-title">Payment Type</div>'
+              + '<div class="pay-options">'
+              + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" id="payTypeSingle" checked> Single Class (Drop-In)</label>'
+              + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="monthly" id="payTypeMonthly"> Monthly Class Plan</label>'
+              + '</div>'
+              + '</div>'
+
+              + '<div id="singlePayBlock" style="margin-top:10px;">'
+              + '<label class="reg-label">Payment Amount ($)</label>'
+              + '<input type="number" class="reg-input" id="singleAmountMobile" min="' + (basePrice || 0) + '" step="1" value="' + (basePrice || 0) + '">'
+              + '<div class="reg-note">Defaulted to minimum rate. You may add an optional contribution.</div>'
+              + '</div>'
+
+              + '<div id="monthlyPayBlock" style="display:none; margin-top:10px;">'
+              + '<label class="reg-label">Monthly Class Plan Tier</label>'
+              + '<select class="reg-input" id="planTierMobile"></select>'
+              + '<div id="feeBreakout" class="reg-note" style="font-weight:600; color:var(--ink);"></div>'
+              + '</div>';
+          } else {
+            html += '<div class="pay-section">'
+              + '<div class="pay-title">Select Ticket Option</div>';
+
+            if (hasProtectedTiers) {
+              html += '<div style="margin-bottom:10px;">'
+                + '<label class="reg-label" style="font-weight:normal;font-size:12px;">Have an access or promo code?</label>'
+                + '<input type="text" class="reg-input" id="promoCodeInput" placeholder="Enter promo code" style="text-transform:uppercase;margin-bottom:4px;">'
+                + '<div id="promoCodeMsg" style="font-size:11px;font-weight:600;display:none;margin-bottom:6px;"></div>'
+                + '</div>';
+            }
+
+            html += '<div class="pay-options">';
+            var firstChecked = false;
+            ev.tiers.forEach(function(tier, idx){
+              var isProtected = tier.requiresPasscode === true;
+              var isChecked = !isProtected && !firstChecked;
+              if (isChecked) firstChecked = true;
+
+              var tierQty = Number(tier.ticketCount || tier.quantity || 1);
+
+              html += '<label class="pay-option ' + (isProtected ? 'protected-tier' : '') + '" data-passcode="' + esc(tier.passcode || '') + '">'
+                + '<input type="radio" name="ticketTierMobile" value="'+esc(tier.price)+'" data-name="'+esc(tier.name)+'" data-count="'+tierQty+'" '+(isChecked ? 'checked' : '')+'> '
+                + '<strong>'+esc(tier.name)+'</strong> — '+esc(tier.priceText)
+                + (tier.description ? '<br><span style="font-size:11px;color:var(--muted);">'+esc(tier.description)+'</span>' : '')
+                + '</label>';
+            });
+            html += '</div>';
+
+            if (isShowOrEvent) {
+              html += '<div style="margin-top:14px;">'
+                + '<label class="reg-label">Ticket Quantity</label>'
+                + '<div class="qty-control-wrapper">'
+                + '<button type="button" class="qty-btn" id="qtyMinusBtn">−</button>'
+                + '<input type="number" class="qty-input" id="ticketQtyMobile" value="1" min="1" step="1">'
+                + '<button type="button" class="qty-btn" id="qtyPlusBtn">+</button>'
+                + '</div>'
+                + '</div>';
+            }
+
+            html += '</div>';
+          }
+
+          html += '<div id="attendeeRosterBlock" style="display:none;"></div>'
+
+          + '<div id="extraContributionBlock" style="margin-top:10px;">'
+          + '<label class="reg-label">Optional Additional Contribution ($)</label>'
+          + '<input type="number" class="reg-input" id="extraContributionMobile" min="0" step="1" placeholder="0.00">'
+          + '<div class="reg-note">Add an optional tax-deductible contribution to support our programs.</div>'
+          + '</div>'
+
+          + '<div id="planStatusBanner" style="display:none; margin-top:10px; padding:10px; border-radius:6px; font-size:13px;"></div>'
+
+          + '<div id="exceededOptions" style="display:none; margin-top:10px; padding:10px; background:#fff3cd; border:1px solid #ffeeba; border-radius:6px; font-size:13px; color:#856404;">'
+          + '<strong>Weekly Plan Limit Exceeded:</strong> Choose an option to proceed:<br><br>'
+          + '<button type="button" id="btnSwitchDropIn" style="width:100%; padding:8px; background:#fff; border:1px solid #c89b3c; border-radius:5px; font-weight:600; cursor:pointer; margin-bottom:6px;">Pay Extra Class as Drop-In</button>'
+          + '<button type="button" id="btnSwitchUpgrade" style="width:100%; padding:8px; background:#c89b3c; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Upgrade Monthly Plan Tier</button>'
+          + '</div>'
+
+          + '<div class="pay-section" id="methodSection">'
+          + '<div class="pay-title">Payment Method</div>'
+          + '<div class="pay-options">'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="square" checked> Card via Square</label>'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="zelle"> Zelle</label>'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="cash"> Cash</label>'
+          + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="check"> Check</label>'
+          + '</div>'
+          + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:block;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>'
+          + '<div id="zelleInfoMobile" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Include your name and event in the memo.</div>'
+          + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event.</div>'
+          + '</div>'
+
+          + '<div class="summary-card" id="summaryCard">'
+          + '<div class="summary-title">Reservation Summary</div>'
+          + '<div class="summary-row"><span>Type:</span><span id="sumType">Single Class (Drop-In)</span></div>'
+          + '<div class="summary-row" id="sumBreakoutRow" style="display:none;"><span>Rate Details:</span><span id="sumBreakout">-</span></div>'
+          + '<div class="summary-total"><span>Total Amount Due:</span><span id="sumTotal">$0.00</span></div>'
+          + '</div>'
+
+          + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
+          + '<div class="pay-title">A few more details</div>'
+          + '<p class="reg-note">This session has inclusive programming. Share only what you\'re comfortable with.</p>'
+          + '<label class="reg-label">Date of Birth</label>'
+          + '<div style="display:flex;gap:6px;margin-bottom:8px;">'
+          + '<select class="reg-input" id="regDobMonthMobile" style="flex:2;margin-bottom:0;"><option value="">Month</option>'+ dobMonthOptions() +'</select>'
+          + '<select class="reg-input" id="regDobDayMobile"   style="flex:1;margin-bottom:0;"><option value="">Day</option>'  + dobDayOptions()   +'</select>'
+          + '<select class="reg-input" id="regDobYearMobile"  style="flex:1.5;margin-bottom:0;"><option value="">Year</option>'+ dobYearOptions() +'</select>'
+          + '</div>'
+          + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver during the session?</div>'
+          + '<div class="pay-options" style="margin-bottom:8px;">'
+          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="yes" id="careYesMobile"> Yes, a support person will attend</label>'
+          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No, a support person will not attend</label>'
+          + '</div>'
+          + '<div id="caregiverFieldsMobile" style="display:none;">'
+          + '<input type="text" class="reg-input" id="regCaregiverNameMobile" placeholder="Support person\'s name">'
+          + '<input type="tel" class="reg-input" id="regCaregiverPhoneMobile" placeholder="Support person\'s phone number">'
+          + '</div>'
+          + '<div class="reg-label" style="margin-top:12px;">Are there any accommodations that would help this participant fully enjoy the session?</div>'
+          + '<div class="pay-options" style="margin-bottom:8px;">'
+          + '<label class="pay-option"><input type="radio" name="accommodationsRequestedMobile" value="yes" id="accYesMobile"> Yes, I\'d like to share some details</label>'
+          + '<label class="pay-option"><input type="radio" name="accommodationsRequestedMobile" value="no" id="accNoMobile" checked> No accommodations needed at this time</label>'
+          + '</div>'
+          + '<div id="accommodationsFieldMobile" style="display:none;">'
+          + '<textarea class="reg-input" id="regAccommodationsMobile" rows="3" placeholder="Please share anything that would help us support you." style="resize:vertical;"></textarea>'
+          + '</div>'
+          + '</div>'
+          + '<div class="release-ack-section">'
+          + '<label class="release-ack-label"><input type="checkbox" id="chkParticipantRelease"> I acknowledge that I have read and agree to the terms of the <a href="https://docs.google.com/document/d/e/2PACX-1vR6-EBPzR_vE_VmG6f5BO2NXcF9hZ6pKx06QMsoyEZTXCP4GCBZ20q1jJKEq6MdvQ/pub" target="_blank" rel="noopener">Wings to Fly Dance Company Participant Release Form</a>. <span class="req-star">*</span></label>'
+          + '<label class="release-ack-label"><input type="checkbox" id="chkPhotoRelease"> I acknowledge that I have read and agree to the terms of the <a href="https://docs.google.com/document/d/e/2PACX-1vTPIuwHJnzE2TspakzXKSUxHnxFvvR7SkigIMXUnmtTkAzD7bLZsEg1490SVbu02g/pub" target="_blank" rel="noopener">Wings to Fly Dance Company Photo Release Form</a>. <span class="req-star">*</span></label>'
+          + '<p class="release-ack-note">Both acknowledgments are required to complete your reservation.</p>'
+          + '</div>'
+          + '<button class="reg-submit" id="regSubmitMobile">'+btnActionText+'</button>'
+          + '</div>'
+
+          + '<div class="reg-success" id="regSuccessMobile"></div>'
+          + '<div class="reg-error" id="regErrorMobile"></div>'
+          + '</div>';
+      }
+      body.innerHTML=html;
+
+      if(ev.isPublic && !ev.isFull && ev.inclusion){
+        var incMobile = document.getElementById('inclusionFieldsMobile');
+        if(incMobile) incMobile.style.display = '';
+      }
+
+      wireMobileForm(ev);
+    }
+
+    function attachCalendarListeners(){
+      var area=document.getElementById('calendarArea');
+      if(!area || area.dataset.listenersAttached) return;
+      area.dataset.listenersAttached='1';
+      area.addEventListener('click', function(e){
+        var btnInfo = e.target.closest('.btn-info');
+        if(btnInfo){
+          var ev = eventMap[btnInfo.getAttribute('data-id')];
+          if(!ev) return;
+          openModal(ev, false);
+          return;
+        }
+        var cell=e.target.closest('.month-cell');
+        if(!cell) return;
+        openDayPanel(cell.getAttribute('data-key'), monthByDay[cell.getAttribute('data-key')] || []);
+      });
+    }
+
+    function attachSessionListeners(){
+      var area=document.getElementById('sessionsArea');
+      if(!area || area.dataset.listenersAttached) return;
+      area.dataset.listenersAttached='1';
+      area.addEventListener('click', function(e){
+        var toggle=e.target.closest('.session-card-toggle');
+        if(toggle){
+          var sid=toggle.getAttribute('data-sid');
+          var panel=document.getElementById('si-'+sid);
+          if(!panel) return;
+          var open=panel.classList.toggle('open');
+          var count=panel.querySelectorAll('.session-instance-row').length;
+          toggle.textContent=open?'Hide dates':count+(count===1?' upcoming date':' upcoming dates')+' — view all';
+          broadcastHeight();
+          return;
+        }
+        var btnInfo=e.target.closest('.btn-info');
+        if(!btnInfo) return;
+        var ev=eventMap[btnInfo.getAttribute('data-id')];
+        if(!ev) return;
+        openModal(ev, false);
+      });
+    }
+
+    function openDayPanel(dayKey, events){
+      var parts=dayKey.split('-');
+      var d=new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+      var titleStr = d.toLocaleDateString("en-US",{weekday:"long", month:"long", day:"numeric"});
+      
+      document.getElementById('modalTitle').textContent = titleStr;
+      var body = document.getElementById('modalBody');
+      var html = '';
+      if(!events.length){html = '<div style="color:var(--muted);text-align:center;padding:14px 0;font-size:14px;">No events this day.</div>';}
+      else{
+        events.forEach(function(ev){
+          var k=registerEvent(ev);
+          var btnText = getReserveButtonText(ev);
+          html += '<div class="panel-event" style="border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;">'
+            + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(formatFriendlyTime(ev.startTime||ev.start, ev.endTime||ev.end))+'</div>'
+            + '<div class="panel-event-title" style="font-weight:600;font-size:14px;margin-bottom:6px;">'+esc(ev.title)+'</div>'
+            + '<div class="panel-btns" style="display:flex;gap:6px;flex-wrap:wrap;">'
+            + (ev.isPublic && !ev.isFull ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')
+            + '<button class="btn-info" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);">More Info</button>'
+            + '</div></div>';
+        });
+      }
+      body.innerHTML = html;
+      document.getElementById('modalOverlay').classList.add('active');
+      attachModalDelegates(body);
+    }
+
+    function attachModalDelegates(root){
+      root.addEventListener('click', function(e){
+        var btnInfo=e.target.closest('.btn-info');
+        if(!btnInfo) return;
+        var ev=eventMap[btnInfo.getAttribute('data-id')];
+        if(!ev) return;
+        openModal(ev, false);
+      });
+    }
+
+    function dobMonthOptions(){
+      var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      return months.map(function(m,i){return '<option value="'+(i+1)+'">'+m+'</option>';}).join('');
+    }
+    function dobDayOptions(){
+      var o=''; for(var d=1;d<=31;d++) o+='<option value="'+d+'">'+d+'</option>'; return o;
+    }
+    function dobYearOptions(){
+      var o=''; var cur=new Date().getFullYear();
+      for(var y=cur;y>=1920;y--) o+='<option value="'+y+'">'+y+'</option>'; return o;
+    }
+
+    function populateTierDropdown(currentTier, requiredMins) {
+      var select = document.getElementById('planTierMobile');
+      if (!select) return;
+      select.innerHTML = '';
+
+      var currentMins = 0;
+      if (currentTier) {
+        var match = ALL_TIERS.find(function(t){ return t.tier.toLowerCase() === currentTier.toLowerCase(); });
+        if (match) currentMins = match.mins;
+      }
+
+      var targetMin = Math.max(currentMins + 1, requiredMins || 0);
+      var filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin; });
+      if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > currentMins; });
+
+      filtered.forEach(function(t) {
+        var opt = document.createElement('option');
+        opt.value = t.tier;
+        opt.textContent = t.tier + ' – $' + t.rate + '/month';
+        select.appendChild(opt);
+      });
+    }
+
+    function wireMobileForm(ev){
+      function updateAttendeeRoster() {
+        var container = document.getElementById('attendeeRosterBlock');
+        if (!container) return;
+
+        var qtyInput = document.getElementById('ticketQtyMobile');
+        var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+
+        var tierMultiplier = 1;
+        var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
+        
+        if (selectedTier) {
+          var tierName = (selectedTier.getAttribute('data-name') || '').toLowerCase();
+          var tierParentLabel = (selectedTier.parentElement ? selectedTier.parentElement.textContent : '').toLowerCase();
+          var explicitCount = parseInt(selectedTier.getAttribute('data-count'), 10);
+
+          if (!isNaN(explicitCount) && explicitCount > 1) {
+            tierMultiplier = explicitCount;
+          } else {
+            var combinedText = tierName + ' ' + tierParentLabel;
+            var match = combinedText.match(/(\d+)\s*(single tickets|tickets|seats|guests|people|person|pack|table)/i) 
+                     || combinedText.match(/\b(table for|table of|group of|party of)\s*(\d+)\b/i);
+            
+            if (match) {
+              var extracted = parseInt(match[1] || match[2], 10);
+              if (!isNaN(extracted) && extracted > 0) tierMultiplier = extracted;
+            }
+          }
+        }
+
+        var totalTickets = qty * tierMultiplier;
+        var extraGuestsNeeded = totalTickets - 1;
+
+        if (extraGuestsNeeded <= 0) {
+          container.innerHTML = '';
+          container.style.display = 'none';
+          return;
+        }
+
+        var html = '<div style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">'
+          + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Additional Guest Details (' + extraGuestsNeeded + ' additional ' + (extraGuestsNeeded === 1 ? 'guest' : 'guests') + ')</div>'
+          + '<p class="reg-note">Please provide contact details for the rest of your party (your details are recorded above).</p>'
+          + '<label style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; cursor:pointer;">'
+          + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be attending, click here to skip guest names</em></span>'
+          + '</label>'
+          + '<div id="attendeeRows">';
+
+        for (var i = 1; i <= extraGuestsNeeded; i++) {
+          html += '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
+            + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #' + i + '</div>'
+            + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
+            + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
+            + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
+            + '</div>'
+            + '<div style="display:flex; gap:6px;">'
+            + '<input type="email" class="reg-input att-em" placeholder="Email" style="flex:1; margin-bottom:0;">'
+            + '<input type="tel" class="reg-input att-ph" placeholder="Phone" style="flex:1; margin-bottom:0;">'
+            + '</div>'
+            + '</div>';
+        }
+        html += '</div></div>';
+        container.style.display = 'block';
+        container.innerHTML = html;
+
+        var chk = document.getElementById('chkSkipAttendees');
+        if (chk) {
+          chk.addEventListener('change', function() {
+            document.getElementById('attendeeRows').style.display = this.checked ? 'none' : 'block';
+          });
+        }
+      }
+
+      var email=document.getElementById('regEmailMobile');
+      var firstNameInput=document.getElementById('regFirstNameMobile');
+      var lastNameInput=document.getElementById('regLastNameMobile');
+      var phone=document.getElementById('regPhoneMobile');
+      var submit=document.getElementById('regSubmitMobile');
+      var tooltip=document.getElementById('recognizedTooltip');
+      var dupBlock=document.getElementById('duplicateBlock');
+      var mainFields=document.getElementById('mainFormFields');
+      var extraInput=document.getElementById('extraContributionMobile');
+      var promoInput=document.getElementById('promoCodeInput');
+      var promoMsg=document.getElementById('promoCodeMsg');
+      var qtyInput = document.getElementById('ticketQtyMobile');
+      var qtyMinusBtn = document.getElementById('qtyMinusBtn');
+      var qtyPlusBtn = document.getElementById('qtyPlusBtn');
+
+      var emailTimer=null;
+      var lastFetchedEmail = "";
+      var existingRegIdForCancel = "";
+      var currentUserCurrentTier = "";
+      var currentUserRequiredMins = 0;
+      var currentPlanValidStatus = false;
+
+      var classMins = parseDurationMinutes(ev.duration);
+      populateTierDropdown('', classMins);
+
+      var hasTiers = ev.tiers && ev.tiers.length > 0;
+      var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
+      var singleInput = document.getElementById('singleAmountMobile');
+      if (singleInput) {
+        // Always set the value and minimum regardless of which payment type is active
+        singleInput.value = basePrice || 0;
+        singleInput.min   = basePrice || 0;
+        singleInput.addEventListener('input', updateItemizedSummary);
+      }
+      if (extraInput) extraInput.addEventListener('input', updateItemizedSummary);
+
+      // Trigger initial summary render now that basePrice and singleInput are set
+      updateItemizedSummary();
+
+      if (qtyInput) {
+        qtyInput.addEventListener('input', function(){
+          updateItemizedSummary();
+          updateAttendeeRoster();
+        });
+        if (qtyMinusBtn) {
+          qtyMinusBtn.addEventListener('click', function(){
+            var cur = Math.max(1, (parseInt(qtyInput.value, 10) || 1) - 1);
+            qtyInput.value = cur;
+            updateItemizedSummary();
+            updateAttendeeRoster();
+          });
+        }
+        if (qtyPlusBtn) {
+          qtyPlusBtn.addEventListener('click', function(){
+            var cur = (parseInt(qtyInput.value, 10) || 1) + 1;
+            qtyInput.value = cur;
+            updateItemizedSummary();
+            updateAttendeeRoster();
+          });
+        }
+      }
+
+      if (promoInput) {
+        promoInput.addEventListener('input', function(){
+          var val = this.value.trim().toLowerCase();
+          var matched = false;
+          document.querySelectorAll('.protected-tier').forEach(function(el){
+            var pass = String(el.getAttribute('data-passcode') || '').toLowerCase();
+            if (val && pass && val === pass) {
+              el.classList.add('unlocked');
+              var radio = el.querySelector('input[type="radio"]');
+              if (radio) { radio.checked = true; }
+              matched = true;
+            } else {
+              el.classList.remove('unlocked');
+            }
+          });
+
+          if (promoMsg) {
+            if (matched) {
+              promoMsg.style.display = 'block';
+              promoMsg.style.color = '#2e7d32';
+              promoMsg.textContent = '✓ Access code applied! Discount option unlocked.';
+            } else if (val.length > 2) {
+              promoMsg.style.display = 'block';
+              promoMsg.style.color = '#c0392b';
+              promoMsg.textContent = '✗ Invalid access code.';
+            } else {
+              promoMsg.style.display = 'none';
+            }
+          }
+          updateItemizedSummary();
+          updateAttendeeRoster();
+        });
+      }
+
+      document.querySelectorAll('input[name="ticketTierMobile"]').forEach(function(r){
+        r.addEventListener('change', function(){
+          updateItemizedSummary();
+          updateAttendeeRoster();
+        });
+      });
+
+      function updateItemizedSummary(){
+        var sumType = document.getElementById('sumType');
+        var sumBreakoutRow = document.getElementById('sumBreakoutRow');
+        var sumBreakout = document.getElementById('sumBreakout');
+        var sumTotal = document.getElementById('sumTotal');
+
+        var extraVal = extraInput ? Number(extraInput.value) : 0;
+        if(isNaN(extraVal) || extraVal < 0) extraVal = 0;
+
+        var qty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+
+        if (hasTiers) {
+          var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
+          var tierPrice = selectedTier ? Number(selectedTier.value) : 0;
+          var tierName = selectedTier ? selectedTier.getAttribute('data-name') : 'Ticket';
+          
+          sumType.textContent = (qty > 1 ? qty + 'x ' : '') + tierName;
+          sumBreakoutRow.style.display = 'none';
+          var tot = (tierPrice * qty) + extraVal;
+          sumTotal.textContent = '$' + tot.toFixed(2);
+          updateAttendeeRoster();
+          return;
+        }
+
+        var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
+        var val = payTypeEl ? payTypeEl.value : 'single';
+
+        if(val === 'single'){
+          // Restore total row visibility in case it was hidden by monthly covered state
+          var sumTotalRow = document.querySelector('.summary-total');
+          if(sumTotalRow) sumTotalRow.style.display = '';
+          sumType.textContent = (qty > 1 ? qty + 'x Tickets ' : '') + 'Single Class (Drop-In)';
+          sumBreakoutRow.style.display = 'none';
+          var amt = singleInput ? Number(singleInput.value) : basePrice;
+          if(!amt || amt < basePrice) amt = basePrice;
+          var tot = (amt * qty) + extraVal;
+          sumTotal.textContent = '$' + tot.toFixed(2);
+        } else if(val === 'monthly'){
+  var tierSelect = document.getElementById('planTierMobile');
+  var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
+  var sumTotalRow = document.querySelector('.summary-total');
+
+  // If plan covers this class, show $0 and hide the total row
+  if(currentPlanValidStatus){
+    sumType.textContent = 'Monthly Class Plan — Covered';
+    sumBreakoutRow.style.display = 'none';
+    sumTotal.textContent = '$0.00';
+    if(sumTotalRow) sumTotalRow.style.display = 'none';
+    return;
+  }
+
+  // Restore total row visibility for purchase flow
+  if(sumTotalRow) sumTotalRow.style.display = '';
+
+  var feeText = document.getElementById('feeBreakout')
+    ? document.getElementById('feeBreakout').textContent
+    : '';
+
+  sumType.textContent = 'Monthly Class Plan (' + tierVal + ')';
+  sumBreakoutRow.style.display = 'flex';
+  sumBreakout.textContent = feeText || 'Select a plan tier to calculate pricing.';
+
+  var rateMap = {
+    '1 hour/week': 65,
+    '1.5 hours/week': 85,
+    '2 hours/week': 100,
+    '2.5 hours/week': 120,
+    '3 hours/week': 135,
+    '3.5 hours/week': 150,
+    '4 hours/week': 160,
+    '4.5 hours/week': 170,
+    '5 hours/week': 185,
+    '5.5 hours/week': 200,
+    '6 hours/week': 215
+  };
+
+  var planPrice = rateMap[tierVal] || 0;
+  var firstTimeFee = feeText.indexOf('One-time registration fee') !== -1
+    ? 25
+    : 0;
+
+  var totalPlanPurchase = planPrice + firstTimeFee;
+  var totalDueNow = totalPlanPurchase + extraVal;
+
+  sumTotal.textContent = '$' + totalDueNow.toFixed(2);
+}
+
+        updateAttendeeRoster();
+      }
+
+      if(email){
+        email.addEventListener('input', function(){
+          var v=this.value.trim();
+          clearTimeout(emailTimer);
+          if(v.length<5 || !v.includes('@')) {
+            if (lastFetchedEmail && v !== lastFetchedEmail) {
+              firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
+              tooltip.style.display = 'none';
+              dupBlock.style.display = 'none';
+              mainFields.style.display = 'block';
+              lastFetchedEmail = "";
+              currentUserCurrentTier = "";
+              currentUserRequiredMins = classMins;
+              populateTierDropdown('', classMins);
+            }
+            return;
+          }
+          emailTimer=setTimeout(function(){
+            var spinner = document.getElementById('emailCheckSpinner');
+            if (spinner) spinner.style.display = 'block';
+
+            apiPost({action:'checkParticipant', email:v, instanceId:ev.instanceId}).then(function(r){
+              if (spinner) spinner.style.display = 'none';
+              if(r && r.exists){
+                firstNameInput.value = r.firstName || ''; 
+                lastNameInput.value  = r.lastName  || ''; 
+                phone.value          = r.phone     || ''; 
+                lastFetchedEmail = v;
+                currentUserCurrentTier = r.currentTier || '';
+                currentUserRequiredMins = r.requiredMins || classMins;
+
+                tooltip.style.display = 'block';
+                tooltip.textContent = "Welcome back, " + (r.firstName || 'Participant') + "! We've auto-filled your details.";
+
+                if(r.alreadyRegistered){
+                  dupBlock.style.display = 'block';
+                  mainFields.style.display = 'none';
+                  existingRegIdForCancel = r.existingRegId;
+
+                  var dupText = '<strong>Already Reserved:</strong> ' + esc(r.firstName + ' ' + r.lastName) + ' is registered for this session.<br>'
+                    + '<strong>Reservation ID:</strong> ' + esc(r.existingRegId) + '<br>'
+                    + '<strong>Payment Type:</strong> ' + esc(r.existingPayType) + '<br>'
+                    + '<strong>Payment Method:</strong> ' + esc(r.existingPayMethod);
+                  document.getElementById('dupDetailsText').innerHTML = dupText;
+                  return;
+                } else {
+                  dupBlock.style.display = 'none';
+                  mainFields.style.display = 'block';
+                }
+
+                if(r.hasActivePlan && !hasTiers){
+                  // Set status variables BEFORE firing change event so handler sees correct state
+                  currentPlanValidStatus  = r.planCovered || false;
+                  currentUserCurrentTier  = r.currentTier || '';
+                  currentUserRequiredMins = r.requiredMins || classMins;
+
+                  var rMonthly = document.getElementById('payTypeMonthly');
+                  if(rMonthly){
+                    rMonthly.checked = true;
+                    rMonthly.dispatchEvent(new Event('change'));
+                  }
+
+                  // Handle INSUFFICIENT_MINUTES — show exceeded block and message
+                  if(r.planStatus === 'INSUFFICIENT_MINUTES'){
+                    var banner = document.getElementById('planStatusBanner');
+                    if(banner){
+                      banner.style.display = 'block';
+                      banner.style.background = '#f8d7da';
+                      banner.style.color = '#721c24';
+                      banner.textContent = r.planMessage || 'Your plan does not have enough hours remaining this week.';
+                    }
+                    var exceededBlock = document.getElementById('exceededOptions');
+                    if(exceededBlock) exceededBlock.style.display = 'block';
+                    populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);
+                  }
+                } else if(!hasTiers) {
+                  currentPlanValidStatus = false;
+                  var tierSel = document.getElementById('planTierMobile');
+                  if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
+                }
+              } else if (lastFetchedEmail) {
+                firstNameInput.value = ''; lastNameInput.value = ''; phone.value = '';
+                tooltip.style.display = 'none';
+                dupBlock.style.display = 'none';
+                mainFields.style.display = 'block';
+                lastFetchedEmail = "";
+                currentUserCurrentTier = "";
+                currentUserRequiredMins = classMins;
+                populateTierDropdown('', classMins);
+              }
+            }).catch(function(){
+              if (spinner) spinner.style.display = 'none';
+            });
+          },400);
+        });
+
+        email.addEventListener('blur', function(){
+          var payTypeEl = document.querySelector('input[name="payTypeMobile"]:checked');
+          var val = payTypeEl ? payTypeEl.value : 'single';
+          if (val === 'current' && !hasTiers) validateCurrentPlan();
+          if (val === 'monthly' && !hasTiers) calculateFees();
+          updateItemizedSummary();
+        });
+      }
+
+      var btnOpenCancel = document.getElementById('btnOpenCancelPrompt');
+      if(btnOpenCancel) btnOpenCancel.addEventListener('click', function(){
+        document.getElementById('cancelPromptArea').style.display = 'block';
+        this.style.display = 'none';
+      });
+
+      var btnSubmitCancel = document.getElementById('btnSubmitCancel');
+      if(btnSubmitCancel) btnSubmitCancel.addEventListener('click', function(){
+        var reasonV = document.getElementById('cancelReasonInput').value.trim();
+        var btn = this; btn.disabled = true; btn.textContent = 'Processing Cancellation...';
+        apiPost({action:'cancelRegistration', registrationId:existingRegIdForCancel, reason:reasonV, email:email.value.trim()})
+          .then(function(r){
+            btn.disabled = false; btn.textContent = 'Confirm Cancellation';
+            if(r && r.success){
+              S.masterData = null; // Invalidate cache on cancel
+              var bodyHost = document.getElementById('modalBody');
+              bodyHost.innerHTML = '<div class="confirmation-view">'
+                + '<div class="confirm-icon" style="color:#c0392b;">✓</div>'
+                + '<div class="confirm-title">Reservation Cancelled</div>'
+                + '<div class="confirm-msg">' + esc(r.message || 'Your reservation has been cancelled.') + '</div>'
+                + '<div class="confirm-btns">'
+                + '<button class="confirm-btn primary" id="btnConfirmCal">Back to Calendar</button>'
+                + '</div>'
+                + '</div>';
+              
+              document.getElementById('btnConfirmCal').addEventListener('click', function(){
+                closeModal(); load(true);
+              });
+            } else {
+              alert(r.message || 'Could not cancel reservation.');
+            }
+          });
+      });
+
+document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
+  r.addEventListener('change', function(){
+    var val = this.value;
+
+    var singlePayBlock  = document.getElementById('singlePayBlock');
+    var monthlyPayBlock = document.getElementById('monthlyPayBlock');
+    var methodSection   = document.getElementById('methodSection');
+    var planStatusBanner = document.getElementById('planStatusBanner');
+    var exceededOptions = document.getElementById('exceededOptions');
+
+    if (singlePayBlock)  singlePayBlock.style.display  = val === 'single'  ? 'block' : 'none';
+    if (monthlyPayBlock) monthlyPayBlock.style.display = val === 'monthly' ? 'block' : 'none';
+    // Show method section for single always; for monthly only when NOT covered by plan
+    if (methodSection)   methodSection.style.display   = (val === 'single' || (val === 'monthly' && !currentPlanValidStatus)) ? 'block' : 'none';
+
+    // Only reset banner when switching away from monthly OR when monthly is not covered
+    if (val !== 'monthly' || !currentPlanValidStatus) {
+      if (planStatusBanner) planStatusBanner.style.display = 'none';
+      if (exceededOptions)  exceededOptions.style.display  = 'none';
+    }
+
+    if (val === 'monthly') {
+      var tierSel     = document.getElementById('planTierMobile');
+      var feeBreakout = document.getElementById('feeBreakout');
+
+      if (currentPlanValidStatus) {
+        // Plan confirmed covered — disable tier, show green message
+        if (tierSel)     { tierSel.disabled = true; tierSel.style.opacity = '0.5'; }
+        if (planStatusBanner) {
+          planStatusBanner.style.display = 'block';
+          planStatusBanner.style.background = '#d4edda';
+          planStatusBanner.style.color = '#155724';
+          planStatusBanner.textContent = 'This class is covered by your active Monthly Class Plan. No additional payment required for this class.';
+        }
+        if (feeBreakout) {
+          feeBreakout.textContent = 'This class is covered by your active Monthly Class Plan. No payment required for this class.';
+          feeBreakout.style.color = '#155724';
+        }
+      } else {
+        // No coverage — enable tier for new plan purchase
+        if (tierSel) { tierSel.disabled = false; tierSel.style.opacity = '1'; }
+        if (feeBreakout) feeBreakout.style.color = 'var(--ink)';
+        populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins || classMins);
+        calculateFees();
+      }
+    }
+
+    updateItemizedSummary();
+  });
+});
+
+      var tierSelect = document.getElementById('planTierMobile');
+      if (tierSelect) tierSelect.addEventListener('change', function(){
+        calculateFees();
+        updateItemizedSummary();
+      });
+
+    function calculateFees() {
+  var emailV = email.value.trim();
+  var tierSelect = document.getElementById('planTierMobile');
+  var tier = tierSelect && tierSelect.value ? tierSelect.value : '';
+
+  if (!tier) {
+    return;
+  }
+
+  var rateMap = {
+    '1 hour/week': 65,
+    '1.5 hours/week': 85,
+    '2 hours/week': 100,
+    '2.5 hours/week': 120,
+    '3 hours/week': 135,
+    '3.5 hours/week': 150,
+    '4 hours/week': 160,
+    '4.5 hours/week': 170,
+    '5 hours/week': 185,
+    '5.5 hours/week': 200,
+    '6 hours/week': 215
+  };
+
+  var planPrice = rateMap[tier] || 0;
+
+  apiPost({
+    action: 'calculateRegistrationFee',
+    email: emailV,
+    paymentType: 'monthly',
+    planTier: tier,
+    baseClassPrice: basePrice
+  }).then(function(res){
+    if (!res || !res.success) {
+      return;
+    }
+
+    var firstTimeFee = res.isFirstTime ? 25 : 0;
+    var planPurchaseTotal = planPrice + firstTimeFee;
+
+    var breakout =
+      'Monthly Plan: $' +
+      planPrice.toFixed(2) +
+      ' per month.';
+
+    if (res.isFirstTime) {
+      breakout +=
+        ' One-time registration fee: $' +
+        firstTimeFee.toFixed(2) +
+        '.';
+    }
+
+    if (res.planStartDate) {
+      breakout +=
+        ' Your Monthly Class Plan will begin ' +
+        res.planStartDate +
+        '. This class is not covered by that plan.';
+    }
+
+    breakout +=
+      ' Plan purchase total: $' +
+      planPurchaseTotal.toFixed(2) +
+      '.';
+
+    var feeBreakout = document.getElementById('feeBreakout');
+
+    if (feeBreakout) {
+      feeBreakout.textContent = breakout;
+    }
+
+    updateItemizedSummary();
+  }).catch(function(){
+    var feeBreakout = document.getElementById('feeBreakout');
+
+    if (feeBreakout) {
+      feeBreakout.textContent =
+        'Unable to calculate Monthly Plan pricing. Please try again.';
+    }
+  });
+}
+
+      function validateCurrentPlan(){
+        var emailV = email.value.trim();
+        var banner = document.getElementById('planStatusBanner');
+        var exceededBlock = document.getElementById('exceededOptions');
+
+        if (!emailV) {
+          banner.style.display = 'block';
+          banner.style.background = '#fff3cd';
+          banner.style.color = '#856404';
+          banner.textContent = 'Please enter your email address above to check active plan.';
+          currentPlanValidStatus = false;
+          return;
+        }
+
+        banner.style.display = 'block';
+        banner.style.background = '#e2e3e5';
+        banner.style.color = '#383d41';
+        banner.textContent = 'Validating current plan with studio server...';
+        exceededBlock.style.display = 'none';
+
+        apiPost({ action: 'checkPlanStatus', email: emailV, instanceId: ev.instanceId })
+          .then(function(res){
+            banner.textContent = res.message;
+            if (res && res.valid) {
+              banner.style.background = '#d4edda';
+              banner.style.color = '#155724';
+              currentPlanValidStatus = true;
+            } else if (res && res.status === 'EXCEEDED') {
+              banner.style.background = '#f8d7da';
+              banner.style.color = '#721c24';
+              exceededBlock.style.display = 'block';
+              currentPlanValidStatus = false;
+              currentUserRequiredMins = res.requiredMins || classMins;
+              currentUserCurrentTier = res.currentTier || '';
+              
+              populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);
+            } else {
+              banner.style.background = '#f8d7da';
+              banner.style.color = '#721c24';
+              currentPlanValidStatus = false;
+            }
+          }).catch(function(){
+            banner.style.background = '#f8d7da';
+            banner.style.color = '#721c24';
+            banner.textContent = 'Server validation failed. Please try again.';
+            currentPlanValidStatus = false;
+          });
+      }
+
+      var btnDropIn = document.getElementById('btnSwitchDropIn');
+      if (btnDropIn) btnDropIn.addEventListener('click', function(){
+        var rSingle = document.querySelector('input[name="payTypeMobile"][value="single"]');
+        if (rSingle) { rSingle.checked = true; rSingle.dispatchEvent(new Event('change')); }
+      });
+
+      var btnUpgrade = document.getElementById('btnSwitchUpgrade');
+      if (btnUpgrade) btnUpgrade.addEventListener('click', function(){
+        var rMonthly = document.querySelector('input[name="payTypeMobile"][value="monthly"]');
+        if (rMonthly) { 
+          rMonthly.checked = true; 
+          rMonthly.dispatchEvent(new Event('change')); 
+        }
+      });
+
+      document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){
+        r.addEventListener('change', function(){
+          document.getElementById('squarePayBtnMobile').style.display='none';
+          document.getElementById('zelleInfoMobile').style.display='none';
+          document.getElementById('cashCheckInfoMobile').style.display='none';
+          if(this.value==='square') document.getElementById('squarePayBtnMobile').style.display='block';
+          else if(this.value==='zelle') document.getElementById('zelleInfoMobile').style.display='block';
+          else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfoMobile').style.display='block';
+        });
+      });
+
+      document.querySelectorAll('input[name="careOfCaregiverMobile"]').forEach(function(r){
+        r.addEventListener('change', function(){
+          document.getElementById('caregiverFieldsMobile').style.display = this.value==='yes' ? 'block' : 'none';
+          if(this.value==='no'){document.getElementById('regCaregiverNameMobile').value=''; document.getElementById('regCaregiverPhoneMobile').value='';}
+        });
+      });
+
+      document.querySelectorAll('input[name="accommodationsRequestedMobile"]').forEach(function(r){
+        r.addEventListener('change', function(){
+          document.getElementById('accommodationsFieldMobile').style.display = this.value==='yes' ? 'block' : 'none';
+          if(this.value==='no') document.getElementById('regAccommodationsMobile').value='';
+        });
+      });
+
+      updateItemizedSummary();
+
+      submit.addEventListener('click', function(){
+        var emailV=email.value.trim(), fNameV=firstNameInput.value.trim(), lNameV=lastNameInput.value.trim(), phoneV=phone.value.trim(), payMethodEl=document.querySelector('input[name="payMethodMobile"]:checked'), payMethodVal=payMethodEl ? payMethodEl.value : 'later', errEl=document.getElementById('regErrorMobile');
+        var extraVal = extraInput ? Number(extraInput.value) : 0;
+        var fullNameV = (fNameV + ' ' + lNameV).trim();
+        var selectedAmount = basePrice;
+        var payTypeVal = 'single';
+        var selectedTierName = '';
+        var ticketQty = qtyInput ? Math.max(1, parseInt(qtyInput.value, 10) || 1) : 1;
+
+        if (hasTiers) {
+          var selectedTier = document.querySelector('input[name="ticketTierMobile"]:checked');
+          if (selectedTier) {
+            selectedAmount = Number(selectedTier.value);
+            selectedTierName = selectedTier.getAttribute('data-name');
+          }
+          payTypeVal = 'ticket_tier: ' + selectedTierName;
+        } else {
+          var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked');
+          payTypeVal=payTypeEl ? payTypeEl.value : 'single';
+        }
+
+        errEl.textContent=''; document.getElementById('regSuccessMobile').textContent='';
+        
+        // Release form acknowledgment validation
+        var chkParticipant = document.getElementById('chkParticipantRelease');
+        var chkPhoto       = document.getElementById('chkPhotoRelease');
+        if (!chkParticipant || !chkParticipant.checked) {
+          errEl.textContent = 'Please acknowledge the Participant Release Form to continue.';
+          chkParticipant && chkParticipant.closest('.release-ack-label') && (chkParticipant.closest('.release-ack-label').style.color = '#dc2626');
+          return;
+        }
+        if (!chkPhoto || !chkPhoto.checked) {
+          errEl.textContent = 'Please acknowledge the Photo Release Form to continue.';
+          chkPhoto && chkPhoto.closest('.release-ack-label') && (chkPhoto.closest('.release-ack-label').style.color = '#dc2626');
+          return;
+        }
+        
+        if(!hasTiers && payTypeVal === 'current' && !currentPlanValidStatus){
+          errEl.textContent = 'You do not have an active monthly plan with available hours. Please select Single Class or Monthly Plan to reserve.';
+          return;
+        }
+
+        if(!emailV || !fNameV || !lNameV){errEl.textContent='Please enter your email, first name, and last name.'; return;}
+        if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
+
+        var inclusionData=null;
+        if(ev.inclusion){
+          var careEl=document.querySelector('input[name="careOfCaregiverMobile"]:checked');
+          var accEl=document.querySelector('input[name="accommodationsRequestedMobile"]:checked');
+          var dobM=document.getElementById('regDobMonthMobile'), dobD=document.getElementById('regDobDayMobile'), dobY=document.getElementById('regDobYearMobile');
+          var dob = (dobY && dobY.value && dobM && dobM.value && dobD && dobD.value)
+            ? (String(dobM.value).length<2?'0':'')+dobM.value + '/' + (String(dobD.value).length<2?'0':'')+dobD.value + '/' + dobY.value : '';
+          inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
+        }
+
+        var guestList = [];
+        var chkSkip = document.getElementById('chkSkipAttendees');
+        var isSkipped = chkSkip ? chkSkip.checked : false;
+
+        if (!isSkipped) {
+          var rows = document.querySelectorAll('#attendeeRows > div');
+          rows.forEach(function(row) {
+            var fn = (row.querySelector('.att-fn') ? row.querySelector('.att-fn').value : '').trim();
+            var ln = (row.querySelector('.att-ln') ? row.querySelector('.att-ln').value : '').trim();
+            var em = (row.querySelector('.att-em') ? row.querySelector('.att-em').value : '').trim();
+            var ph = (row.querySelector('.att-ph') ? row.querySelector('.att-ph').value : '').trim();
+
+            if (fn) {
+              guestList.push({
+                firstName: fn,
+                lastName: ln,
+                email: em,
+                phone: ph
+              });
+            }
+          });
+        }
+
+        var btn=this; btn.disabled=true; btn.textContent='Submitting…';
+        apiPost({
+          action:'register', 
+          instanceId:ev.instanceId, 
+          name:fullNameV, 
+          email:emailV, 
+          phone:phoneV, 
+          payMethod:payMethodVal, 
+          payType:payTypeVal,
+          singleAmount: selectedAmount * ticketQty,
+          ticketQuantity: ticketQty,
+          planTier: document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : '',
+          extraContribution: extraVal,
+          inclusionData:inclusionData,
+          guests: guestList,
+          participantReleaseAck: true,
+          photoReleaseAck: true
+        }).then(function(r){
+          btn.disabled=false; btn.textContent=getReserveButtonText(ev);
+          if(r && r.success){
+            S.masterData = null; // Clear local cache on successful booking
+            var bodyHost = document.getElementById('modalBody');
+            bodyHost.innerHTML = '<div class="confirmation-view">'
+              + '<div class="confirm-icon">✓</div>'
+              + '<div class="confirm-title">Reservation Confirmed!</div>'
+              + '<div class="confirm-msg">' + esc(r.message || 'Your reservation has been recorded.') + '<br><br><strong>Reservation ID:</strong> ' + esc(r.registrationId) + '</div>'
+              + '<div class="confirm-btns">'
+              + '<button class="confirm-btn primary" id="btnConfirmCal">Back to Calendar</button>'
+              + '<button class="confirm-btn" id="btnConfirmHome" onclick="window.top.location.href=\'https://wtfdc.org\'">Return to Home</button>'
+              + '</div>'
+              + '</div>';
+            
+            document.getElementById('btnConfirmCal').addEventListener('click', function(){
+              closeModal(); load(true);
+            });
+          }
+          else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
+        }).catch(function(){btn.disabled=false; btn.textContent=getReserveButtonText(ev); errEl.textContent='Connection error. Please try again.';});
+      });
+    }
+
+    function renderSessions(){
+      var area=document.getElementById('sessionsArea');
+      if (!area) return;
+      
+      var sessions=(S.sessionsData && S.sessionsData.sessions) ? S.sessionsData.sessions : [];
+      var filtered=sessions.filter(function(s){
+        var typeLC=String(s.type || '').toLowerCase();
+        var catLC=String(s.category || '').toLowerCase();
+        var isShow=(typeLC==='event' || catLC==='performance');
+        if(S.showClasses && !S.showShows && isShow) return false;
+        if(S.showShows && !S.showClasses && !isShow) return false;
+        return true;
+      });
+      
+      var html='';
+      if(!filtered.length){html='<div style="text-align:center;padding:24px 0;color:var(--muted);font-size:14px;">No sessions found.</div>';}
+      else{
+        html='<div class="sessions-grid">';
+        filtered.forEach(function(s){
+          var hasImg=s.imageUrl && s.imageUrl.trim();
+          var sid=esc(s.sessionId);
+          var catLabel = s.category || s.type || 'Session';
+          
+          html += '<div class="session-card">'
+            + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy" crossorigin="anonymous">' : '')
+            + '<div class="session-card-body">'
+            + '<div class="session-card-category">'+esc(catLabel)+'</div>'
+            + '<div class="session-card-title">'+esc(s.title)+'</div>'
+            + (s.description ? '<div class="session-card-desc">'+esc(s.description)+'</div>' : '')
+            + (s.costText ? '<div class="session-card-cost">'+esc(s.costText)+' per session</div>' : '')
+            + '<button class="session-card-toggle" data-sid="'+sid+'">'+s.instances.length+(s.instances.length===1?' upcoming date':' upcoming dates')+' — view all</button>'
+            + '<div class="session-instances" id="si-'+sid+'">'+buildInstanceRows(s.instances)+'</div>'
+            + '</div></div>';
+        });
+        html += '</div>';
+      }
+      
+      area.innerHTML=html;
+      attachSessionListeners();
+      broadcastHeight();
+    }
+
+    function buildInstanceRows(instances){
+      if(!instances || !instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
+      return instances.map(function(ev){
+        var k=registerEvent(ev);
+        var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
+        var canReg = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+        var btnText = getReserveButtonText(ev);
+        
+        var timeStr = formatFriendlyTime(ev.startTime || ev.start, ev.endTime || ev.end);
+
+var sessionDateLabel = ev.dateLabel || '';
+
+if (!sessionDateLabel) {
+  var dateSource = ev.start || ev.startMs || '';
+
+  if (dateSource) {
+    var sessionStartDate = new Date(dateSource);
+
+    if (!isNaN(sessionStartDate.getTime())) {
+      sessionDateLabel = sessionStartDate.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+  }
+}
+
+        var statusBadge = ev.statusLabel
+          ? '<div style="margin-bottom:4px;">'
+            + '<span style="display:inline-block;font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px;'
+            + 'background:' + esc(ev.statusColor) + '1a;'
+            + 'color:' + esc(ev.statusColor) + ';'
+            + 'border:1px solid ' + esc(ev.borderColor || ev.statusColor) + ';">'
+            + esc(ev.statusLabel) 
+            + '</span></div>'
+          : '';
+
+        return '<div class="session-instance-row" style="padding:10px 0; border-bottom:1px solid var(--line);' + (ev.isCancelled ? ' opacity:0.6;' : '') + '">'+
+          '<div style="margin-bottom:8px;">'+
+            statusBadge +
+(sessionDateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(sessionDateLabel) + '</div>' : '') +
+            (timeStr ? '<div class="session-instance-time" style="font-size:12px; color:var(--muted);">' + esc(timeStr) + '</div>' : '') +
+            (ev.location ? '<div class="session-instance-spots" style="font-size:11px; color:var(--muted); margin-top:2px;">' + esc(ev.location) + '</div>' : '') +
+            (ev.spotsText ? '<div class="session-instance-spots" style="font-size:11px; font-style:italic; color:var(--muted);">' + esc(ev.spotsText) + '</div>' : '') +
+          '</div>'+
+          '<div style="display:flex; flex-direction:column; gap:6px; width:100%;">'+
+            (canReg ? '<a href="https://yellowstudios.github.io/wingsstudio/?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="session-instance-btn primary" style="display:block; width:100%; text-align:center; box-sizing:border-box; padding:8px 12px; font-size:12px; font-weight:600; text-decoration:none;">' + btnText + '</a>' : '') +
+            '<button type="button" class="session-instance-btn btn-info" data-id="' + esc(k) + '" style="display:block; width:100%; text-align:center; box-sizing:border-box; padding:8px 12px; font-size:12px; font-weight:600; cursor:pointer;">More Info</button>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+    }
+
+    function broadcastHeight(){
+      try{
+        var h=Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);
+        window.parent.postMessage({type:'wingsHeight', height:h}, '*');
+      }catch(e){}
+    }
+
+    document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e){
+      if (e.target === this) closeModal();
+    });
+
+    // 0ms Instant Client-Side Navigation
+    document.getElementById('prevBtn').addEventListener('click', function(){
+      if(S.view==='week'){
+        S.currentMonday = addDays(S.currentMonday, -7); 
+      } else {
+        var parts = S.currentMonth.split('-'); 
+        S.currentMonth = monthKey(new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 2, 1));
+      }
+      load();
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', function(){
+      if(S.view==='week'){
+        S.currentMonday = addDays(S.currentMonday, 7); 
+      } else {
+        var parts = S.currentMonth.split('-'); 
+        S.currentMonth = monthKey(new Date(parseInt(parts[0],10), parseInt(parts[1],10), 1));
+      }
+      load();
+    });
+
+    document.getElementById('viewWeek').addEventListener('click', function(){
+      if(S.view === 'week') return; 
+      S.view = 'week'; 
+      load();
+    });
+
+    document.getElementById('viewMonth').addEventListener('click', function(){
+      if(S.view === 'month') return; 
+      S.view = 'month'; 
+      S.currentMonth = monthKey(S.currentMonday); 
+      load();
+    });
+
+    document.getElementById('tabClasses').addEventListener('click', function(){
+      S.showClasses = !S.showClasses; 
+      render(); 
+      renderSessions();
+    });
+
+    document.getElementById('tabShows').addEventListener('click', function(){
+      S.showShows = !S.showShows; 
+      render(); 
+      renderSessions();
+    });
+
+    attachCalendarListeners();
+    load();
+    broadcastHeight();
+    if(window.ResizeObserver){new ResizeObserver(broadcastHeight).observe(document.body);}
+  </script>
+</body>
+</html>

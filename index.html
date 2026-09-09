@@ -1025,9 +1025,16 @@ if (!ev.costText && hasTiers) {
         if (match) currentMins = match.mins;
       }
 
-      var targetMin = Math.max(currentMins + 1, requiredMins || 0);
-      var filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin; });
-      if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > currentMins; });
+      // If no currentTier (fresh purchase, not an upgrade), show ALL tiers
+      // Only filter when upgrading an existing plan or covering partial hours
+      var filtered;
+      if (!currentTier && (!requiredMins || requiredMins <= 0)) {
+        filtered = ALL_TIERS.slice(); // all tiers
+      } else {
+        var targetMin = Math.max(currentMins + (currentTier ? 1 : 0), requiredMins || 0);
+        filtered = ALL_TIERS.filter(function(t){ return t.mins >= targetMin; });
+        if (filtered.length === 0) filtered = ALL_TIERS.filter(function(t){ return t.mins > currentMins; });
+      }
 
       filtered.forEach(function(t) {
         var opt = document.createElement('option');
@@ -1374,7 +1381,10 @@ if (!ev.costText && hasTiers) {
                     populateTierDropdown(currentUserCurrentTier, currentUserRequiredMins);
                   }
                 } else if(!hasTiers) {
-                  currentPlanValidStatus = false;
+                  // No plan covers this event — reset tier so all options show for fresh purchase
+                  currentPlanValidStatus  = false;
+                  currentUserCurrentTier  = '';
+                  currentUserRequiredMins = classMins;
                   var tierSel = document.getElementById('planTierMobile');
                   if(tierSel){ tierSel.disabled = false; tierSel.style.opacity = '1'; }
                 }
@@ -1495,11 +1505,24 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
       });
 
     function calculateFees() {
-  var emailV = email.value.trim();
+  var emailV = email.value.trim() || lastFetchedEmail || '';
   var tierSelect = document.getElementById('planTierMobile');
   var tier = tierSelect && tierSelect.value ? tierSelect.value : '';
 
   if (!tier) {
+    return;
+  }
+
+  if (!emailV) {
+    // No email yet — show base rate without first-time fee calculation
+    var rateMap2 = {
+      '1 hour/week': 65, '1.5 hours/week': 85, '2 hours/week': 100,
+      '2.5 hours/week': 120, '3 hours/week': 135, '3.5 hours/week': 150,
+      '4 hours/week': 160, '4.5 hours/week': 170, '5 hours/week': 185,
+      '5.5 hours/week': 200, '6 hours/week': 215
+    };
+    var feeBreakout = document.getElementById('feeBreakout');
+    if (feeBreakout) feeBreakout.textContent = 'Enter your email above to calculate your exact plan cost.';
     return;
   }
 

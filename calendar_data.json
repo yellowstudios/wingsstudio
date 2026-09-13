@@ -1,13 +1,7 @@
 {
   "view": "year",
-  "todayKey": "2026-09-12",
+  "todayKey": "2026-09-13",
   "days": [
-    {
-      "key": "2026-08-13",
-      "name": "Thu",
-      "num": "13",
-      "monthNum": "8"
-    },
     {
       "key": "2026-08-14",
       "name": "Fri",
@@ -2376,6 +2370,12 @@
       "key": "2027-09-12",
       "name": "Sun",
       "num": "12",
+      "monthNum": "9"
+    },
+    {
+      "key": "2027-09-13",
+      "name": "Mon",
+      "num": "13",
       "monthNum": "9"
     }
   ],
@@ -10706,32 +10706,6 @@
         "inclusion": true,
         "instances": [
           {
-            "instanceId": "OI_253",
-            "title": "Inclusive Dance Session",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "start": "2026-09-12T14:00:00.000Z",
-            "end": "2026-09-12T15:00:00.000Z",
-            "cost": 20,
-            "category": "Movement",
-            "type": "Class",
-            "inclusion": true,
-            "spotsText": "11 spots left",
-            "isFull": false,
-            "isCancelled": false,
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "dayKey": "2026-09-12",
-            "duration": "1899-12-30T06:00:00.000Z",
-            "participantNotes": "Join us and experience the magic of inclusion — ALL are welcome! This class is designed to foster connection between dancers of all abilities. As we support one another, we discover healing within ourselves.",
-            "imageUrl": "https://lirp.cdn-website.com/f6547041/dms3rep/multi/opt/Harnessed+back+stage-1920w.jpeg",
-            "isPublic": true,
-            "sessionId": "O_002",
-            "_calType": "class",
-            "tiers": []
-          },
-          {
             "instanceId": "OI_254",
             "title": "Inclusive Dance Session",
             "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
@@ -11056,32 +11030,6 @@
         "videoUrl": "https://www.youtube.com/embed/HB7oJdXWcGs",
         "inclusion": true,
         "instances": [
-          {
-            "instanceId": "OI_240",
-            "title": "Progressive Ballet Technique",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "start": "2026-09-12T13:00:00.000Z",
-            "end": "2026-09-12T14:00:00.000Z",
-            "cost": 20,
-            "category": "Conditioning",
-            "type": "Class",
-            "inclusion": true,
-            "spotsText": "12 spots left",
-            "isFull": false,
-            "isCancelled": false,
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "dayKey": "2026-09-12",
-            "duration": "1899-12-30T06:00:00.000Z",
-            "participantNotes": "Progressing Ballet Technique (PBT) is an innovative body-conditioning and strengthening program that has been designed to enhance students’ technique by focusing on training the muscle memory required in each exercise in all forms of dance. The program helps with injury prevention and rehabilitation and enhances the ability of athletes to perform at their best. With the use of an exercise ball, the students gain a great sense of posture and weight-placement whilst feeling each correct muscle group working throughout each exercise, which then stays with them when whilst performing in dance or their chosen field of sport. PBT focuses on core strength, weight placement and alignment of the body with a gradual approach of carefully designed exercises and repetitions of these exercises that trigger their muscle memory. ﻿ PBT is not only a program to improve technique in ballet dancers, but also now being appreciated and incorporated in training by all forms of dancers, athletes, physiotherapists and even footballers! Great class for horseback riders to strengthen core.",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_004.Image.143054.png",
-            "isPublic": true,
-            "sessionId": "O_004",
-            "_calType": "class",
-            "tiers": []
-          },
           {
             "instanceId": "OI_115",
             "title": "Progressive Ballet Technique",
@@ -12457,55 +12405,6 @@
         "videoUrl": "https://www.youtube.com/embed/HB7oJdXWcGs",
         "inclusion": false,
         "instances": [
-          {
-            "instanceId": "OI_297",
-            "title": "Edgeworks Movement Lab with Crystal",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "start": "2026-09-12T18:00:00.000Z",
-            "end": "2026-09-12T20:00:00.000Z",
-            "cost": 35,
-            "category": "Movement",
-            "type": "Event",
-            "inclusion": false,
-            "spotsText": "3 spots left",
-            "isFull": false,
-            "isCancelled": false,
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "dayKey": "2026-09-12",
-            "duration": "1899-12-30T07:00:00.000Z",
-            "participantNotes": "EdgeWorks Movement is a guided improvisational practice for dancers and curious humans who want to move beyond the surface. Through structured exploration, creative prompts, spatial awareness, and optional partnering, participants build strength, mobility, coordination, and expressive range - all within a clear framework so no one feels lost. This class invites a childlike curiosity back into the body. It's a space to experiment, emote, take risks, and discover new movement pathways in a safe and supportive environment. Expect to leave feeling invigorated, open, and more connected - to your body, your creativity, and the people moving beside you. No performance pressure. No expectations. Just the freedom to explore your edge. EdgeWorks becomes: A home for: The dancer seeking more depth in their artistry The former dancer who misses artistry The mom who wants to feel alive again The adult who always wanted to dance The mover who doesn't want recital culture The human craving depth without heaviness",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_007.Image.165152.jpg",
-            "isPublic": true,
-            "sessionId": "O_007",
-            "_calType": "class",
-            "tiers": [
-              {
-                "name": "Company Members",
-                "qty": 1,
-                "ticketCount": 1,
-                "quantity": 1,
-                "price": 20,
-                "priceText": "$20.00",
-                "description": "Discounted workshop rate for company members",
-                "requiresPasscode": true,
-                "passcode": "wings123"
-              },
-              {
-                "name": "Individual Workshop Access Pre-Register",
-                "qty": 1,
-                "ticketCount": 1,
-                "quantity": 1,
-                "price": 35,
-                "priceText": "$35.00",
-                "description": "Pre-register for the workshop for a discounted rate.",
-                "requiresPasscode": false,
-                "passcode": ""
-              }
-            ]
-          },
           {
             "instanceId": "OI_299",
             "title": "Edgeworks Movement Lab with Crystal",
@@ -15416,32 +15315,6 @@
         "videoUrl": "https://www.youtube.com/embed/HB7oJdXWcGs",
         "inclusion": true,
         "instances": [
-          {
-            "instanceId": "OI_300",
-            "title": "WheelDancer & Caregiver",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "start": "2026-09-12T15:15:00.000Z",
-            "end": "2026-09-08T16:15:00.000Z",
-            "cost": 20,
-            "category": "Movement",
-            "type": "Class",
-            "inclusion": true,
-            "spotsText": "5 spots left",
-            "isFull": false,
-            "isCancelled": false,
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "dayKey": "2026-09-12",
-            "duration": "1899-12-30T06:00:00.000Z",
-            "participantNotes": "",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_013.Image.155617.jpg",
-            "isPublic": true,
-            "sessionId": "O_013",
-            "_calType": "class",
-            "tiers": []
-          },
           {
             "instanceId": "OI_189",
             "title": "WheelDancer & Caregiver",

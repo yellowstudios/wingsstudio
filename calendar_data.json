@@ -3261,13 +3261,13 @@
           "passcode": "wings123"
         },
         {
-          "name": "Individual Workshop Access Pre-Register",
+          "name": "Pre-Registration price",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
           "price": 35,
           "priceText": "$35.00",
-          "description": "Pre-register for the workshop for a discounted rate.",
+          "description": "LIMITED SPACE- hold your spot TODAY!",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -4822,13 +4822,13 @@
       "isCancelled": false,
       "tiers": [
         {
-          "name": "Individual Workshop Access - At the Door",
+          "name": "At the door",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
-          "price": 40,
-          "priceText": "$40.00",
-          "description": "Register for the workshop the day of the event.",
+          "price": 45,
+          "priceText": "$45.00",
+          "description": "Space is not guaranteed without pre registration.",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -6342,13 +6342,13 @@
       "isCancelled": false,
       "tiers": [
         {
-          "name": "Individual Workshop Access - At the Door",
+          "name": "At the door",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
-          "price": 40,
-          "priceText": "$40.00",
-          "description": "Register for the workshop the day of the event.",
+          "price": 45,
+          "priceText": "$45.00",
+          "description": "Space is not guaranteed without pre registration.",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -12447,13 +12447,13 @@
             "_calType": "class",
             "tiers": [
               {
-                "name": "Individual Workshop Access - At the Door",
+                "name": "At the door",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
-                "price": 40,
-                "priceText": "$40.00",
-                "description": "Register for the workshop the day of the event.",
+                "price": 45,
+                "priceText": "$45.00",
+                "description": "Space is not guaranteed without pre registration.",
                 "requiresPasscode": false,
                 "passcode": ""
               }
@@ -12485,13 +12485,13 @@
             "_calType": "class",
             "tiers": [
               {
-                "name": "Individual Workshop Access - At the Door",
+                "name": "At the door",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
-                "price": 40,
-                "priceText": "$40.00",
-                "description": "Register for the workshop the day of the event.",
+                "price": 45,
+                "priceText": "$45.00",
+                "description": "Space is not guaranteed without pre registration.",
                 "requiresPasscode": false,
                 "passcode": ""
               }

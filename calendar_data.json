@@ -8308,7 +8308,7 @@
       "startMs": 1795372200000,
       "dateLabel": "Sun, Nov 22, 2026",
       "costText": "$15.00",
-      "spotsText": "295 spots left",
+      "spotsText": "294 spots left",
       "dayKey": "2026-11-22",
       "duration": "Sat Dec 30 1899 03:00:00 GMT-0500 (Eastern Standard Time)",
       "category": "Fundraising",
@@ -8334,7 +8334,7 @@
           "priceText": "$50.00",
           "description": "Group homes on the Treasure Coast and surrounding areas receive a discounted rate for attendance of $10/ticket in groups of 5 or more.",
           "requiresPasscode": true,
-          "passcode": "wingsandwinter2026"
+          "passcode": "wings123"
         },
         {
           "name": "Single Ticket",
@@ -12301,7 +12301,7 @@
             "category": "Fundraising",
             "type": "Event",
             "inclusion": true,
-            "spotsText": "295 spots left",
+            "spotsText": "294 spots left",
             "isFull": false,
             "isCancelled": false,
             "status": "upcoming",
@@ -12325,7 +12325,7 @@
                 "priceText": "$50.00",
                 "description": "Group homes on the Treasure Coast and surrounding areas receive a discounted rate for attendance of $10/ticket in groups of 5 or more.",
                 "requiresPasscode": true,
-                "passcode": "wingsandwinter2026"
+                "passcode": "wings123"
               },
               {
                 "name": "Single Ticket",

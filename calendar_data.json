@@ -3067,6 +3067,17 @@
           "description": "LIMITED SPACE- hold your spot TODAY!",
           "requiresPasscode": false,
           "passcode": ""
+        },
+        {
+          "name": "At the door",
+          "qty": 1,
+          "ticketCount": 1,
+          "quantity": 1,
+          "price": 45,
+          "priceText": "$45.00",
+          "description": "Space is not guaranteed without pre registration.",
+          "requiresPasscode": false,
+          "passcode": ""
         }
       ]
     },
@@ -4416,35 +4427,35 @@
       "isCancelled": false,
       "tiers": [
         {
-          "name": "Pre Registration",
-          "qty": 1,
-          "ticketCount": 1,
-          "quantity": 1,
-          "price": 35,
-          "priceText": "$35.00",
-          "description": "Pre Registration for workshop",
-          "requiresPasscode": false,
-          "passcode": ""
-        },
-        {
-          "name": "Company",
+          "name": "Company Members",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
           "price": 20,
           "priceText": "$20.00",
-          "description": "Discounted price for company",
+          "description": "Discounted workshop rate for company members",
           "requiresPasscode": true,
           "passcode": "wings123"
         },
         {
-          "name": "On the day",
+          "name": "Pre-Registration price",
+          "qty": 1,
+          "ticketCount": 1,
+          "quantity": 1,
+          "price": 35,
+          "priceText": "$35.00",
+          "description": "LIMITED SPACE- hold your spot TODAY!",
+          "requiresPasscode": false,
+          "passcode": ""
+        },
+        {
+          "name": "At the door",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
           "price": 45,
           "priceText": "$45.00",
-          "description": "On the day registration",
+          "description": "Space is not guaranteed without pre registration.",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -5784,35 +5795,35 @@
       "isCancelled": false,
       "tiers": [
         {
-          "name": "Pre Registration",
-          "qty": 1,
-          "ticketCount": 1,
-          "quantity": 1,
-          "price": 35,
-          "priceText": "$35.00",
-          "description": "Payment for workshop. pre registration",
-          "requiresPasscode": false,
-          "passcode": ""
-        },
-        {
-          "name": "Company",
+          "name": "Company Members",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
           "price": 20,
           "priceText": "$20.00",
-          "description": "Company discount",
+          "description": "Discounted workshop rate for company members",
           "requiresPasscode": true,
           "passcode": "wings123"
         },
         {
-          "name": "on the day",
+          "name": "Pre-Registration price",
+          "qty": 1,
+          "ticketCount": 1,
+          "quantity": 1,
+          "price": 35,
+          "priceText": "$35.00",
+          "description": "LIMITED SPACE- hold your spot TODAY!",
+          "requiresPasscode": false,
+          "passcode": ""
+        },
+        {
+          "name": "At the door",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
           "price": 45,
           "priceText": "$45.00",
-          "description": "On the day payment",
+          "description": "Space is not guaranteed without pre registration.",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -11098,35 +11109,35 @@
             "_calType": "class",
             "tiers": [
               {
-                "name": "Pre Registration",
-                "qty": 1,
-                "ticketCount": 1,
-                "quantity": 1,
-                "price": 35,
-                "priceText": "$35.00",
-                "description": "Pre Registration for workshop",
-                "requiresPasscode": false,
-                "passcode": ""
-              },
-              {
-                "name": "Company",
+                "name": "Company Members",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
                 "price": 20,
                 "priceText": "$20.00",
-                "description": "Discounted price for company",
+                "description": "Discounted workshop rate for company members",
                 "requiresPasscode": true,
                 "passcode": "wings123"
               },
               {
-                "name": "On the day",
+                "name": "Pre-Registration price",
+                "qty": 1,
+                "ticketCount": 1,
+                "quantity": 1,
+                "price": 35,
+                "priceText": "$35.00",
+                "description": "LIMITED SPACE- hold your spot TODAY!",
+                "requiresPasscode": false,
+                "passcode": ""
+              },
+              {
+                "name": "At the door",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
                 "price": 45,
                 "priceText": "$45.00",
-                "description": "On the day registration",
+                "description": "Space is not guaranteed without pre registration.",
                 "requiresPasscode": false,
                 "passcode": ""
               }
@@ -11158,35 +11169,35 @@
             "_calType": "class",
             "tiers": [
               {
-                "name": "Pre Registration",
-                "qty": 1,
-                "ticketCount": 1,
-                "quantity": 1,
-                "price": 35,
-                "priceText": "$35.00",
-                "description": "Payment for workshop. pre registration",
-                "requiresPasscode": false,
-                "passcode": ""
-              },
-              {
-                "name": "Company",
+                "name": "Company Members",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
                 "price": 20,
                 "priceText": "$20.00",
-                "description": "Company discount",
+                "description": "Discounted workshop rate for company members",
                 "requiresPasscode": true,
                 "passcode": "wings123"
               },
               {
-                "name": "on the day",
+                "name": "Pre-Registration price",
+                "qty": 1,
+                "ticketCount": 1,
+                "quantity": 1,
+                "price": 35,
+                "priceText": "$35.00",
+                "description": "LIMITED SPACE- hold your spot TODAY!",
+                "requiresPasscode": false,
+                "passcode": ""
+              },
+              {
+                "name": "At the door",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
                 "price": 45,
                 "priceText": "$45.00",
-                "description": "On the day payment",
+                "description": "Space is not guaranteed without pre registration.",
                 "requiresPasscode": false,
                 "passcode": ""
               }

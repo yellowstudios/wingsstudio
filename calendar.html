@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Calendar — Wings to Fly Dance Company</title>
+</head>
+<body style="margin:0;padding:0;">
+<!--
+  Calendar-only page.
+  Embeds the full Wings Studio calendar (index.html) in an iframe
+  with the sessions section hidden via a URL parameter.
+  The iframe auto-resizes via postMessage height broadcasts from index.html.
+-->
+<iframe
+  id="calFrame"
+  src="https://yellowstudios.github.io/wingsstudio/?view=calendar"
+  style="width:100%;border:none;display:block;min-height:600px;"
+  scrolling="no"
+  title="Wings to Fly Dance Company — Calendar">
+</iframe>
+<script>
+  window.addEventListener('message', function(e){
+    if (e.data && e.data.type === 'wingsHeight') {
+      document.getElementById('calFrame').style.height = e.data.height + 'px';
+    }
+  });
+</script>
+</body>
+</html>

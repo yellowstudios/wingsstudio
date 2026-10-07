@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Our Sessions — Wings to Fly Dance Company</title>
+  <style>
+    :root{--accent:#c89b3c;--ink:#222;--muted:#777;--line:#e5e5e5;--bg:#fafafa;}
+    *{box-sizing:border-box;}
+    html,body{width:100%;margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+    body{padding-bottom:env(safe-area-inset-bottom,0);}
+
+    /* Page header */
+    .page-header{padding:20px 16px 12px;border-bottom:1px solid var(--line);background:#fff;}
+    .page-header h1{margin:0;font-size:22px;font-weight:700;color:var(--ink);}
+    .page-header p{margin:4px 0 0;font-size:13px;color:var(--muted);}
+
+    /* Tabs */
+    .tabs-bar{display:flex;gap:6px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);}
+    .tabs-bar button{font:inherit;font-size:13px;padding:5px 12px;border-radius:6px;border:1px solid var(--line);background:none;cursor:pointer;color:var(--muted);}
+    .tabs-bar button.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+    /* Sessions grid */
+    #sessionsArea{padding:14px 12px;}
+    .sessions-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+    .session-card{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+    .session-card-img{width:100%;height:160px;object-fit:cover;display:block;}
+    .session-card-body{padding:12px;}
+    .session-card-category{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);font-weight:600;margin-bottom:4px;}
+    .session-card-title{font-size:16px;font-weight:700;margin-bottom:6px;}
+    .session-card-desc{font-size:13px;color:var(--muted);margin-bottom:8px;line-height:1.5;}
+    .session-card-cost{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px;}
+    .session-card-toggle{font:inherit;font-size:12px;color:var(--accent);background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;}
+    .session-instances{display:none;margin-top:10px;border-top:1px solid var(--line);padding-top:10px;}
+    .session-instances.open{display:block;}
+    .session-instance-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);gap:8px;}
+    .session-instance-row:last-child{border-bottom:none;}
+    .session-instance-date{font-size:13px;font-weight:600;}
+    .session-instance-time{font-size:12px;color:var(--muted);}
+    .session-instance-spots{font-size:12px;color:var(--muted);}
+    .session-instance-btn{font:inherit;font-size:12px;font-weight:600;padding:6px 10px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);text-decoration:none;display:inline-block;text-align:center;}
+    .session-instance-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+    /* Loading */
+    .loading-msg{text-align:center;padding:40px 0;color:var(--muted);font-size:14px;}
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Our Sessions</h1>
+  <p>Browse all offerings and upcoming class dates.</p>
+</div>
+
+<div class="tabs-bar">
+  <button id="tabAll" class="active">All</button>
+  <button id="tabClasses">Classes</button>
+  <button id="tabShows">Shows &amp; Events</button>
+</div>
+
+<div id="sessionsArea">
+  <div class="loading-msg">Loading sessions…</div>
+</div>
+
+<script>
+var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3Hhuw1kW00sOdEilXh5jebe0tc-vLIakY1WX1h2c1w/exec";
+var STATIC_JSON_URL = "./calendar_data.json";
+var showClasses = true, showShows = true;
+var sessionsData = null;
+
+function esc(s){ var d=document.createElement('div'); d.appendChild(document.createTextNode(String(s||''))); return d.innerHTML; }
+
+function fetchSessions() {
+  var url = STATIC_JSON_URL + '?t=' + Date.now();
+  fetch(url).then(function(r){ return r.json(); }).then(function(data){
+    sessionsData = data.sessionsPayload || data;
+    renderSessions();
+  }).catch(function(){
+    // Fallback to live API
+    fetch(API + '?view=sessions').then(function(r){ return r.json(); }).then(function(data){
+      sessionsData = data.sessionsPayload || data;
+      renderSessions();
+    }).catch(function(){
+      document.getElementById('sessionsArea').innerHTML = '<div class="loading-msg">Unable to load sessions. Please try again.</div>';
+    });
+  });
+}
+
+function buildInstanceRows(instances) {
+  if (!instances || !instances.length) return '<div style="font-size:13px;color:var(--muted);padding:8px 0;">No upcoming dates scheduled.</div>';
+  return instances.map(function(ev){
+    var btnText = ev.isFull ? 'Full' : 'Register';
+    var canReg = ev.isPublic && !ev.isFull;
+    return '<div class="session-instance-row">'
+      + '<div>'
+        + '<div class="session-instance-date">' + esc(ev.dateLabel || '') + '</div>'
+        + '<div class="session-instance-time">' + esc(ev.startTime || '') + ' – ' + esc(ev.endTime || '') + '</div>'
+        + (ev.location ? '<div class="session-instance-spots">' + esc(ev.location) + '</div>' : '')
+        + (ev.spotsText ? '<div class="session-instance-spots">' + esc(ev.spotsText) + '</div>' : '')
+      + '</div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap;">'
+        + (canReg ? '<a href="https://wtfdc.org/reserve?reserve=' + encodeURIComponent(ev.instanceId) + '" target="_top" rel="noopener" class="session-instance-btn primary">' + btnText + '</a>' : '')
+        + '<a href="https://wtfdc.org/reserve?reserve=' + encodeURIComponent(ev.instanceId) + '" target="_top" rel="noopener" class="session-instance-btn">More Info</a>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+}
+
+function renderSessions() {
+  var area = document.getElementById('sessionsArea');
+  if (!sessionsData || !sessionsData.sessions || !sessionsData.sessions.length) {
+    area.innerHTML = '<div class="loading-msg">No sessions found.</div>';
+    return;
+  }
+
+  var sessions = sessionsData.sessions.filter(function(s){
+    var typeLC = String(s.type || '').toLowerCase();
+    var catLC  = String(s.category || '').toLowerCase();
+    var isShow = typeLC === 'event' || catLC === 'performance' || typeLC === 'show';
+    if (showClasses && !showShows && isShow)  return false;
+    if (showShows  && !showClasses && !isShow) return false;
+    return true;
+  });
+
+  if (!sessions.length) { area.innerHTML = '<div class="loading-msg">No sessions found.</div>'; return; }
+
+  var html = '<div class="sessions-grid">';
+  sessions.forEach(function(s){
+    var sid = encodeURIComponent(s.sessionId || '');
+    html += '<div class="session-card">'
+      + (s.imageUrl ? '<img class="session-card-img" src="' + esc(s.imageUrl) + '" alt="' + esc(s.title) + '" loading="lazy">' : '')
+      + '<div class="session-card-body">'
+        + '<div class="session-card-category">' + esc(s.category || s.type || 'Session') + '</div>'
+        + '<div class="session-card-title">' + esc(s.title) + '</div>'
+        + (s.description ? '<div class="session-card-desc">' + esc(s.description) + '</div>' : '')
+        + (s.costText ? '<div class="session-card-cost">' + esc(s.costText) + ' per session</div>' : '')
+        + '<button class="session-card-toggle" data-sid="' + sid + '">'
+          + s.instances.length + (s.instances.length === 1 ? ' upcoming date' : ' upcoming dates') + ' — view all'
+        + '</button>'
+        + '<div class="session-instances" id="si-' + sid + '">' + buildInstanceRows(s.instances) + '</div>'
+      + '</div></div>';
+  });
+  html += '</div>';
+  area.innerHTML = html;
+
+  // Wire toggles
+  area.querySelectorAll('.session-card-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.getElementById('si-' + btn.dataset.sid);
+      if (el) el.classList.toggle('open');
+    });
+  });
+}
+
+// Tab wiring
+['tabAll','tabClasses','tabShows'].forEach(function(id){
+  document.getElementById(id).addEventListener('click', function(){
+    document.querySelectorAll('.tabs-bar button').forEach(function(b){ b.classList.remove('active'); });
+    this.classList.add('active');
+    showClasses = id === 'tabAll' || id === 'tabClasses';
+    showShows   = id === 'tabAll' || id === 'tabShows';
+    renderSessions();
+  });
+});
+
+fetchSessions();
+</script>
+</body>
+</html>

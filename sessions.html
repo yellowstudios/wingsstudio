@@ -148,8 +148,17 @@ function renderSessions() {
     btn.addEventListener('click', function(){
       var el = document.getElementById('si-' + btn.dataset.sid);
       if (el) el.classList.toggle('open');
+      scheduleHeightBroadcast();
     });
   });
+
+  // Broadcast after images load
+  area.querySelectorAll('img').forEach(function(img){
+    img.addEventListener('load', scheduleHeightBroadcast);
+    img.addEventListener('error', scheduleHeightBroadcast);
+  });
+
+  scheduleHeightBroadcast();
 }
 
 // Tab wiring
@@ -164,6 +173,30 @@ function renderSessions() {
 });
 
 fetchSessions();
+
+// Broadcast height to parent iframe so Duda page auto-resizes
+function broadcastHeight() {
+  try {
+    var h = document.body.scrollHeight;
+    window.parent.postMessage({ type: 'wingsHeight', height: h }, '*');
+  } catch(e) {}
+}
+
+// Broadcast after content loads and on any resize
+var heightTimer = null;
+function scheduleHeightBroadcast() {
+  clearTimeout(heightTimer);
+  heightTimer = setTimeout(broadcastHeight, 100);
+}
+
+window.addEventListener('resize', scheduleHeightBroadcast);
+// Also broadcast periodically for first few seconds while images load
+var broadcastCount = 0;
+var broadcastInterval = setInterval(function(){
+  broadcastHeight();
+  broadcastCount++;
+  if (broadcastCount > 20) clearInterval(broadcastInterval);
+}, 300);
 </script>
 </body>
 </html>

@@ -91,10 +91,33 @@ function buildInstanceRows(instances) {
   return instances.map(function(ev){
     var btnText = ev.isFull ? 'Full' : 'Register';
     var canReg = ev.isPublic && !ev.isFull;
+
+    // Build date label — use dateLabel if available, fall back to startMs or start
+    var dateStr = ev.dateLabel || '';
+    if (!dateStr && (ev.startMs || ev.start)) {
+      var d = new Date(ev.startMs || ev.start);
+      if (!isNaN(d.getTime())) {
+        dateStr = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+      }
+    }
+
+    // Build time string — use startTime/endTime if available, fall back to start/end
+    var timeStr = '';
+    if (ev.startTime) {
+      timeStr = ev.startTime + (ev.endTime ? ' – ' + ev.endTime : '');
+    } else if (ev.start) {
+      var ds = new Date(ev.start);
+      var de = ev.end ? new Date(ev.end) : null;
+      if (!isNaN(ds.getTime())) {
+        timeStr = ds.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+        if (de && !isNaN(de.getTime())) timeStr += ' – ' + de.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+      }
+    }
+
     return '<div class="session-instance-row">'
       + '<div>'
-        + '<div class="session-instance-date">' + esc(ev.dateLabel || '') + '</div>'
-        + '<div class="session-instance-time">' + esc(ev.startTime || '') + ' – ' + esc(ev.endTime || '') + '</div>'
+        + (dateStr ? '<div class="session-instance-date">' + esc(dateStr) + '</div>' : '')
+        + (timeStr ? '<div class="session-instance-time">' + esc(timeStr) + '</div>' : '')
         + (ev.location ? '<div class="session-instance-spots">' + esc(ev.location) + '</div>' : '')
         + (ev.spotsText ? '<div class="session-instance-spots">' + esc(ev.spotsText) + '</div>' : '')
       + '</div>'

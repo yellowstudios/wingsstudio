@@ -113,6 +113,13 @@
 <script>
 var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3Hhuw1kW00sOdEilXh5jebe0tc-vLIakY1WX1h2c1w/exec";
 
+// Broadcast height to parent iframe
+function broadcastHeight() {
+  try { window.parent.postMessage({ type: 'wingsHeight', height: document.body.scrollHeight }, '*'); } catch(e) {}
+}
+setTimeout(broadcastHeight, 300);
+window.addEventListener('resize', broadcastHeight);
+
 document.getElementById('submitBtn').addEventListener('click', function(){
   var firstName = document.getElementById('sigFirstName').value.trim();
   var lastName  = document.getElementById('sigLastName').value.trim();
@@ -154,6 +161,7 @@ document.getElementById('submitBtn').addEventListener('click', function(){
       document.getElementById('formView').style.display = 'none';
       document.getElementById('successMsg').textContent = r.message || 'Your signed forms are on file. A confirmation has been sent to your email.';
       document.getElementById('successView').style.display = 'block';
+      setTimeout(broadcastHeight, 100);
     } else {
       errEl.textContent = (r && r.message) ? r.message : 'Something went wrong. Please try again.';
     }

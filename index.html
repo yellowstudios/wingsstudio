@@ -228,8 +228,7 @@
       </div>
       <div class="divider"></div>
       <div class="tabs">
-        <button id="tabClasses" class="active">Classes &amp; Rehearsals</button>
-        <button id="tabShows" class="active">Shows &amp; Events</button>
+        <a href="https://wtfdc.org/sessions" target="_top" style="display:inline-block;font:inherit;font-size:13px;padding:5px 12px;border-radius:6px;border:1px solid var(--line);background:var(--accent);color:#fff;text-decoration:none;font-weight:600;cursor:pointer;">View all Offerings</a>
       </div>
     </div>
   </div>
@@ -539,8 +538,7 @@ function fetchStaticJson() {
     function render(){
       if (!S.data) return;
       document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; 
-      document.getElementById('tabClasses').classList.toggle('active',S.showClasses); 
-      document.getElementById('tabShows').classList.toggle('active',S.showShows); 
+      // Tab toggle removed — single "View all Offerings" link used instead
       document.getElementById('viewWeek').classList.toggle('active', S.view === 'week');
       document.getElementById('viewMonth').classList.toggle('active', S.view === 'month');
 
@@ -949,7 +947,15 @@ if (!ev.costText && hasTiers) {
       area.addEventListener('click', function(e){
         var btnInfo = e.target.closest('.btn-info');
         if(btnInfo){
-          var ev = eventMap[btnInfo.getAttribute('data-id')];
+          var dataId = btnInfo.getAttribute('data-id');
+          var ev = eventMap[dataId];
+          // Fallback: search eventMap values if key lookup fails
+          if(!ev && dataId) {
+            var vals = Object.values ? Object.values(eventMap) : Object.keys(eventMap).map(function(k){ return eventMap[k]; });
+            for(var vi=0; vi<vals.length; vi++){
+              if(String(vals[vi].instanceId||'') === String(dataId)) { ev = vals[vi]; break; }
+            }
+          }
           if(!ev) return;
           openModal(ev, false);
           return;
@@ -2002,17 +2008,7 @@ if (!sessionDateLabel) {
       load();
     });
 
-    document.getElementById('tabClasses').addEventListener('click', function(){
-      S.showClasses = !S.showClasses; 
-      render(); 
-      renderSessions();
-    });
-
-    document.getElementById('tabShows').addEventListener('click', function(){
-      S.showShows = !S.showShows; 
-      render(); 
-      renderSessions();
-    });
+    // Tab toggle buttons replaced by "View all Offerings" link to sessions page
 
     attachCalendarListeners();
     load();

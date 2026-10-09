@@ -794,7 +794,7 @@ if (!ev.costText && hasTiers) {
 
               + '<div id="singlePayBlock" style="margin-top:10px;">'
               + '<label class="reg-label">Payment Amount ($)</label>'
-              + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1">'
+              + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1" readonly style="background:#f5f5f5;cursor:not-allowed;color:var(--muted);">'
               + '<div class="reg-note">Defaulted to minimum rate. You may add an optional contribution.</div>'
               + '</div>'
 
@@ -1480,7 +1480,11 @@ if (!ev.costText && hasTiers) {
                 + '</div>';
               
               document.getElementById('btnConfirmCal').addEventListener('click', function(){
-                closeModal(); load(true);
+                if (isStandalone) {
+                  window.top.location.href = 'https://wtfdc.org/UpcomingEvents';
+                } else {
+                  closeModal(); load(true);
+                }
               });
             } else {
               alert(r.message || 'Could not cancel reservation.');
@@ -1854,10 +1858,22 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
                 + '<button class="confirm-btn" id="btnConfirmHome" onclick="window.top.location.href=\'https://wtfdc.org\'">Return to Home</button>'
                 + '</div>'
                 + '</div>';
-              document.getElementById('btnConfirmCal').addEventListener('click', function(){ closeModal(); load(true); });
+              document.getElementById('btnConfirmCal').addEventListener('click', function(){
+                if (isStandalone) {
+                  window.top.location.href = 'https://wtfdc.org/UpcomingEvents';
+                } else {
+                  closeModal(); load(true);
+                }
+              });
             };
 
             if (didHoldMySpot && r.planEnrollmentId) {
+              // Keep button disabled and show loading — holdMySpot can take several seconds
+              btn.disabled = true;
+              btn.textContent = 'Holding your spot…';
+              var errEl2 = document.getElementById('regErrorMobile');
+              if (errEl2) errEl2.textContent = 'Registering you for upcoming classes — please wait…';
+
               apiPost({
                 action           : 'holdMySpot',
                 instanceId       : ev.instanceId,
@@ -1868,8 +1884,14 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
                 planTier         : currentUserCurrentTier || (document.getElementById('planTierMobile') ? document.getElementById('planTierMobile').value : ''),
                 planEnrollmentId : r.planEnrollmentId
               }).then(function(holdResult){
+                btn.disabled = false;
+                btn.textContent = getReserveButtonText(ev);
+                if (errEl2) errEl2.textContent = '';
                 showConfirm(holdResult);
               }).catch(function(){
+                btn.disabled = false;
+                btn.textContent = getReserveButtonText(ev);
+                if (errEl2) errEl2.textContent = '';
                 showConfirm(null);
               });
             } else {

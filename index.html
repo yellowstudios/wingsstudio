@@ -746,8 +746,11 @@ if (!ev.costText && hasTiers) {
 
       if(ev.isFull) html += '<div class="modal-row"><span class="modal-value" style="color:#c0392b;font-style:italic;margin-top:8px;">This event is currently full. Check back for future sessions!</span></div>';
 
-      var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
-      var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
+      var statusLC = String(ev.status || '').trim().toLowerCase();
+      var isUpcoming = statusLC === 'upcoming' || statusLC === 'planning' || statusLC === '';
+      // Also allow registration if status is missing but event is not past/cancelled
+      var isCancelledStatus = statusLC === 'cancelled' || statusLC === 'completed' || statusLC === 'pending close-out';
+      var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && !isCancelledStatus;
 
       if (canRegister) {
         html += '<hr class="modal-divider">';
@@ -1070,6 +1073,13 @@ if (!ev.costText && hasTiers) {
     }
 
     function wireMobileForm(ev){
+      // Compute isShowOrEvent here so it's in scope for the submit click handler
+      var isShowOrEvent = (function(){
+        var typeLC = String(ev.type || '').toLowerCase();
+        var catLC  = String(ev.category || '').toLowerCase();
+        return typeLC === 'show' || typeLC === 'event' || catLC === 'performance';
+      })();
+
       function updateAttendeeRoster() {
         var container = document.getElementById('attendeeRosterBlock');
         if (!container) return;
@@ -1146,6 +1156,12 @@ if (!ev.costText && hasTiers) {
       var lastNameInput=document.getElementById('regLastNameMobile');
       var phone=document.getElementById('regPhoneMobile');
       var submit=document.getElementById('regSubmitMobile');
+      if (!submit) {
+        // Submit button not found — form may not be rendered (canRegister=false)
+        // Log details to help diagnose
+        console.warn('wireMobileForm: regSubmitMobile not found. ev.isPublic=', ev.isPublic, 'ev.isFull=', ev.isFull, 'ev.isPast=', ev.isPast, 'ev.status=', ev.status);
+        return;
+      }
       var tooltip=document.getElementById('recognizedTooltip');
       var dupBlock=document.getElementById('duplicateBlock');
       var mainFields=document.getElementById('mainFormFields');

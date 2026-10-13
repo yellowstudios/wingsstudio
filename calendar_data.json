@@ -8983,7 +8983,7 @@
       "type": "Event",
       "inclusion": true,
       "participantNotes": "Kick of the winter holiday season with a fun show and market for the entire family! Setup your vendor table between 12:00-1:15, Meet with other Vendors 1:15-1:30, Market Opens 1:30-2:15, Watch our Show 2:15-3:30, Market reopens 3:30-4:15. Each vendor registrations receives 1 table and additional tables can be reserved for $25.",
-      "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offering%20Instances_Images%2FOI_346.Instance%20Image.192839.png",
+      "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_005.Image.193306.png",
       "status": "upcoming",
       "statusLabel": "Upcoming",
       "statusColor": "#1b5e20",
@@ -9005,7 +9005,7 @@
           "passcode": ""
         }
       ],
-      "registrationFormType": "true"
+      "registrationFormType": "Vendor"
     },
     {
       "instanceId": "OI_039",
@@ -10279,7 +10279,7 @@
             "type": "Event",
             "inclusion": true,
             "participantNotes": "Kick of the winter holiday season with a fun show and market for the entire family! Setup your vendor table between 12:00-1:15, Meet with other Vendors 1:15-1:30, Market Opens 1:30-2:15, Watch our Show 2:15-3:30, Market reopens 3:30-4:15. Each vendor registrations receives 1 table and additional tables can be reserved for $25.",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offering%20Instances_Images%2FOI_346.Instance%20Image.192839.png",
+            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_005.Image.193306.png",
             "status": "upcoming",
             "statusLabel": "Upcoming",
             "statusColor": "#1b5e20",
@@ -10301,7 +10301,7 @@
                 "passcode": ""
               }
             ],
-            "registrationFormType": "true",
+            "registrationFormType": "Vendor",
             "instanceTitle": "Be a Vendor at the Annual Winter Holiday Show"
           },
           {

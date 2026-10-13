@@ -233,6 +233,8 @@
         <button id="tabClasses" class="active">Classes &amp; Rehearsals</button>
         <button id="tabShows" class="active">Shows &amp; Events</button>
       </div>
+      <div class="divider"></div>
+      <a href="https://wtfdc.org/our-sessions" target="_top" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--accent);color:var(--accent);background:#fff;text-decoration:none;white-space:nowrap;cursor:pointer;" id="viewAllSessionsBtn">Our Sessions ›</a>
     </div>
   </div>
 
@@ -566,6 +568,8 @@ function fetchStaticJson() {
     }
 
     function getReserveButtonText(ev) {
+      // Vendor form always uses "Reserve Space" regardless of type
+      if (String(ev.registrationFormType || '').toLowerCase() === 'vendor') return 'Reserve Space';
       var typeLC = String(ev.type || '').toLowerCase();
       var catLC = String(ev.category || '').toLowerCase();
       if (typeLC === 'show' || typeLC === 'event' || catLC === 'performance') return 'Reserve Tickets';
@@ -709,21 +713,11 @@ function fetchStaticJson() {
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy" crossorigin="anonymous">';;
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       
-     if (!ev.costText && hasTiers) {
-  html += '<div class="modal-row">'
-    + '<span class="modal-label">Price</span>'
-    + '<span class="modal-value">Select a ticket option below.</span>'
-    + '</div>';
-}
-
-if (!ev.costText && hasTiers) {
-  html += '<div class="modal-row">'
-    + '<span class="modal-label">Price</span>'
-    + '<span class="modal-value">Select a ticket option below.</span>'
-    + '</div>';
-}
-
- html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
+      if (ev.costText) {
+        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
+      } else if (hasTiers) {
+        html += '<div class="modal-row"><span class="modal-label">Price</span><span class="modal-value">Select a ticket option below.</span></div>';
+      }
       if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
       if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
       if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>';
@@ -811,7 +805,7 @@ if (!ev.costText && hasTiers) {
 
               + '<div id="singlePayBlock" style="margin-top:10px;">'
               + '<label class="reg-label">Payment Amount ($)</label>'
-              + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1">'
+              + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1" readonly style="background:#f5f5f5; color:var(--muted); cursor:not-allowed;">'
               + '<div class="reg-note">Defaulted to minimum rate. You may add an optional contribution.</div>'
               + '</div>'
 
@@ -909,21 +903,23 @@ if (!ev.costText && hasTiers) {
           + '<div id="inclusionFieldsMobile" style="display:none;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;">'
           + '<div class="pay-title">A few more details</div>'
           + '<p class="reg-note">This session has inclusive programming. Share only what you\'re comfortable with.</p>'
-          + '<label class="reg-label">Date of Birth</label>'
-          + '<div style="display:flex;gap:6px;margin-bottom:8px;">'
-          + '<select class="reg-input" id="regDobMonthMobile" style="flex:2;margin-bottom:0;"><option value="">Month</option>'+ dobMonthOptions() +'</select>'
-          + '<select class="reg-input" id="regDobDayMobile"   style="flex:1;margin-bottom:0;"><option value="">Day</option>'  + dobDayOptions()   +'</select>'
-          + '<select class="reg-input" id="regDobYearMobile"  style="flex:1.5;margin-bottom:0;"><option value="">Year</option>'+ dobYearOptions() +'</select>'
-          + '</div>'
-          + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver during the session?</div>'
-          + '<div class="pay-options" style="margin-bottom:8px;">'
-          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="yes" id="careYesMobile"> Yes, a support person will attend</label>'
-          + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No, a support person will not attend</label>'
-          + '</div>'
-          + '<div id="caregiverFieldsMobile" style="display:none;">'
-          + '<input type="text" class="reg-input" id="regCaregiverNameMobile" placeholder="Support person\'s name">'
-          + '<input type="tel" class="reg-input" id="regCaregiverPhoneMobile" placeholder="Support person\'s phone number">'
-          + '</div>'
+          + (isVendorForm ? '' :
+              '<label class="reg-label">Date of Birth</label>'
+              + '<div style="display:flex;gap:6px;margin-bottom:8px;">'
+              + '<select class="reg-input" id="regDobMonthMobile" style="flex:2;margin-bottom:0;"><option value="">Month</option>'+ dobMonthOptions() +'</select>'
+              + '<select class="reg-input" id="regDobDayMobile"   style="flex:1;margin-bottom:0;"><option value="">Day</option>'  + dobDayOptions()   +'</select>'
+              + '<select class="reg-input" id="regDobYearMobile"  style="flex:1.5;margin-bottom:0;"><option value="">Year</option>'+ dobYearOptions() +'</select>'
+              + '</div>'
+              + '<div class="reg-label" style="margin-top:12px;">Will this participant be accompanied by a support person or caregiver during the session?</div>'
+              + '<div class="pay-options" style="margin-bottom:8px;">'
+              + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="yes" id="careYesMobile"> Yes, a support person will attend</label>'
+              + '<label class="pay-option"><input type="radio" name="careOfCaregiverMobile" value="no" id="careNoMobile" checked> No, a support person will not attend</label>'
+              + '</div>'
+              + '<div id="caregiverFieldsMobile" style="display:none;">'
+              + '<input type="text" class="reg-input" id="regCaregiverNameMobile" placeholder="Support person\'s name">'
+              + '<input type="tel" class="reg-input" id="regCaregiverPhoneMobile" placeholder="Support person\'s phone number">'
+              + '</div>'
+            )
           + '<div class="reg-label" style="margin-top:12px;">Are there any accommodations that would help this participant fully enjoy the session?</div>'
           + '<div class="pay-options" style="margin-bottom:8px;">'
           + '<label class="pay-option"><input type="radio" name="accommodationsRequestedMobile" value="yes" id="accYesMobile"> Yes, I\'d like to share some details</label>'
@@ -1252,6 +1248,8 @@ if (!ev.costText && hasTiers) {
         var sumBreakoutRow = document.getElementById('sumBreakoutRow');
         var sumBreakout = document.getElementById('sumBreakout');
         var sumTotal = document.getElementById('sumTotal');
+        // No reg form rendered (e.g. non-public event) — nothing to update
+        if (!sumType || !sumTotal) return;
 
         var extraVal = extraInput ? Number(extraInput.value) : 0;
         if(isNaN(extraVal) || extraVal < 0) extraVal = 0;
@@ -1952,6 +1950,7 @@ if (!sessionDateLabel) {
         return '<div class="session-instance-row" style="padding:10px 0; border-bottom:1px solid var(--line);' + (ev.isCancelled ? ' opacity:0.6;' : '') + '">'+
           '<div style="margin-bottom:8px;">'+
             statusBadge +
+            (ev.title ? '<div style="font-size:13px; font-weight:700; color:var(--accent); margin-bottom:2px;">'+esc(ev.title)+'</div>' : '') +
 (sessionDateLabel ? '<div class="session-instance-date" style="font-weight:700; font-size:13px;">' + esc(sessionDateLabel) + '</div>' : '') +
             (timeStr ? '<div class="session-instance-time" style="font-size:12px; color:var(--muted);">' + esc(timeStr) + '</div>' : '') +
             (ev.location ? '<div class="session-instance-spots" style="font-size:11px; color:var(--muted); margin-top:2px;">' + esc(ev.location) + '</div>' : '') +

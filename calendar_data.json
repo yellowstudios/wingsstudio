@@ -8994,24 +8994,13 @@
       "isCancelled": false,
       "tiers": [
         {
-          "name": "Group Home Group Rate",
-          "qty": 5,
-          "ticketCount": 5,
-          "quantity": 5,
-          "price": 50,
-          "priceText": "$50.00",
-          "description": "Group homes on the Treasure Coast and surrounding areas receive a discounted rate for attendance of $10/ticket in groups of 5 or more.",
-          "requiresPasscode": true,
-          "passcode": "wings123"
-        },
-        {
-          "name": "Single Ticket",
+          "name": "Single Vendor Spot",
           "qty": 1,
           "ticketCount": 1,
           "quantity": 1,
-          "price": 15,
-          "priceText": "$15.00",
-          "description": "Single general admission ticket",
+          "price": 25,
+          "priceText": "$25.00",
+          "description": "Single vendor booth spot with table and 1 show ticket",
           "requiresPasscode": false,
           "passcode": ""
         }
@@ -10209,24 +10198,13 @@
             "registrationFormType": "Vendor",
             "tiers": [
               {
-                "name": "Group Home Group Rate",
-                "qty": 5,
-                "ticketCount": 5,
-                "quantity": 5,
-                "price": 50,
-                "priceText": "$50.00",
-                "description": "Group homes on the Treasure Coast and surrounding areas receive a discounted rate for attendance of $10/ticket in groups of 5 or more.",
-                "requiresPasscode": true,
-                "passcode": "wings123"
-              },
-              {
-                "name": "Single Ticket",
+                "name": "Single Vendor Spot",
                 "qty": 1,
                 "ticketCount": 1,
                 "quantity": 1,
-                "price": 15,
-                "priceText": "$15.00",
-                "description": "Single general admission ticket",
+                "price": 25,
+                "priceText": "$25.00",
+                "description": "Single vendor booth spot with table and 1 show ticket",
                 "requiresPasscode": false,
                 "passcode": ""
               }

@@ -4567,7 +4567,7 @@
       "startMs": 1792242000000,
       "dateLabel": "Sat, Oct 17, 2026",
       "costText": "$20.00",
-      "spotsText": "10 spots left",
+      "spotsText": "11 spots left",
       "dayKey": "2026-10-17",
       "duration": "Sat Dec 30 1899 01:00:00 GMT-0500 (Eastern Standard Time)",
       "category": "Conditioning",
@@ -8976,7 +8976,7 @@
       "startMs": 1795366800000,
       "dateLabel": "Sun, Nov 22, 2026",
       "costText": "$25.00",
-      "spotsText": "9 spots left",
+      "spotsText": "10 spots left",
       "dayKey": "2026-11-22",
       "duration": "Sat Dec 30 1899 03:00:00 GMT-0500 (Eastern Standard Time)",
       "category": "Fundraising",
@@ -9148,7 +9148,8 @@
                 "passcode": "wingsanddiamonds2027"
               }
             ],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Annual Dance Gala & Fundraiser"
           }
         ]
       },
@@ -9192,7 +9193,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           },
           {
             "instanceId": "OI_259",
@@ -9222,7 +9224,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           },
           {
             "instanceId": "OI_260",
@@ -9252,7 +9255,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           },
           {
             "instanceId": "OI_261",
@@ -9282,7 +9286,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           },
           {
             "instanceId": "OI_262",
@@ -9312,7 +9317,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           },
           {
             "instanceId": "OI_263",
@@ -9342,7 +9348,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           },
           {
             "instanceId": "OI_264",
@@ -9372,7 +9379,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           },
           {
             "instanceId": "OI_265",
@@ -9402,7 +9410,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Inclusive Dance Session"
           }
         ]
       },
@@ -9446,7 +9455,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Imagine"
           }
         ]
       },
@@ -9490,7 +9500,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_245",
@@ -9503,7 +9514,7 @@
             "startMs": 1792242000000,
             "dateLabel": "Sat, Oct 17, 2026",
             "costText": "$20.00",
-            "spotsText": "10 spots left",
+            "spotsText": "11 spots left",
             "dayKey": "2026-10-17",
             "duration": "Sat Dec 30 1899 01:00:00 GMT-0500 (Eastern Standard Time)",
             "category": "Conditioning",
@@ -9520,7 +9531,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_120",
@@ -9550,7 +9562,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_080",
@@ -9580,7 +9593,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_246",
@@ -9610,7 +9624,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_121",
@@ -9640,7 +9655,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_081",
@@ -9670,7 +9686,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_247",
@@ -9700,7 +9717,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_122",
@@ -9730,7 +9748,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_082",
@@ -9760,7 +9779,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_248",
@@ -9790,7 +9810,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_123",
@@ -9820,7 +9841,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_083",
@@ -9850,7 +9872,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_249",
@@ -9880,7 +9903,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_124",
@@ -9910,7 +9934,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_084",
@@ -9940,7 +9965,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_250",
@@ -9970,7 +9996,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_125",
@@ -10000,7 +10027,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_085",
@@ -10030,7 +10058,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_251",
@@ -10060,7 +10089,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_126",
@@ -10090,7 +10120,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_086",
@@ -10120,7 +10151,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_252",
@@ -10150,7 +10182,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_127",
@@ -10180,7 +10213,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           },
           {
             "instanceId": "OI_128",
@@ -10210,7 +10244,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Progressive Ballet Technique"
           }
         ]
       },
@@ -10237,7 +10272,7 @@
             "startMs": 1795366800000,
             "dateLabel": "Sun, Nov 22, 2026",
             "costText": "$25.00",
-            "spotsText": "9 spots left",
+            "spotsText": "10 spots left",
             "dayKey": "2026-11-22",
             "duration": "Sat Dec 30 1899 03:00:00 GMT-0500 (Eastern Standard Time)",
             "category": "Fundraising",
@@ -10266,7 +10301,8 @@
                 "passcode": ""
               }
             ],
-            "registrationFormType": "Vendor"
+            "registrationFormType": "Vendor",
+            "instanceTitle": "Vendor at Annual Winter Holiday Show"
           },
           {
             "instanceId": "OI_055",
@@ -10319,7 +10355,8 @@
                 "passcode": ""
               }
             ],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Annual Winter Holiday Show"
           }
         ]
       },
@@ -10397,7 +10434,8 @@
                 "passcode": ""
               }
             ],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Edgeworks Movement Lab with Crystal"
           }
         ]
       },
@@ -10441,7 +10479,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Wings Company Rehearsal"
           },
           {
             "instanceId": "OI_182",
@@ -10471,7 +10510,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Wings Company Rehearsal"
           },
           {
             "instanceId": "OI_183",
@@ -10501,7 +10541,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Wings Company Rehearsal"
           },
           {
             "instanceId": "OI_184",
@@ -10531,7 +10572,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Wings Company Rehearsal"
           },
           {
             "instanceId": "OI_185",
@@ -10561,7 +10603,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Wings Company Rehearsal"
           },
           {
             "instanceId": "OI_186",
@@ -10591,7 +10634,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Wings Company Rehearsal"
           },
           {
             "instanceId": "OI_187",
@@ -10621,7 +10665,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Wings Company Rehearsal"
           }
         ]
       },
@@ -10665,7 +10710,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_286",
@@ -10695,7 +10741,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_287",
@@ -10725,7 +10772,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_288",
@@ -10755,7 +10803,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_289",
@@ -10785,7 +10834,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_290",
@@ -10815,7 +10865,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_291",
@@ -10845,7 +10896,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_292",
@@ -10875,7 +10927,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_293",
@@ -10905,7 +10958,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_294",
@@ -10935,7 +10989,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_295",
@@ -10965,7 +11020,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           },
           {
             "instanceId": "OI_296",
@@ -10995,7 +11051,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Mindful Daily Movement with Sound Therapy"
           }
         ]
       },
@@ -11039,7 +11096,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_104",
@@ -11069,7 +11127,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_105",
@@ -11099,7 +11158,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_106",
@@ -11129,7 +11189,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_107",
@@ -11159,7 +11220,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_108",
@@ -11189,7 +11251,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_109",
@@ -11219,7 +11282,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_110",
@@ -11249,7 +11313,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           },
           {
             "instanceId": "OI_111",
@@ -11279,7 +11344,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Beginner/Intermediate Dance"
           }
         ]
       },
@@ -11323,7 +11389,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_135",
@@ -11353,7 +11420,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_345",
@@ -11383,7 +11451,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_065",
@@ -11413,7 +11482,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_136",
@@ -11443,7 +11513,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_066",
@@ -11473,7 +11544,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_137",
@@ -11503,7 +11575,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_067",
@@ -11533,7 +11606,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_138",
@@ -11563,7 +11637,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_068",
@@ -11593,7 +11668,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_139",
@@ -11623,7 +11699,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_069",
@@ -11653,7 +11730,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_140",
@@ -11683,7 +11761,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_070",
@@ -11713,7 +11792,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_141",
@@ -11743,7 +11823,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_071",
@@ -11773,7 +11854,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_142",
@@ -11803,7 +11885,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           },
           {
             "instanceId": "OI_072",
@@ -11833,7 +11916,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Private Session"
           }
         ]
       },
@@ -11877,7 +11961,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_148",
@@ -11907,7 +11992,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_220",
@@ -11937,7 +12023,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_149",
@@ -11967,7 +12054,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_221",
@@ -11997,7 +12085,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_150",
@@ -12027,7 +12116,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_222",
@@ -12057,7 +12147,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_151",
@@ -12087,7 +12178,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_223",
@@ -12117,7 +12209,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_152",
@@ -12147,7 +12240,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_224",
@@ -12177,7 +12271,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_153",
@@ -12207,7 +12302,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_225",
@@ -12237,7 +12333,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_154",
@@ -12267,7 +12364,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           },
           {
             "instanceId": "OI_226",
@@ -12297,7 +12395,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Fly Company Rehearsal"
           }
         ]
       },
@@ -12341,7 +12440,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_305",
@@ -12371,7 +12471,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_194",
@@ -12401,7 +12502,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_306",
@@ -12431,7 +12533,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_195",
@@ -12461,7 +12564,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_307",
@@ -12491,7 +12595,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_196",
@@ -12521,7 +12626,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_308",
@@ -12551,7 +12657,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_197",
@@ -12581,7 +12688,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_309",
@@ -12611,7 +12719,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_198",
@@ -12641,7 +12750,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_310",
@@ -12671,7 +12781,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_199",
@@ -12701,7 +12812,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_311",
@@ -12731,7 +12843,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_200",
@@ -12761,7 +12874,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_312",
@@ -12791,7 +12905,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_313",
@@ -12821,7 +12936,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_314",
@@ -12851,7 +12967,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_315",
@@ -12881,7 +12998,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_316",
@@ -12911,7 +13029,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_317",
@@ -12941,7 +13060,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_318",
@@ -12971,7 +13091,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_319",
@@ -13001,7 +13122,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_320",
@@ -13031,7 +13153,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_321",
@@ -13061,7 +13184,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_322",
@@ -13091,7 +13215,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_323",
@@ -13121,7 +13246,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_324",
@@ -13151,7 +13277,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_325",
@@ -13181,7 +13308,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_326",
@@ -13211,7 +13339,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_327",
@@ -13241,7 +13370,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_328",
@@ -13271,7 +13401,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_329",
@@ -13301,7 +13432,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_330",
@@ -13331,7 +13463,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_331",
@@ -13361,7 +13494,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_332",
@@ -13391,7 +13525,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_333",
@@ -13421,7 +13556,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_334",
@@ -13451,7 +13587,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_335",
@@ -13481,7 +13618,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_336",
@@ -13511,7 +13649,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_337",
@@ -13541,7 +13680,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_338",
@@ -13571,7 +13711,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_339",
@@ -13601,7 +13742,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_340",
@@ -13631,7 +13773,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           },
           {
             "instanceId": "OI_341",
@@ -13661,7 +13804,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "WheelDancer & Caregiver"
           }
         ]
       },
@@ -13705,7 +13849,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           },
           {
             "instanceId": "OI_233",
@@ -13735,7 +13880,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           },
           {
             "instanceId": "OI_234",
@@ -13765,7 +13911,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           },
           {
             "instanceId": "OI_235",
@@ -13795,7 +13942,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           },
           {
             "instanceId": "OI_236",
@@ -13825,7 +13973,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           },
           {
             "instanceId": "OI_237",
@@ -13855,7 +14004,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           },
           {
             "instanceId": "OI_238",
@@ -13885,7 +14035,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           },
           {
             "instanceId": "OI_239",
@@ -13915,7 +14066,8 @@
             "isFull": false,
             "isCancelled": false,
             "tiers": [],
-            "registrationFormType": "Standard"
+            "registrationFormType": "Standard",
+            "instanceTitle": "Artistic Committee Meeting"
           }
         ]
       }

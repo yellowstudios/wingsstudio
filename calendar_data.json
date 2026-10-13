@@ -8967,7 +8967,7 @@
   "shows": [
     {
       "instanceId": "OI_346",
-      "title": "Vendor at Annual Winter Holiday Show",
+      "title": "Be a Vendor at the Annual Winter Holiday Show",
       "location": "The Kane Center, 900 SE Salerno Rd, Stuart 34997",
       "startTime": "12:00 PM",
       "endTime": "4:30 PM",
@@ -8981,9 +8981,9 @@
       "duration": "Sat Dec 30 1899 04:30:00 GMT-0500 (Eastern Standard Time)",
       "category": "Fundraising",
       "type": "Event",
-      "inclusion": false,
+      "inclusion": true,
       "participantNotes": "Kick of the winter holiday season with a fun show and market for the entire family! Setup your vendor table between 12:00-1:15, Meet with other Vendors 1:15-1:30, Market Opens 1:30-2:15, Watch our Show 2:15-3:30, Market reopens 3:30-4:15. Each vendor registrations receives 1 table and additional tables can be reserved for $25.",
-      "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offering%20Instances_Images%2FOI_346.Instance%20Image.185944.png",
+      "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_005.Image.012335.png",
       "status": "upcoming",
       "statusLabel": "Upcoming",
       "statusColor": "#1b5e20",
@@ -10263,7 +10263,7 @@
         "instances": [
           {
             "instanceId": "OI_346",
-            "title": "Vendor at Annual Winter Holiday Show",
+            "title": "Be a Vendor at the Annual Winter Holiday Show",
             "location": "The Kane Center, 900 SE Salerno Rd, Stuart 34997",
             "startTime": "12:00 PM",
             "endTime": "4:30 PM",
@@ -10302,7 +10302,7 @@
               }
             ],
             "registrationFormType": "true",
-            "instanceTitle": "Vendor at Annual Winter Holiday Show"
+            "instanceTitle": "Be a Vendor at the Annual Winter Holiday Show"
           },
           {
             "instanceId": "OI_055",

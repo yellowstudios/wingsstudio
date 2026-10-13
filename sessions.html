@@ -116,6 +116,7 @@ function buildInstanceRows(instances) {
 
     return '<div class="session-instance-row">'
       + '<div>'
+        + (ev.instanceTitle ? '<div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:2px;">' + esc(ev.instanceTitle) + '</div>' : '')
         + (dateStr ? '<div class="session-instance-date">' + esc(dateStr) + '</div>' : '')
         + (timeStr ? '<div class="session-instance-time">' + esc(timeStr) + '</div>' : '')
         + (ev.location ? '<div class="session-instance-spots">' + esc(ev.location) + '</div>' : '')

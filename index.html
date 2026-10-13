@@ -1023,7 +1023,8 @@ function fetchStaticJson() {
       }
       body.innerHTML=html;
 
-      if(ev.isPublic && !ev.isFull && ev.inclusion){
+      var isVendorFormType = String(ev.registrationFormType || '').toLowerCase() === 'vendor';
+      if(ev.isPublic && !ev.isFull && ev.inclusion && !isVendorFormType){
         var incMobile = document.getElementById('inclusionFieldsMobile');
         if(incMobile) incMobile.style.display = '';
       }

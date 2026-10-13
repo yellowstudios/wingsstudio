@@ -8773,7 +8773,7 @@
       "statusColor": "#1b5e20",
       "borderColor": "#a5d6a7",
       "isPast": false,
-      "isPublic": true,
+      "isPublic": false,
       "isFull": false,
       "isCancelled": false,
       "tiers": [
@@ -9944,7 +9944,7 @@
             "duration": "1899-12-30T07:00:00.000Z",
             "participantNotes": "Kick of the winter holiday season with a fun show and market for the entire family! All vendor participant should arrive at least 30 minutes early to setup and must bring their own table and items for sale. All vendors receive a free ticket to the show!",
             "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_005.Image.012335.png",
-            "isPublic": true,
+            "isPublic": false,
             "sessionId": "O_005",
             "_calType": "event",
             "tiers": [

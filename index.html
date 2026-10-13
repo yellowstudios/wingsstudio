@@ -229,12 +229,7 @@
         <button id="viewMonth">Month</button>
       </div>
       <div class="divider"></div>
-      <div class="tabs">
-        <button id="tabClasses" class="active">Classes &amp; Rehearsals</button>
-        <button id="tabShows" class="active">Shows &amp; Events</button>
-      </div>
-      <div class="divider"></div>
-      <a href="https://wtfdc.org/our-sessions" target="_top" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--accent);color:var(--accent);background:#fff;text-decoration:none;white-space:nowrap;cursor:pointer;" id="viewAllSessionsBtn">Our Sessions ›</a>
+      <a href="https://www.wtfdc.org/sessions" target="_top" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font:inherit;font-size:13px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid var(--accent);color:var(--accent);background:#fff;text-decoration:none;white-space:nowrap;cursor:pointer;" id="viewAllSessionsBtn">Our Sessions ›</a>
     </div>
   </div>
 
@@ -535,9 +530,7 @@ function fetchStaticJson() {
 
     function render(){
       if (!S.data) return;
-      document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||''; 
-      document.getElementById('tabClasses').classList.toggle('active',S.showClasses); 
-      document.getElementById('tabShows').classList.toggle('active',S.showShows); 
+      document.getElementById('periodLabel').textContent=S.data.weekLabel||S.data.monthLabel||'';
       document.getElementById('viewWeek').classList.toggle('active', S.view === 'week');
       document.getElementById('viewMonth').classList.toggle('active', S.view === 'month');
 
@@ -720,7 +713,7 @@ function fetchStaticJson() {
       }
       if(ev.category) html += '<div class="modal-row"><span class="modal-label">Category</span><span class="modal-value">'+esc(ev.category)+'</span></div>';
       if(ev.type) html += '<div class="modal-row"><span class="modal-label">Type</span><span class="modal-value">'+esc(ev.type)+'</span></div>';
-      if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Inclusion</span><span class="modal-value">✓ Inclusive event</span></div>';
+      if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Accessibility</span><span class="modal-value">✓ Wheel-Chair Accessible</span></div>';
       if(ev.spotsText) html += '<div class="modal-row"><span class="modal-label">Availability</span><span class="modal-value">'+esc(ev.spotsText)+'</span></div>';
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
       if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
@@ -1353,10 +1346,19 @@ function fetchStaticJson() {
             return;
           }
           emailTimer=setTimeout(function(){
+            // Skip fetch if we already have data for this exact email
+            if (v === lastFetchedEmail) return;
+
             var spinner = document.getElementById('emailCheckSpinner');
-            if (spinner) spinner.style.display = 'block';
+            if (spinner) { spinner.style.display = 'block'; spinner.title = 'Checking participant records…'; }
+
+            // Safety timeout — hide spinner after 12s if GAS hasn't responded (cold-start safeguard)
+            var spinnerTimeout = setTimeout(function(){
+              if (spinner) spinner.style.display = 'none';
+            }, 12000);
 
             apiPost({action:'checkParticipant', email:v, instanceId:ev.instanceId}).then(function(r){
+              clearTimeout(spinnerTimeout);
               if (spinner) spinner.style.display = 'none';
               if(r && r.exists){
                 firstNameInput.value = r.firstName || ''; 
@@ -1429,9 +1431,10 @@ function fetchStaticJson() {
                 populateTierDropdown('', classMins);
               }
             }).catch(function(){
+              clearTimeout(spinnerTimeout);
               if (spinner) spinner.style.display = 'none';
             });
-          },400);
+          }, 700); // 700ms debounce — reduces cold-start GAS calls from rapid typing
         });
 
         email.addEventListener('blur', function(){
@@ -1797,7 +1800,10 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
           var dobM=document.getElementById('regDobMonthMobile'), dobD=document.getElementById('regDobDayMobile'), dobY=document.getElementById('regDobYearMobile');
           var dob = (dobY && dobY.value && dobM && dobM.value && dobD && dobD.value)
             ? (String(dobM.value).length<2?'0':'')+dobM.value + '/' + (String(dobD.value).length<2?'0':'')+dobD.value + '/' + dobY.value : '';
-          inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:document.getElementById('regCaregiverNameMobile').value.trim(), caregiverPhone:document.getElementById('regCaregiverPhoneMobile').value.trim(), accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:document.getElementById('regAccommodationsMobile').value.trim()};
+          var cgNameEl  = document.getElementById('regCaregiverNameMobile');
+          var cgPhoneEl = document.getElementById('regCaregiverPhoneMobile');
+          var accomEl   = document.getElementById('regAccommodationsMobile');
+          inclusionData={dob:dob, careOfCaregiver:careEl ? careEl.value==='yes' : false, caregiverName:cgNameEl ? cgNameEl.value.trim() : '', caregiverPhone:cgPhoneEl ? cgPhoneEl.value.trim() : '', accommodationsRequested:accEl ? accEl.value==='yes' : false, accommodations:accomEl ? accomEl.value.trim() : ''};
         }
 
         var guestList = [];
@@ -2010,17 +2016,21 @@ if (!sessionDateLabel) {
       load();
     });
 
-    document.getElementById('tabClasses').addEventListener('click', function(){
-      S.showClasses = !S.showClasses; 
-      render(); 
+    // Tab filter buttons removed from calendar toolbar — always show all events
+    // (Classes & Rehearsals / Shows & Events tabs remain on the Our Sessions section only)
+    if (false) {
+    document.getElementById('tabClasses') && document.getElementById('tabClasses').addEventListener('click', function(){
+      S.showClasses = !S.showClasses;
+      render();
       renderSessions();
     });
 
-    document.getElementById('tabShows').addEventListener('click', function(){
-      S.showShows = !S.showShows; 
-      render(); 
+    document.getElementById('tabShows') && document.getElementById('tabShows').addEventListener('click', function(){
+      S.showShows = !S.showShows;
+      render();
       renderSessions();
     });
+    } // end if(false) — tab buttons removed from calendar toolbar
 
     attachCalendarListeners();
     load();

@@ -790,7 +790,7 @@ function fetchStaticJson() {
       }
 
       if(ev.statusLabel) html += '<span style="display:inline-block;font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;background:'+esc(ev.statusColor)+'1a;color:'+esc(ev.statusColor)+';border:1px solid '+esc(ev.borderColor||ev.statusColor)+';margin-bottom:10px;">'+esc(ev.statusLabel)+'</span>';
-      if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy" crossorigin="anonymous">';;
+      if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       
       if (ev.costText) {
@@ -1987,7 +1987,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
           var catLabel = s.category || s.type || 'Session';
           
           html += '<div class="session-card">'
-            + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy" crossorigin="anonymous">' : '')
+            + (hasImg ? '<img class="session-card-img" src="'+esc(s.imageUrl)+'" alt="'+esc(s.title)+'" loading="lazy">' : '')
             + '<div class="session-card-body">'
             + '<div class="session-card-category">'+esc(catLabel)+'</div>'
             + '<div class="session-card-title">'+esc(s.title)+'</div>'

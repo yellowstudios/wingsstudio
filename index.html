@@ -1061,7 +1061,7 @@ function fetchStaticJson() {
           if(!panel) return;
           var open=panel.classList.toggle('open');
           var count=panel.querySelectorAll('.session-instance-row').length;
-          toggle.textContent=open?'Hide dates':count+(count===1?' upcoming date':' upcoming dates')+' — view all';
+          toggle.textContent=open?'Hide dates':count+(count===1?' upcoming offering':' upcoming offerings')+' — view all';
           broadcastHeight();
           return;
         }
@@ -1992,7 +1992,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
             + '<div class="session-card-title">'+esc(s.title)+'</div>'
             + (s.description ? '<div class="session-card-desc">'+esc(s.description)+'</div>' : '')
             + (s.costText ? '<div class="session-card-cost">'+esc(s.costText)+' per session</div>' : '')
-            + '<button class="session-card-toggle" data-sid="'+sid+'">'+s.instances.length+(s.instances.length===1?' upcoming date':' upcoming dates')+' — view all</button>'
+            + '<button class="session-card-toggle" data-sid="'+sid+'">'+s.instances.length+(s.instances.length===1?' upcoming offering':' upcoming offerings')+' — view all</button>'
             + '<div class="session-instances" id="si-'+sid+'">'+buildInstanceRows(s.instances)+'</div>'
             + '</div></div>';
         });

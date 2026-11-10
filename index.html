@@ -1931,8 +1931,12 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
             var bodyHost = document.getElementById('modalBody');
             var isStandaloneMode = getQueryParam('standalone') === 'true';
             var squareBtnHtml = '';
-            if (r.paymentMethod === 'square' && r.amountDue > 0 && r.squarePaymentLink) {
+            console.log('Registration response paymentMethod:', r.paymentMethod, 'amountDue:', r.amountDue, 'squarePaymentLink:', r.squarePaymentLink);
+            if (r.paymentMethod === 'square' && Number(r.amountDue) > 0 && r.squarePaymentLink) {
               squareBtnHtml = '<a href="' + esc(r.squarePaymentLink) + '" target="_blank" rel="noopener" class="confirm-btn primary" id="btnConfirmSquare" style="text-decoration:none;background:#006aff;border-color:#006aff;">Complete Payment with Square →</a>';
+            } else if (r.paymentMethod === 'square' && Number(r.amountDue) > 0 && !r.squarePaymentLink) {
+              // Square was selected and amount > 0 but no link generated — show fallback text
+              squareBtnHtml = '<div style="margin-bottom:8px;padding:10px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:13px;color:#856404;text-align:center;">Payment link could not be generated automatically. Please contact us to complete your payment of $' + Number(r.amountDue).toFixed(2) + ' for Reservation ID ' + esc(r.registrationId) + '.</div>';
             }
             var payMethod = (r.paymentMethod || '').toLowerCase();
             var memoNoteHtml = '';
@@ -1949,6 +1953,10 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
                 + '<strong>Check payment reminder:</strong> Please bring payment to the event or arrange payment in advance with a Wings to Fly representative. Make check payable to <strong>Wings to Fly Dance Company</strong> and include <strong>Reservation ID ' + esc(r.registrationId) + '</strong> and your name in the memo.'
                 + '</div>';
             }
+            // Hide the standalone nav "Back to Full Calendar" bar — confirmation screen has its own
+            var standaloneNav = document.getElementById('standaloneBackBtn');
+            if (standaloneNav) standaloneNav.style.display = 'none';
+
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
               + '<div class="confirm-title">Reservation Confirmed!</div>'
@@ -1968,6 +1976,16 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
               + '<strong>Need to cancel?</strong> Open the calendar, find this item, and enter your email in the <em>Reserve for This Session</em> field — a <strong>Cancel this Reservation</strong> option will appear.'
               + '</div>'
               + '</div>';
+
+            // Scroll to top so confirmation is immediately visible
+            setTimeout(function() {
+              try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) {}
+              try { document.documentElement.scrollTop = 0; } catch(e) {}
+              try { document.body.scrollTop = 0; } catch(e) {}
+              // Also scroll the modal container if present
+              var mc = document.querySelector('.modal-container');
+              if (mc) mc.scrollTop = 0;
+            }, 50);
           }
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
         }).catch(function(){btn.disabled=false; btn.textContent=getReserveButtonText(ev); errEl.textContent='Connection error. Please try again.';});

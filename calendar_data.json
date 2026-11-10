@@ -6747,7 +6747,7 @@
       "startMs": 1795366800000,
       "dateLabel": "Sun, Nov 22, 2026",
       "costText": "$25.00",
-      "spotsText": "Full",
+      "spotsText": "5 spots left",
       "dayKey": "2026-11-22",
       "duration": "Sat Dec 30 1899 04:30:00 GMT-0500 (Eastern Standard Time)",
       "category": "Fundraising",
@@ -6761,7 +6761,7 @@
       "borderColor": "#a5d6a7",
       "isPast": false,
       "isPublic": true,
-      "isFull": true,
+      "isFull": false,
       "isCancelled": false,
       "tiers": [
         {
@@ -7600,7 +7600,7 @@
             "startMs": 1795366800000,
             "dateLabel": "Sun, Nov 22, 2026",
             "costText": "$25.00",
-            "spotsText": "Full",
+            "spotsText": "5 spots left",
             "dayKey": "2026-11-22",
             "duration": "Sat Dec 30 1899 04:30:00 GMT-0500 (Eastern Standard Time)",
             "category": "Fundraising",
@@ -7614,7 +7614,7 @@
             "borderColor": "#a5d6a7",
             "isPast": false,
             "isPublic": true,
-            "isFull": true,
+            "isFull": false,
             "isCancelled": false,
             "tiers": [
               {

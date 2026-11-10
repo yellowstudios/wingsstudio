@@ -1945,15 +1945,25 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
             S.masterData = null; // Clear local cache on successful booking
             var bodyHost = document.getElementById('modalBody');
             var isStandaloneMode = getQueryParam('standalone') === 'true';
+            var squareBtnHtml = '';
+            if (r.paymentMethod === 'square' && r.amountDue > 0 && r.squarePaymentLink) {
+              squareBtnHtml = '<a href="' + esc(r.squarePaymentLink) + '" target="_blank" rel="noopener" class="confirm-btn primary" id="btnConfirmSquare" style="text-decoration:none;background:#006aff;border-color:#006aff;">Complete Payment with Square →</a>';
+            }
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
               + '<div class="confirm-title">Reservation Confirmed!</div>'
               + '<div class="confirm-msg">' + esc(r.message || 'Your reservation has been recorded.') + '<br><br><strong>Reservation ID:</strong> ' + esc(r.registrationId) + '</div>'
+              + '<div style="margin-bottom:10px;">'
+              + '<a href="https://wtfdc.org/UpcomingEvents" target="_top" class="confirm-btn primary" id="btnConfirmCal" style="text-decoration:none;display:block;width:100%;box-sizing:border-box;">‹ Back to Full Calendar</a>'
+              + '</div>'
               + '<div class="confirm-btns" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'
-              + '<a href="https://wtfdc.org/UpcomingEvents" target="_top" class="confirm-btn primary" id="btnConfirmCal" style="text-decoration:none;">‹ Back to Full Calendar</a>'
+              + squareBtnHtml
               + '<a href="https://wtfdc.org" target="_top" class="confirm-btn" id="btnConfirmHome" style="text-decoration:none;">Return to Home</a>'
               + '</div>'
-              + '<div class="confirm-cancel-note" style="margin-top:18px;padding:14px 16px;background:#f0f4ff;border-radius:8px;text-align:left;font-size:13px;color:#444;line-height:1.5;">'
+              + '<div style="margin-top:14px;padding:10px 14px;background:#fffbea;border:1px solid #f0d060;border-radius:8px;font-size:13px;color:#555;text-align:center;line-height:1.5;">'
+              + '<em>Please be prepared to show the Reservation ID and confirmation email as your entry ticket(s).</em>'
+              + '</div>'
+              + '<div class="confirm-cancel-note" style="margin-top:12px;padding:14px 16px;background:#f0f4ff;border-radius:8px;text-align:left;font-size:13px;color:#444;line-height:1.5;">'
               + '<strong>Need to cancel?</strong> Open the calendar, find this item, and enter your email in the <em>Reserve for This Session</em> field — a <strong>Cancel this Reservation</strong> option will appear.'
               + '</div>'
               + '</div>';

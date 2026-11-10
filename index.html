@@ -2000,15 +2000,23 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
               + '</div>'
               + '</div>';
 
-            // Scroll to top so confirmation is immediately visible
-            setTimeout(function() {
+            // Scroll confirmation into view — works in standalone, modal, and iframe contexts
+            function doScrollToTop() {
+              // 1. Scroll inner window to top
               try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) {}
-              try { document.documentElement.scrollTop = 0; } catch(e) {}
-              try { document.body.scrollTop = 0; } catch(e) {}
-              // Also scroll the modal container if present
+              try { document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch(e) {}
+              // 2. Scroll modal container if present
               var mc = document.querySelector('.modal-container');
-              if (mc) mc.scrollTop = 0;
-            }, 50);
+              if (mc) { mc.scrollTop = 0; }
+              // 3. Post message to parent Squarespace page to scroll to top of embed
+              try { window.parent.postMessage({ action: 'scrollToTop' }, '*'); } catch(e) {}
+              // 4. Scroll the confirmation view element itself into view
+              var cv = document.querySelector('.confirmation-view');
+              if (cv) cv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            setTimeout(doScrollToTop, 50);
+            setTimeout(doScrollToTop, 300);
+            setTimeout(doScrollToTop, 800);
           }
           else {errEl.textContent=(r && r.message) ? r.message : 'Something went wrong. Please try again.';}
         }).catch(function(){btn.disabled=false; btn.textContent=getReserveButtonText(ev); errEl.textContent='Connection error. Please try again.';});

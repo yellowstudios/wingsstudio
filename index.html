@@ -344,6 +344,17 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
       var regParam = getQueryParam('reg');
       if (paidParam === 'true') {
         document.body.classList.add('standalone-mode');
+        // Fire-and-forget: tell GAS backend to mark this registration as Paid
+        var amtParam = getQueryParam('amt');
+        if (regParam) {
+          try {
+            fetch(SCRIPT_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'markSquarePaid', registrationId: regParam, amountPaid: amtParam ? Number(amtParam) : null })
+            }).catch(function(){});
+          } catch(e) {}
+        }
         var mc = document.querySelector('.modal-container');
         if (mc) {
           mc.innerHTML = '<div class="confirmation-view">'

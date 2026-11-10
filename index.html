@@ -968,9 +968,8 @@ function fetchStaticJson() {
           + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="cash"> Cash</label>'
           + '<label class="pay-option"><input type="radio" name="payMethodMobile" value="check"> Check</label>'
           + '</div>'
-          + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:block;margin-top:10px;width:100%;text-align:center;background:#006aff;color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 0;border-radius:6px;">Pay with Square →</a>'
-          + '<div id="zelleInfoMobile" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Include your name and event in the memo.</div>'
-          + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event.</div>'
+          + '<div id="zelleInfoMobile" style="display:none;margin-top:10px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:6px;padding:10px;font-size:13px;color:#1a4a8a;">Send via Zelle to: <strong>wingstoflydance@gmail.com</strong><br>Your Reservation ID will be shown on the next screen — include it and your name in the memo.</div>'
+          + '<div id="cashCheckInfoMobile" style="display:none;margin-top:10px;background:#f5f5f5;border:1px solid var(--line);border-radius:6px;padding:10px;font-size:13px;color:var(--muted);">Please bring payment to the event, or arrange payment in advance with a Wings to Fly representative. Your Reservation ID will be shown on the next screen.</div>'
           + '</div>'
 
           + '<div class="summary-card" id="summaryCard">'
@@ -1015,6 +1014,7 @@ function fetchStaticJson() {
           + '<p class="release-ack-note">Both acknowledgments are required to complete your reservation.</p>'
           + '</div>'
           + '<button class="reg-submit" id="regSubmitMobile">'+btnActionText+'</button>'
+          + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:block;margin-top:8px;width:100%;text-align:center;background:#fff;color:#006aff;text-decoration:none;font-weight:600;font-size:13px;padding:9px 0;border-radius:6px;border:1px solid #006aff;box-sizing:border-box;">Add Donation</a>'
           + '</div>'
 
           + '<div class="reg-success" id="regSuccessMobile"></div>'
@@ -1786,11 +1786,9 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
 
       document.querySelectorAll('input[name="payMethodMobile"]').forEach(function(r){
         r.addEventListener('change', function(){
-          document.getElementById('squarePayBtnMobile').style.display='none';
           document.getElementById('zelleInfoMobile').style.display='none';
           document.getElementById('cashCheckInfoMobile').style.display='none';
-          if(this.value==='square') document.getElementById('squarePayBtnMobile').style.display='block';
-          else if(this.value==='zelle') document.getElementById('zelleInfoMobile').style.display='block';
+          if(this.value==='zelle') document.getElementById('zelleInfoMobile').style.display='block';
           else if(this.value==='cash' || this.value==='check') document.getElementById('cashCheckInfoMobile').style.display='block';
         });
       });
@@ -1949,6 +1947,21 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
             if (r.paymentMethod === 'square' && r.amountDue > 0 && r.squarePaymentLink) {
               squareBtnHtml = '<a href="' + esc(r.squarePaymentLink) + '" target="_blank" rel="noopener" class="confirm-btn primary" id="btnConfirmSquare" style="text-decoration:none;background:#006aff;border-color:#006aff;">Complete Payment with Square →</a>';
             }
+            var payMethod = (r.paymentMethod || '').toLowerCase();
+            var memoNoteHtml = '';
+            if (payMethod === 'zelle') {
+              memoNoteHtml = '<div style="margin-top:12px;padding:12px 14px;background:#f0f7ff;border:1px solid #cce0ff;border-radius:8px;font-size:13px;color:#1a4a8a;text-align:left;line-height:1.5;">'
+                + '<strong>Zelle payment reminder:</strong> Send to <strong>wingstoflydance@gmail.com</strong> and include <strong>Reservation ID ' + esc(r.registrationId) + '</strong> and your name in the memo.'
+                + '</div>';
+            } else if (payMethod === 'cash') {
+              memoNoteHtml = '<div style="margin-top:12px;padding:12px 14px;background:#f5f5f5;border:1px solid var(--line);border-radius:8px;font-size:13px;color:#444;text-align:left;line-height:1.5;">'
+                + '<strong>Cash payment reminder:</strong> Please bring payment to the event or arrange payment in advance with a Wings to Fly representative. Reference <strong>Reservation ID ' + esc(r.registrationId) + '</strong>.'
+                + '</div>';
+            } else if (payMethod === 'check') {
+              memoNoteHtml = '<div style="margin-top:12px;padding:12px 14px;background:#f5f5f5;border:1px solid var(--line);border-radius:8px;font-size:13px;color:#444;text-align:left;line-height:1.5;">'
+                + '<strong>Check payment reminder:</strong> Please bring payment to the event or arrange payment in advance with a Wings to Fly representative. Make check payable to <strong>Wings to Fly Dance Company</strong> and include <strong>Reservation ID ' + esc(r.registrationId) + '</strong> and your name in the memo.'
+                + '</div>';
+            }
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
               + '<div class="confirm-title">Reservation Confirmed!</div>'
@@ -1963,6 +1976,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
               + '<div style="margin-top:14px;padding:10px 14px;background:#fffbea;border:1px solid #f0d060;border-radius:8px;font-size:13px;color:#555;text-align:center;line-height:1.5;">'
               + '<em>Please be prepared to show the Reservation ID and confirmation email as your entry ticket(s).</em>'
               + '</div>'
+              + memoNoteHtml
               + '<div class="confirm-cancel-note" style="margin-top:12px;padding:14px 16px;background:#f0f4ff;border-radius:8px;text-align:left;font-size:13px;color:#444;line-height:1.5;">'
               + '<strong>Need to cancel?</strong> Open the calendar, find this item, and enter your email in the <em>Reserve for This Session</em> field — a <strong>Cancel this Reservation</strong> option will appear.'
               + '</div>'

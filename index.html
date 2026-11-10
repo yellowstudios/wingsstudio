@@ -868,8 +868,9 @@ function fetchStaticJson() {
           + '<div class="recognized-tooltip" id="recognizedTooltip"></div>'
 
           + '<div class="duplicate-block" id="duplicateBlock">'
-          + '<div id="dupDetailsText" style="margin-bottom:8px; line-height:1.4;"></div>'
-          + '<button type="button" id="btnOpenCancelPrompt" style="width:100%; padding:8px; background:#c0392b; color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer;">Cancel Reservation</button>'
+          + '<div id="dupDetailsText" style="margin-bottom:12px; line-height:1.4;"></div>'
+          + '<button type="button" id="btnAddToReservation" style="width:100%; padding:9px; background:var(--accent); color:#fff; border:none; border-radius:5px; font-weight:600; cursor:pointer; margin-bottom:8px;">+ Add to Reservation</button>'
+          + '<button type="button" id="btnOpenCancelPrompt" style="width:100%; padding:8px; background:#fff; color:#c0392b; border:1px solid #c0392b; border-radius:5px; font-weight:600; cursor:pointer;">Cancel Reservation</button>'
           + '<div id="cancelPromptArea" style="display:none; margin-top:10px;">'
           + '<p class="reg-note" style="color:#0d47a1;">Please share your reason for cancelling (not required, but appreciated):</p>'
           + '<textarea class="reg-input" id="cancelReasonInput" rows="2" placeholder="Reason for cancellation..."></textarea>'
@@ -1272,6 +1273,7 @@ function fetchStaticJson() {
       var emailTimer=null;
       var lastFetchedEmail = "";
       var existingRegIdForCancel = "";
+      var addToReservationMode = false;  // true when user clicked "Add to Reservation"
       var currentUserCurrentTier = "";
       var currentUserRequiredMins = 0;
       var currentPlanValidStatus = false;
@@ -1590,6 +1592,79 @@ function fetchStaticJson() {
           });
       });
 
+      // ── Add to Reservation ───────────────────────────────────────────────────
+      var btnAddToRes = document.getElementById('btnAddToReservation');
+      if (btnAddToRes) btnAddToRes.addEventListener('click', function() {
+        addToReservationMode = true;
+
+        // Hide duplicate block, show main form
+        dupBlock.style.display = 'none';
+        mainFields.style.display = 'block';
+
+        // Name/email/phone are already pre-filled from checkParticipant response
+        // Show a banner so user knows they are adding to an existing reservation
+        var existingBanner = document.createElement('div');
+        existingBanner.id = 'addToResBanner';
+        existingBanner.style.cssText = 'background:#fffbf0;border:1px solid var(--accent);border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:#7a5a00;line-height:1.4;';
+        existingBanner.innerHTML = '<strong>Adding to your reservation</strong> — Your details are pre-filled below. '
+          + 'Update the name/contact if needed, then add at least one guest below to continue.';
+        mainFields.insertBefore(existingBanner, mainFields.firstChild);
+
+        // Force the guest section to show with 1 slot even if no tier is selected
+        var guestContainer = document.getElementById('additionalGuestsContainer');
+        if (guestContainer) {
+          // Already rendered — just make sure it shows with at least 1 row
+          if (!guestContainer.querySelector('#attendeeRows > div')) {
+            // Build 1 guest row
+            var attendeeRows = document.getElementById('attendeeRows');
+            if (attendeeRows && attendeeRows.children.length === 0) {
+              attendeeRows.innerHTML = '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
+                + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #1</div>'
+                + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
+                + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
+                + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
+                + '</div>'
+                + '<input type="email" class="reg-input att-em" placeholder="Email (optional)" style="margin-bottom:4px;">'
+                + '<input type="tel" class="reg-input att-ph" placeholder="Phone (optional)">'
+                + '</div>';
+            }
+          }
+          guestContainer.style.display = 'block';
+        } else {
+          // Container wasn't rendered (e.g. single-ticket event) — inject it now
+          var guestHtml = '<div id="additionalGuestsContainer" style="margin-top:14px; border-top:1px solid var(--line); padding-top:12px;">'
+            + '<div style="font-weight:700; font-size:14px; margin-bottom:4px;">Additional Guest Details</div>'
+            + '<p class="reg-note">Add the person(s) you are registering. Your own spot is already reserved.</p>'
+            + '<label style="display:flex; align-items:center; gap:8px; font-size:12px; margin-bottom:12px; cursor:pointer;">'
+            + '<input type="checkbox" id="chkSkipAttendees"> <span><em>If you are unsure who will be attending, click here to skip guest names</em></span>'
+            + '</label>'
+            + '<div id="attendeeRows">'
+            + '<div style="background:#f9f9f9; border:1px solid var(--line); border-radius:6px; padding:10px; margin-bottom:8px;">'
+            + '<div style="font-weight:600; font-size:12px; margin-bottom:6px;">Guest #1</div>'
+            + '<div style="display:flex; gap:6px; margin-bottom:6px;">'
+            + '<input type="text" class="reg-input att-fn" placeholder="First Name *" style="flex:1; margin-bottom:0;">'
+            + '<input type="text" class="reg-input att-ln" placeholder="Last Name" style="flex:1; margin-bottom:0;">'
+            + '</div>'
+            + '<input type="email" class="reg-input att-em" placeholder="Email (optional)" style="margin-bottom:4px;">'
+            + '<input type="tel" class="reg-input att-ph" placeholder="Phone (optional)">'
+            + '</div>'
+            + '</div>'
+            + '</div>';
+          // Insert before submit area
+          var submitBtn = document.getElementById('btnReserveMobile');
+          if (submitBtn && submitBtn.parentNode) {
+            submitBtn.parentNode.insertAdjacentHTML('beforebegin', guestHtml);
+          } else {
+            mainFields.insertAdjacentHTML('beforeend', guestHtml);
+          }
+        }
+
+        // Scroll to top of form
+        var mc = document.querySelector('.modal-container');
+        if (mc) mc.scrollTop = 0;
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e2) {}
+      });
+
 document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
   r.addEventListener('change', function(){
     var val = this.value;
@@ -1880,6 +1955,20 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
         if(!emailV || !fNameV || !lNameV){errEl.textContent='Please enter your email, first name, and last name.'; return;}
         if(!phoneV){errEl.textContent='Please enter your phone number.'; return;}
 
+        // Add to Reservation mode: require at least 1 guest (unless skip-names checked)
+        if (addToReservationMode) {
+          var chkSkipCheck = document.getElementById('chkSkipAttendees');
+          if (!chkSkipCheck || !chkSkipCheck.checked) {
+            var guestFnInputs = document.querySelectorAll('#attendeeRows .att-fn');
+            var hasGuest = false;
+            guestFnInputs.forEach(function(inp) { if (inp.value.trim()) hasGuest = true; });
+            if (!hasGuest) {
+              errEl.textContent = 'Please add at least one guest name, or check the box if you don\'t know the name yet.';
+              return;
+            }
+          }
+        }
+
         // Vendor field collection & validation
         var vendorData = null;
         var registrationFormType = String(ev.registrationFormType || 'Standard');
@@ -1991,10 +2080,16 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
             var standaloneNav = document.getElementById('standaloneBackBtn');
             if (standaloneNav) standaloneNav.style.display = 'none';
 
+            var confirmTitle = addToReservationMode ? 'Guests Added!' : 'Reservation Confirmed!';
+            var confirmMsg = addToReservationMode
+              ? 'Your additional guest(s) have been added to this reservation. A confirmation has been sent to your email.'
+              : (r.message || 'Your reservation has been recorded.');
+            addToReservationMode = false; // reset flag
+
             bodyHost.innerHTML = '<div class="confirmation-view">'
               + '<div class="confirm-icon">✓</div>'
-              + '<div class="confirm-title">Reservation Confirmed!</div>'
-              + '<div class="confirm-msg">' + esc(r.message || 'Your reservation has been recorded.') + '<br><br><strong>Reservation ID:</strong> ' + esc(r.registrationId) + '</div>'
+              + '<div class="confirm-title">' + confirmTitle + '</div>'
+              + '<div class="confirm-msg">' + esc(confirmMsg) + '<br><br><strong>Reservation ID:</strong> ' + esc(r.registrationId) + '</div>'
               + '<div style="margin-bottom:10px;">'
               + '<a href="https://wtfdc.org/UpcomingEvents" target="_top" class="confirm-btn primary" id="btnConfirmCal" style="text-decoration:none;display:block;width:100%;box-sizing:border-box;">‹ Back to Full Calendar</a>'
               + '</div>'
@@ -2019,7 +2114,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
               // 2. Scroll modal container if present
               var mc = document.querySelector('.modal-container');
               if (mc) { mc.scrollTop = 0; }
-              // 3. Post message to parent Squarespace page to scroll to top of embed
+              // 3. Post message to parent Duda page to scroll to top of embed
               try { window.parent.postMessage({ action: 'scrollToTop' }, '*'); } catch(e) {}
               // 4. Scroll the confirmation view element itself into view
               var cv = document.querySelector('.confirmation-view');

@@ -339,6 +339,29 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
     }
 
     function checkDeepLink(){
+      // Handle Square redirect back after payment: ?paid=true&reg=R_250
+      var paidParam = getQueryParam('paid');
+      var regParam = getQueryParam('reg');
+      if (paidParam === 'true') {
+        document.body.classList.add('standalone-mode');
+        var mc = document.querySelector('.modal-container');
+        if (mc) {
+          mc.innerHTML = '<div class="confirmation-view">'
+            + '<div class="confirm-icon" style="color:#2a9d2a;">✓</div>'
+            + '<div class="confirm-title">Payment Complete!</div>'
+            + '<div class="confirm-msg">Your payment has been received and your reservation is confirmed.'
+            + (regParam ? '<br><br><strong>Reservation ID:</strong> ' + regParam : '')
+            + '<br><br>A receipt has been sent to your email by Square. Please bring that receipt (or your Wings to Fly confirmation email) to the event as proof of registration.</div>'
+            + '<div style="margin-bottom:10px;margin-top:16px;">'
+            + '<a href="https://wtfdc.org/UpcomingEvents" target="_top" class="confirm-btn primary" style="text-decoration:none;display:block;width:100%;box-sizing:border-box;">‹ Back to Full Calendar</a>'
+            + '</div>'
+            + '<a href="https://wtfdc.org" target="_top" class="confirm-btn" style="text-decoration:none;display:block;width:100%;box-sizing:border-box;text-align:center;">Return to Home</a>'
+            + '</div>';
+        }
+        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) {}
+        return; // Don't process other deep link params
+      }
+
       var reserveId = getQueryParam('reserve') || getQueryParam('event') || getQueryParam('instanceId');
       var isStandalone = getQueryParam('standalone') === 'true';
       
@@ -1933,7 +1956,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
             var squareBtnHtml = '';
             console.log('Registration response paymentMethod:', r.paymentMethod, 'amountDue:', r.amountDue, 'squarePaymentLink:', r.squarePaymentLink);
             if (r.paymentMethod === 'square' && Number(r.amountDue) > 0 && r.squarePaymentLink) {
-              squareBtnHtml = '<a href="' + esc(r.squarePaymentLink) + '" target="_blank" rel="noopener" class="confirm-btn primary" id="btnConfirmSquare" style="text-decoration:none;background:#006aff;border-color:#006aff;">Complete Payment with Square →</a>';
+              squareBtnHtml = '<a href="' + esc(r.squarePaymentLink) + '" target="_top" class="confirm-btn primary" id="btnConfirmSquare" style="text-decoration:none;background:#006aff;border-color:#006aff;">Complete Payment with Square →</a>';
             } else if (r.paymentMethod === 'square' && Number(r.amountDue) > 0 && !r.squarePaymentLink) {
               // Square was selected and amount > 0 but no link generated — show fallback text
               squareBtnHtml = '<div style="margin-bottom:8px;padding:10px 14px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:13px;color:#856404;text-align:center;">Payment link could not be generated automatically. Please contact us to complete your payment of $' + Number(r.amountDue).toFixed(2) + ' for Reservation ID ' + esc(r.registrationId) + '.</div>';
@@ -1969,7 +1992,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
               + '<a href="https://wtfdc.org" target="_top" class="confirm-btn" id="btnConfirmHome" style="text-decoration:none;">Return to Home</a>'
               + '</div>'
               + '<div style="margin-top:14px;padding:10px 14px;background:#fffbea;border:1px solid #f0d060;border-radius:8px;font-size:13px;color:#555;text-align:center;line-height:1.5;">'
-              + '<em>Please be prepared to show the Reservation ID and confirmation email as your entry ticket(s).</em>'
+              + '<em>Please be prepared to show your confirmation email as your entry ticket(s).</em>'
               + '</div>'
               + memoNoteHtml
               + '<div class="confirm-cancel-note" style="margin-top:12px;padding:14px 16px;background:#f0f4ff;border-radius:8px;text-align:left;font-size:13px;color:#444;line-height:1.5;">'

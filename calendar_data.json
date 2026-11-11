@@ -1,13 +1,7 @@
 {
   "view": "year",
-  "todayKey": "2026-11-10",
+  "todayKey": "2026-11-11",
   "days": [
-    {
-      "key": "2026-10-11",
-      "name": "Sun",
-      "num": "11",
-      "monthNum": "10"
-    },
     {
       "key": "2026-10-12",
       "name": "Mon",
@@ -2376,6 +2370,12 @@
       "key": "2027-11-10",
       "name": "Wed",
       "num": "10",
+      "monthNum": "11"
+    },
+    {
+      "key": "2027-11-11",
+      "name": "Thu",
+      "num": "11",
       "monthNum": "11"
     }
   ],
@@ -8531,37 +8531,6 @@
         "videoUrl": "https://www.youtube.com/embed/HB7oJdXWcGs",
         "inclusion": true,
         "instances": [
-          {
-            "instanceId": "OI_197",
-            "title": "WheelDancer & Caregiver",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "startTime": "5:00 PM",
-            "endTime": "6:00 PM",
-            "start": "2026-11-10T22:00:00.000Z",
-            "end": "2026-11-10T23:00:00.000Z",
-            "startMs": 1794348000000,
-            "dateLabel": "Tue, Nov 10, 2026",
-            "costText": "$20.00",
-            "spotsText": "5 spots left",
-            "dayKey": "2026-11-10",
-            "duration": "Sat Dec 30 1899 01:00:00 GMT-0500 (Eastern Standard Time)",
-            "category": "Movement",
-            "type": "Class",
-            "inclusion": true,
-            "participantNotes": "",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_013.Image.155617.jpg",
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "isPast": true,
-            "isPublic": true,
-            "isFull": false,
-            "isCancelled": false,
-            "tiers": [],
-            "registrationFormType": "Standard",
-            "instanceTitle": "WheelDancer & Caregiver"
-          },
           {
             "instanceId": "OI_309",
             "title": "WheelDancer & Caregiver",

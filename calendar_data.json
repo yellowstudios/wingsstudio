@@ -4155,6 +4155,48 @@
       "registrationFormType": "Standard"
     },
     {
+      "instanceId": "OI_349",
+      "title": "Flow as you are",
+      "location": "",
+      "startTime": "8:15 PM",
+      "endTime": "9:15 PM",
+      "start": "2026-11-23T01:15:00.000Z",
+      "end": "2026-11-23T02:15:00.000Z",
+      "startMs": 1795396500000,
+      "dateLabel": "Sun, Nov 22, 2026",
+      "costText": "$0.00",
+      "spotsText": "1 spot left",
+      "dayKey": "2026-11-22",
+      "duration": "Sat Dec 30 1899 01:00:00 GMT-0500 (Eastern Standard Time)",
+      "category": "Movement",
+      "type": "Class",
+      "inclusion": true,
+      "participantNotes": "",
+      "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_016.Image.173451.jpg",
+      "status": "planning",
+      "statusLabel": "Planning",
+      "statusColor": "#0d47a1",
+      "borderColor": "#90caf9",
+      "isPast": false,
+      "isPublic": true,
+      "isFull": false,
+      "isCancelled": false,
+      "tiers": [
+        {
+          "name": "Company",
+          "qty": 1,
+          "ticketCount": 1,
+          "quantity": 1,
+          "price": 20,
+          "priceText": "$20.00",
+          "description": "",
+          "requiresPasscode": true,
+          "passcode": "wingsandworkshops"
+        }
+      ],
+      "registrationFormType": "Standard"
+    },
+    {
       "instanceId": "OI_069",
       "title": "Private Session",
       "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
@@ -8474,6 +8516,63 @@
             "tiers": [],
             "registrationFormType": "Standard",
             "instanceTitle": "Artistic Committee Meeting"
+          }
+        ]
+      },
+      {
+        "sessionId": "O_016",
+        "title": "Flow as you are",
+        "category": "Movement",
+        "type": "T_001",
+        "registrationFormType": "Standard",
+        "cost": "35.00",
+        "description": "",
+        "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_016.Image.173451.jpg",
+        "videoUrl": "https://www.youtube.com/embed/HB7oJdXWcGs",
+        "inclusion": true,
+        "instances": [
+          {
+            "instanceId": "OI_349",
+            "title": "Flow as you are",
+            "location": "",
+            "startTime": "8:15 PM",
+            "endTime": "9:15 PM",
+            "start": "2026-11-23T01:15:00.000Z",
+            "end": "2026-11-23T02:15:00.000Z",
+            "startMs": 1795396500000,
+            "dateLabel": "Sun, Nov 22, 2026",
+            "costText": "$0.00",
+            "spotsText": "1 spot left",
+            "dayKey": "2026-11-22",
+            "duration": "Sat Dec 30 1899 01:00:00 GMT-0500 (Eastern Standard Time)",
+            "category": "Movement",
+            "type": "Class",
+            "inclusion": true,
+            "participantNotes": "",
+            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_016.Image.173451.jpg",
+            "status": "planning",
+            "statusLabel": "Planning",
+            "statusColor": "#0d47a1",
+            "borderColor": "#90caf9",
+            "isPast": false,
+            "isPublic": true,
+            "isFull": false,
+            "isCancelled": false,
+            "tiers": [
+              {
+                "name": "Company",
+                "qty": 1,
+                "ticketCount": 1,
+                "quantity": 1,
+                "price": 20,
+                "priceText": "$20.00",
+                "description": "",
+                "requiresPasscode": true,
+                "passcode": "wingsandworkshops"
+              }
+            ],
+            "registrationFormType": "Standard",
+            "instanceTitle": "Flow as you are"
           }
         ]
       }

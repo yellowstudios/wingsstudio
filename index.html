@@ -645,6 +645,11 @@ function fetchStaticJson() {
       return isNaN(num) ? 60 : num;
     }
 
+    // The price on a calendar card: "Donation · suggested $8.00" for pay-what-you-can dates
+    function cardCostHtml(ev) {
+      if (ev.donation) return '<span class="event-cost">Donation' + (Number(ev.suggestedAmount) > 0 ? ' · suggested $' + Number(ev.suggestedAmount).toFixed(2) : '') + '</span>';
+      return ev.costText ? '<span class="event-cost">' + esc(ev.costText) + '</span>' : '';
+    }
     function getReserveButtonText(ev) {
       // Vendor form always uses "Reserve Space" regardless of type
       if (String(ev.registrationFormType || '').toLowerCase() === 'vendor') return 'Reserve Space';
@@ -706,7 +711,7 @@ function fetchStaticJson() {
               + '<div class="event-title">'+esc(ev.title)+'</div>'
               + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
               + '<div class="event-meta">'
-              + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
+              + cardCostHtml(ev)
               + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
               + '</div>'
               + btnHtml
@@ -766,7 +771,7 @@ function fetchStaticJson() {
             + '<div class="event-title">'+esc(ev.title)+'</div>'
             + (ev.location ? '<div class="event-location">'+esc(ev.location)+'</div>' : '')
             + '<div class="event-meta">'
-            + (ev.costText ? '<span class="event-cost">'+esc(ev.costText)+'</span>' : '')
+            + cardCostHtml(ev)
             + (ev.spotsText ? '<span class="event-spots">'+esc(ev.spotsText)+'</span>' : '')
             + '</div>'
             + btnHtml

@@ -163,6 +163,20 @@
     .pay-option input[type=radio]{accent-color:var(--accent);width:16px;height:16px;}
     .protected-tier{display:none;}
     .protected-tier.unlocked{display:flex; animation:fadeIn 0.3s ease-in;}
+    .access-lock{background:#fcfaf5;border:1px solid var(--accent);border-radius:10px;padding:16px;margin-bottom:12px;text-align:center;}
+    .access-lock .al-icon{font-size:26px;line-height:1;margin-bottom:6px;}
+    .access-lock .al-title{font-weight:700;font-size:15px;margin-bottom:4px;color:var(--ink);}
+    .access-lock .al-note{font-size:13px;color:var(--muted);margin-bottom:10px;}
+    .access-row{display:flex;gap:6px;}
+    .access-row .reg-input{margin-bottom:0;flex:1;}
+    .access-row button{background:var(--accent);color:#fff;border:none;border-radius:6px;padding:0 16px;font-weight:700;cursor:pointer;white-space:nowrap;}
+    .access-row button:disabled{opacity:.6;cursor:default;}
+    .access-msg{font-size:12px;font-weight:600;margin-top:6px;display:none;}
+    .ext-reg{background:#fcfaf5;border:1px solid var(--accent);border-radius:10px;padding:16px;margin-top:4px;}
+    .ext-reg .ext-title{font-weight:700;font-size:15px;margin-bottom:6px;color:var(--ink);}
+    .ext-reg .ext-notes{font-size:13px;line-height:1.5;white-space:pre-line;margin-bottom:12px;color:var(--ink);}
+    .ext-reg .ext-btn{display:block;text-align:center;background:var(--accent);color:#fff;text-decoration:none;font-weight:700;padding:12px 14px;border-radius:6px;}
+    .ext-reg .ext-small{font-size:11px;color:var(--muted);margin-top:8px;text-align:center;}
 
     @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
 
@@ -626,6 +640,7 @@ function fetchStaticJson() {
     function getReserveButtonText(ev) {
       // Vendor form always uses "Reserve Space" regardless of type
       if (String(ev.registrationFormType || '').toLowerCase() === 'vendor') return 'Reserve Space';
+      if (String(ev.registrationFormType || '').toLowerCase() === 'external') return 'How to Register';
       var typeLC = String(ev.type || '').toLowerCase();
       var catLC = String(ev.category || '').toLowerCase();
       if (typeLC === 'show' || typeLC === 'event' || catLC === 'performance') return 'Reserve Tickets';
@@ -827,7 +842,10 @@ function fetchStaticJson() {
       if(ev.imageUrl && ev.imageUrl.trim()) html += '<img class="modal-img show" src="'+esc(ev.imageUrl)+'" alt="'+esc(ev.title)+'" loading="lazy">';
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       
-      if (ev.costText) {
+      var isExternal = String(ev.registrationFormType || '').toLowerCase() === 'external';
+      if (ev.donation) {
+        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">Pay what you can' + (ev.suggestedAmount > 0 ? ' — suggested $' + Number(ev.suggestedAmount).toFixed(2) : '') + '</span></div>';
+      } else if (ev.costText) {
         html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
       } else if (hasTiers) {
         html += '<div class="modal-row"><span class="modal-label">Price</span><span class="modal-value">Select a ticket option below.</span></div>';
@@ -837,11 +855,11 @@ function fetchStaticJson() {
       if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Accessibility</span><span class="modal-value">✓ Wheel-Chair Accessible</span></div>';
       if(ev.spotsText) html += '<div class="modal-row"><span class="modal-label">Availability</span><span class="modal-value">'+esc(ev.spotsText)+'</span></div>';
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
-      if(ev.participantNotes) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
+      if(ev.participantNotes && !isExternal) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
       
       var directUrl = 'https://wtfdc.org/reserve?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
 
-      if (!document.body.classList.contains('standalone-mode')) {
+      if (!document.body.classList.contains('standalone-mode') && !isExternal) {
         html += '<div style="margin-top:14px; padding-top:10px; border-top:1px solid var(--line);">'
           + '<a href="' + directUrl + '" target="_blank" rel="noopener" style="display:block; width:100%; text-align:center; background:var(--accent); color:#fff; border:none; font-size:13px; font-weight:700; padding:12px 14px; border-radius:6px; text-decoration:none; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.1);">'
           + '↗ Open Full Registration Page'
@@ -854,9 +872,32 @@ function fetchStaticJson() {
       var isUpcoming = String(ev.status || '').trim().toLowerCase() === 'upcoming';
       var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
 
+      if (isExternal && !ev.isPast && ev.status !== 'cancelled' && !ev.isCancelled) {
+        // A teacher renting the studio runs their own registration: show their instructions and link
+        html += '<hr class="modal-divider">'
+          + '<div class="ext-reg">'
+          + '<div class="ext-title">How to register</div>'
+          + (ev.participantNotes ? '<div class="ext-notes">' + esc(ev.participantNotes) + '</div>'
+                                 : '<div class="ext-notes">Registration and payment for this class are handled by the instructor.</div>')
+          + (ev.externalUrl ? '<a class="ext-btn" href="' + esc(ev.externalUrl) + '" target="_blank" rel="noopener">Continue to registration ↗</a>'
+                              + '<div class="ext-small">Opens the instructor\'s registration page in a new tab.</div>' : '')
+          + '</div>';
+        canRegister = false;
+      }
+
       if (canRegister) {
         html += '<hr class="modal-divider">';
         html += '<div class="reg-section active" id="regSectionModal">'
+          + (ev.accessOnly
+              ? '<div class="access-lock" id="accessLock">'
+                + '<div class="al-icon">🔒</div>'
+                + '<div class="al-title">Access code required</div>'
+                + '<div class="al-note">Registration for this event is by invitation (for example, company members). Enter the code you were given.</div>'
+                + '<div class="access-row"><input type="text" class="reg-input" id="accessCodeInput" placeholder="Access code" autocomplete="off" autocapitalize="off">'
+                + '<button type="button" id="accessCodeBtn">Unlock</button></div>'
+                + '<div class="access-msg" id="accessCodeMsg"></div>'
+                + '</div><div id="regLockedArea" style="display:none">'
+              : '')
           + '<div class="reg-title">Reserve for this session</div>'
           + '<p class="reg-note">Enter your email — if you\'ve reserved before, we\'ll fill in your details.</p>'
           + '<div style="margin-bottom:8px;">'
@@ -910,7 +951,7 @@ function fetchStaticJson() {
           // ─────────────────────────────────────────────────────────────────────
 
           if (!hasTiers) {
-            html += '<div class="pay-section">'
+            html += '<div class="pay-section"' + (ev.donation ? ' style="display:none"' : '') + '>'
               + '<div class="pay-title">Payment Type</div>'
               + '<div class="pay-options">'
               + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" id="payTypeSingle" checked> Single Class (Drop-In)</label>'
@@ -918,11 +959,18 @@ function fetchStaticJson() {
               + '</div>'
               + '</div>'
 
-              + '<div id="singlePayBlock" style="margin-top:10px;">'
-              + '<label class="reg-label">Payment Amount ($)</label>'
-              + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1" readonly style="background:#f5f5f5; color:var(--muted); cursor:not-allowed;">'
-              + '<div class="reg-note">Defaulted to minimum rate.</div>'
-              + '</div>'
+              + (ev.donation
+                  ? '<div id="singlePayBlock" class="pay-section">'
+                    + '<div class="pay-title">Pay what you can</div>'
+                    + '<label class="reg-label">Your amount ($)</label>'
+                    + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1" inputmode="decimal">'
+                    + '<div class="reg-note">' + (ev.suggestedAmount > 0 ? 'Suggested: $' + Number(ev.suggestedAmount).toFixed(2) + '. ' : '') + 'Any amount is welcome, including $0 — everyone is invited to dance.</div>'
+                    + '</div>'
+                  : '<div id="singlePayBlock" style="margin-top:10px;">'
+                    + '<label class="reg-label">Payment Amount ($)</label>'
+                    + '<input type="number" class="reg-input" id="singleAmountMobile" min="0" step="1" readonly style="background:#f5f5f5; color:var(--muted); cursor:not-allowed;">'
+                    + '<div class="reg-note">Defaulted to minimum rate.</div>'
+                    + '</div>')
 
               + '<div id="monthlyPayBlock" style="display:none; margin-top:10px;">'
               + '<label class="reg-label">Monthly Class Plan Tier</label>'
@@ -940,11 +988,12 @@ function fetchStaticJson() {
             html += '<div class="pay-section">'
               + '<div class="pay-title">Select Ticket Option</div>';
 
-            if (hasProtectedTiers) {
+            if (hasProtectedTiers && !ev.accessOnly) {
               html += '<div style="margin-bottom:10px;">'
                 + '<label class="reg-label" style="font-weight:normal;font-size:12px;">Have an access or promo code?</label>'
-                + '<input type="text" class="reg-input" id="promoCodeInput" placeholder="Enter promo code" style="text-transform:uppercase;margin-bottom:4px;">'
-                + '<div id="promoCodeMsg" style="font-size:11px;font-weight:600;display:none;margin-bottom:6px;"></div>'
+                + '<div class="access-row"><input type="text" class="reg-input" id="promoCodeInput" placeholder="Enter code" autocomplete="off" autocapitalize="off">'
+                + '<button type="button" id="promoCodeBtn">Apply</button></div>'
+                + '<div id="promoCodeMsg" style="font-size:11px;font-weight:600;display:none;margin:4px 0 6px;"></div>'
                 + '</div>';
             }
 
@@ -957,7 +1006,7 @@ function fetchStaticJson() {
 
               var tierQty = Number(tier.ticketCount || tier.quantity || 1);
 
-              html += '<label class="pay-option ' + (isProtected ? 'protected-tier' : '') + '" data-passcode="' + esc(tier.passcode || '') + '">'
+              html += '<label class="pay-option ' + (isProtected ? 'protected-tier' : '') + '" data-tier="' + esc(tier.name || '') + '">'
                 + '<input type="radio" name="ticketTierMobile" value="'+esc(tier.price)+'" data-name="'+esc(tier.name)+'" data-count="'+tierQty+'" '+(isChecked ? 'checked' : '')+'> '
                 + '<strong>'+esc(tier.name)+'</strong> — '+esc(tier.priceText)
                 + (tier.description ? '<br><span style="font-size:11px;color:var(--muted);">'+esc(tier.description)+'</span>' : '')
@@ -1047,6 +1096,7 @@ function fetchStaticJson() {
           + '<a id="squarePayBtnMobile" href="https://checkout.square.site/merchant/4Q0X7Y5T8RBF9/checkout/SLRCFUHNGAUIFRBY2XLHYC5D" target="_blank" rel="noopener" style="display:block;margin-top:8px;width:100%;text-align:center;background:#fff;color:#006aff;text-decoration:none;font-weight:600;font-size:13px;padding:9px 0;border-radius:6px;border:1px solid #006aff;box-sizing:border-box;">Add Donation</a>'
           + '</div>'
 
+          + (ev.accessOnly ? '</div>' : '')
           + '<div class="reg-success" id="regSuccessMobile"></div>'
           + '<div class="reg-error" id="regErrorMobile"></div>'
           + '</div>';
@@ -1286,9 +1336,57 @@ function fetchStaticJson() {
       var basePrice = Number(ev.costText ? ev.costText.replace(/[^0-9.]/g, '') : 0);
       var singleInput = document.getElementById('singleAmountMobile');
       if (singleInput) {
+        if (ev.donation) basePrice = Number(ev.suggestedAmount) || 0;   // pay what you can: the suggestion, any amount allowed
         singleInput.value = basePrice || 0;
-        singleInput.min   = basePrice || 0;
+        singleInput.min   = ev.donation ? 0 : (basePrice || 0);
         singleInput.addEventListener('input', updateItemizedSummary);
+      }
+
+      // ── Access codes: checked by the server (the codes are not in this page) ──
+      var accessCodeOk = '';
+      function applyAccessCode(code, msgEl, btn, onOk) {
+        code = String(code || '').trim();
+        if (!code) { showAccessMsg(msgEl, 'Please enter the code.', false); return; }
+        if (btn) { btn.disabled = true; btn.textContent = 'Checking…'; }
+        apiPost({ action: 'checkAccessCode', instanceId: ev.instanceId, code: code }).then(function(r) {
+          if (btn) { btn.disabled = false; btn.textContent = btn.getAttribute('data-label') || 'Apply'; }
+          if (!r || !r.ok) { showAccessMsg(msgEl, '✗ ' + ((r && r.message) || 'That code isn\'t right.'), false); return; }
+          accessCodeOk = code;
+          var firstUnlocked = null;
+          document.querySelectorAll('.protected-tier').forEach(function(el) {
+            if ((r.tiers || []).indexOf(el.getAttribute('data-tier')) !== -1) {
+              el.classList.add('unlocked');
+              if (!firstUnlocked) firstUnlocked = el.querySelector('input[type="radio"]');
+            }
+          });
+          if (firstUnlocked) firstUnlocked.checked = true;
+          showAccessMsg(msgEl, '✓ Code accepted' + ((r.tiers || []).length ? ' — ' + r.tiers.join(', ') + ' unlocked.' : '.'), true);
+          if (onOk) onOk();
+          updateItemizedSummary();
+          updateAttendeeRoster();
+          if (typeof broadcastHeight === 'function') broadcastHeight();
+        }).catch(function() {
+          if (btn) { btn.disabled = false; btn.textContent = btn.getAttribute('data-label') || 'Apply'; }
+          showAccessMsg(msgEl, 'Could not check the code. Please try again.', false);
+        });
+      }
+      function showAccessMsg(el, text, ok) {
+        if (!el) return;
+        el.style.display = 'block';
+        el.style.color = ok ? '#2e7d32' : '#c0392b';
+        el.textContent = text;
+      }
+      var accessBtn = document.getElementById('accessCodeBtn'), accessInput = document.getElementById('accessCodeInput');
+      if (accessBtn && accessInput) {
+        accessBtn.setAttribute('data-label', 'Unlock');
+        var unlockForm = function() {
+          applyAccessCode(accessInput.value, document.getElementById('accessCodeMsg'), accessBtn, function() {
+            document.getElementById('accessLock').style.display = 'none';
+            var area = document.getElementById('regLockedArea'); if (area) area.style.display = '';
+          });
+        };
+        accessBtn.addEventListener('click', unlockForm);
+        accessInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); unlockForm(); } });
       }
 
       if (qtyInput) {
@@ -1315,37 +1413,11 @@ function fetchStaticJson() {
       }
 
       if (promoInput) {
-        promoInput.addEventListener('input', function(){
-          var val = this.value.trim().toLowerCase();
-          var matched = false;
-          document.querySelectorAll('.protected-tier').forEach(function(el){
-            var pass = String(el.getAttribute('data-passcode') || '').toLowerCase();
-            if (val && pass && val === pass) {
-              el.classList.add('unlocked');
-              var radio = el.querySelector('input[type="radio"]');
-              if (radio) { radio.checked = true; }
-              matched = true;
-            } else {
-              el.classList.remove('unlocked');
-            }
-          });
-
-          if (promoMsg) {
-            if (matched) {
-              promoMsg.style.display = 'block';
-              promoMsg.style.color = '#2e7d32';
-              promoMsg.textContent = '✓ Access code applied! Discount option unlocked.';
-            } else if (val.length > 2) {
-              promoMsg.style.display = 'block';
-              promoMsg.style.color = '#c0392b';
-              promoMsg.textContent = '✗ Invalid access code.';
-            } else {
-              promoMsg.style.display = 'none';
-            }
-          }
-          updateItemizedSummary();
-          updateAttendeeRoster();
-        });
+        var promoBtn = document.getElementById('promoCodeBtn');
+        if (promoBtn) promoBtn.setAttribute('data-label', 'Apply');
+        var applyPromo = function() { applyAccessCode(promoInput.value, promoMsg, promoBtn); };
+        if (promoBtn) promoBtn.addEventListener('click', applyPromo);
+        promoInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); applyPromo(); } });
       }
 
       document.querySelectorAll('input[name="ticketTierMobile"]').forEach(function(r){
@@ -1384,11 +1456,15 @@ function fetchStaticJson() {
           // Restore total row visibility in case it was hidden by monthly covered state
           var sumTotalRow = document.querySelector('.summary-total');
           if(sumTotalRow) sumTotalRow.style.display = '';
-          sumType.textContent = (qty > 1 ? qty + 'x Tickets ' : '') + 'Single Class (Drop-In)';
+          sumType.textContent = (qty > 1 ? qty + 'x Tickets ' : '') + (ev.donation ? 'Pay what you can' : 'Single Class (Drop-In)');
           sumBreakoutRow.style.display = 'none';
           var amt = singleInput ? Number(singleInput.value) : basePrice;
-          if(!amt || amt < basePrice) amt = basePrice;
+          if (ev.donation) { if (!(amt >= 0)) amt = 0; }
+          else if(!amt || amt < basePrice) amt = basePrice;
           sumTotal.textContent = '$' + (amt * qty).toFixed(2);
+          // Nothing to pay → no need to pick a payment method
+          var methodSec = document.getElementById('methodSection');
+          if (methodSec && ev.donation) methodSec.style.display = (amt * qty) > 0 ? '' : 'none';
         } else if(val === 'monthly'){
   var tierSelect = document.getElementById('planTierMobile');
   var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
@@ -1898,6 +1974,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
 
       updateItemizedSummary();
 
+      if (!submit) return;   // no registration form on this event (e.g. an External class)
       submit.addEventListener('click', function(){
         var emailV=email.value.trim(), fNameV=firstNameInput.value.trim(), lNameV=lastNameInput.value.trim(), phoneV=phone.value.trim(), payMethodEl=document.querySelector('input[name="payMethodMobile"]:checked'), payMethodVal=payMethodEl ? payMethodEl.value : 'later', errEl=document.getElementById('regErrorMobile');
         var fullNameV = (fNameV + ' ' + lNameV).trim();
@@ -1916,6 +1993,11 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
         } else {
           var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked');
           payTypeVal=payTypeEl ? payTypeEl.value : 'single';
+          if (ev.donation) {
+            payTypeVal = 'single';
+            var dAmt = singleInput ? Number(singleInput.value) : basePrice;
+            selectedAmount = (dAmt >= 0) ? Math.round(dAmt * 100) / 100 : 0;
+          }
           // If Monthly Plan + Hold My Spot checked, override payType
           if (payTypeVal === 'monthly') {
             var chkHold = document.getElementById('chkHoldMySpot');
@@ -2037,6 +2119,7 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
           guests: guestList,
           vendorData: vendorData,
           registrationFormType: registrationFormType,
+          accessCode: accessCodeOk,
           participantReleaseAck: true,
           photoReleaseAck: true
         }).then(function(r){

@@ -846,6 +846,8 @@ function fetchStaticJson() {
       var isExternal = String(ev.registrationFormType || '').toLowerCase() === 'external';
       if (ev.donation) {
         html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">Pay what you can' + (ev.suggestedAmount > 0 ? ' — suggested $' + Number(ev.suggestedAmount).toFixed(2) : '') + '</span></div>';
+      } else if (ev.payElsewhere) {
+        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">' + (ev.costText ? esc(ev.costText) + ' — ' : '') + 'paid directly to the host, not through Wings to Fly</span></div>';
       } else if (ev.costText) {
         html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
       } else if (hasTiers) {
@@ -952,7 +954,7 @@ function fetchStaticJson() {
           // ─────────────────────────────────────────────────────────────────────
 
           if (!hasTiers) {
-            html += '<div class="pay-section"' + (ev.donation ? ' style="display:none"' : '') + '>'
+            html += '<div class="pay-section"' + ((ev.donation || ev.free || ev.payElsewhere) ? ' style="display:none"' : '') + '>'
               + '<div class="pay-title">Payment Type</div>'
               + '<div class="pay-options">'
               + '<label class="pay-option"><input type="radio" name="payTypeMobile" value="single" id="payTypeSingle" checked> Single Class (Drop-In)</label>'
@@ -960,7 +962,9 @@ function fetchStaticJson() {
               + '</div>'
               + '</div>'
 
-              + (ev.donation
+              + ((ev.free || ev.payElsewhere)
+                  ? '<div id="singlePayBlock" style="display:none"><input type="number" id="singleAmountMobile" value="0" min="0"></div>'
+                  : ev.donation
                   ? '<div id="singlePayBlock" class="pay-section">'
                     + '<div class="pay-title">Pay what you can</div>'
                     + '<label class="reg-label">Your amount ($)</label>'
@@ -1338,8 +1342,9 @@ function fetchStaticJson() {
       var singleInput = document.getElementById('singleAmountMobile');
       if (singleInput) {
         if (ev.donation) basePrice = Number(ev.suggestedAmount) || 0;   // pay what you can: the suggestion, any amount allowed
+        if (ev.free || ev.payElsewhere) basePrice = 0;                 // nothing is paid to us for this date
         singleInput.value = basePrice || 0;
-        singleInput.min   = ev.donation ? 0 : (basePrice || 0);
+        singleInput.min   = (ev.donation || ev.free || ev.payElsewhere) ? 0 : (basePrice || 0);
         singleInput.addEventListener('input', updateItemizedSummary);
       }
 
@@ -1457,15 +1462,16 @@ function fetchStaticJson() {
           // Restore total row visibility in case it was hidden by monthly covered state
           var sumTotalRow = document.querySelector('.summary-total');
           if(sumTotalRow) sumTotalRow.style.display = '';
-          sumType.textContent = (qty > 1 ? qty + 'x Tickets ' : '') + (ev.donation ? 'Pay what you can' : 'Single Class (Drop-In)');
+          sumType.textContent = (qty > 1 ? qty + 'x Tickets ' : '') + (ev.donation ? 'Pay what you can' : ev.free ? 'Free' : ev.payElsewhere ? 'Paid directly to the host' : 'Single Class (Drop-In)');
           sumBreakoutRow.style.display = 'none';
           var amt = singleInput ? Number(singleInput.value) : basePrice;
-          if (ev.donation) { if (!(amt >= 0)) amt = 0; }
+          if (ev.free || ev.payElsewhere) amt = 0;
+          else if (ev.donation) { if (!(amt >= 0)) amt = 0; }
           else if(!amt || amt < basePrice) amt = basePrice;
           sumTotal.textContent = '$' + (amt * qty).toFixed(2);
           // Nothing to pay → no need to pick a payment method
           var methodSec = document.getElementById('methodSection');
-          if (methodSec && ev.donation) methodSec.style.display = (amt * qty) > 0 ? '' : 'none';
+          if (methodSec && (ev.donation || ev.free || ev.payElsewhere)) methodSec.style.display = (amt * qty) > 0 ? '' : 'none';
         } else if(val === 'monthly'){
   var tierSelect = document.getElementById('planTierMobile');
   var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';
@@ -1994,7 +2000,8 @@ document.querySelectorAll('input[name="payTypeMobile"]').forEach(function(r){
         } else {
           var payTypeEl=document.querySelector('input[name="payTypeMobile"]:checked');
           payTypeVal=payTypeEl ? payTypeEl.value : 'single';
-          if (ev.donation) {
+          if (ev.free || ev.payElsewhere) { payTypeVal = 'single'; selectedAmount = 0; }
+          else if (ev.donation) {
             payTypeVal = 'single';
             var dAmt = singleInput ? Number(singleInput.value) : basePrice;
             selectedAmount = (dAmt >= 0) ? Math.round(dAmt * 100) / 100 : 0;

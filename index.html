@@ -844,10 +844,14 @@ function fetchStaticJson() {
       html += '<div class="modal-row"><span class="modal-label">Location</span><span class="modal-value">'+esc(ev.location||'')+'</span></div>';
       
       var isExternal = String(ev.registrationFormType || '').toLowerCase() === 'external';
+      // Who collects: External = the host (their own sign-up page); otherwise Wings to Fly
+      var paidToHost = (isExternal || ev.payElsewhere) ? ' — paid directly to the host, not through Wings to Fly' : '';
       if (ev.donation) {
-        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">Pay what you can' + (ev.suggestedAmount > 0 ? ' — suggested $' + Number(ev.suggestedAmount).toFixed(2) : '') + '</span></div>';
-      } else if (ev.payElsewhere) {
-        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">' + (ev.costText ? esc(ev.costText) + ' — ' : '') + 'paid directly to the host, not through Wings to Fly</span></div>';
+        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">Donation' + (ev.suggestedAmount > 0 ? ' — suggested cost $' + Number(ev.suggestedAmount).toFixed(2) : '') + paidToHost + '</span></div>';
+      } else if (ev.free) {
+        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">Free</span></div>';
+      } else if (ev.costText && paidToHost) {
+        html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">' + esc(ev.costText) + paidToHost + '</span></div>';
       } else if (ev.costText) {
         html += '<div class="modal-row"><span class="modal-label">Cost</span><span class="modal-value">'+esc(ev.costText)+'</span></div>';
       } else if (hasTiers) {
@@ -858,7 +862,7 @@ function fetchStaticJson() {
       if(ev.inclusion) html += '<div class="modal-row"><span class="modal-label">Accessibility</span><span class="modal-value">✓ Wheel-Chair Accessible</span></div>';
       if(ev.spotsText) html += '<div class="modal-row"><span class="modal-label">Availability</span><span class="modal-value">'+esc(ev.spotsText)+'</span></div>';
       html += '<div class="modal-row"><span class="modal-label">Open to Public</span><span class="modal-value">'+(ev.isPublic ? '✓ Yes, this is a public event' : '✗ No, this is a closed event')+'</span></div>';
-      if(ev.participantNotes && !isExternal) html += '<div class="modal-row"><span class="modal-label">Notes</span><span class="modal-value">'+esc(ev.participantNotes)+'</span></div>';
+      if(ev.participantNotes && !isExternal) html += '<hr class="modal-divider"><div class="ext-reg"><div class="ext-title">Info</div><div class="ext-notes">' + esc(ev.participantNotes) + '</div></div>';
       
       var directUrl = 'https://wtfdc.org/reserve?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
 
@@ -879,7 +883,7 @@ function fetchStaticJson() {
         // A teacher renting the studio runs their own registration: show their instructions and link
         html += '<hr class="modal-divider">'
           + '<div class="ext-reg">'
-          + '<div class="ext-title">How to register</div>'
+          + '<div class="ext-title">Info and How to Register</div>'
           + (ev.participantNotes ? '<div class="ext-notes">' + esc(ev.participantNotes) + '</div>'
                                  : '<div class="ext-notes">Registration and payment for this class are handled by the instructor.</div>')
           + (ev.externalUrl ? '<a class="ext-btn" href="' + esc(ev.externalUrl) + '" target="_blank" rel="noopener">Continue to registration ↗</a>'
@@ -1471,7 +1475,8 @@ function fetchStaticJson() {
           sumTotal.textContent = '$' + (amt * qty).toFixed(2);
           // Nothing to pay → no need to pick a payment method
           var methodSec = document.getElementById('methodSection');
-          if (methodSec && (ev.donation || ev.free || ev.payElsewhere)) methodSec.style.display = (amt * qty) > 0 ? '' : 'none';
+          if (methodSec && (ev.free || ev.payElsewhere)) methodSec.style.display = 'none';
+          if (methodSec && ev.donation) methodSec.style.display = '';   // Wings to Fly collects donations: always show how to pay
         } else if(val === 'monthly'){
   var tierSelect = document.getElementById('planTierMobile');
   var tierVal = tierSelect && tierSelect.value ? tierSelect.value : '';

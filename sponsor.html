@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Become a Sponsor | Wings to Fly Dance Company</title>
 <link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <style>
   :root { --accent:#c89b3c; --accent-dark:#a8862f; --ink:#222; --muted:#6f6a64; --line:#e5e1db; --bg:#fafafa; --card:#fff; --cream:#faf6ea; --ok:#2e7d32; --bad:#c0392b; }
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 32px; }
+  .step { display:inline-block; background: var(--cream); border:1px solid #ecdcae; color: var(--accent-dark); font-weight:700; font-size:12px; letter-spacing:1px; text-transform:uppercase; border-radius:999px; padding:4px 12px; margin-bottom:10px; }
   .hero { text-align:center; margin-bottom: 26px; }
   .hero .kicker { font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--accent-dark); font-weight:700; }
   .hero h1 { font-size: clamp(26px, 4vw, 38px); margin: 8px 0 10px; }
@@ -89,13 +91,23 @@ function esc(s) { return String(s === null || s === undefined ? '' : s).replace(
 function money(n) { n = Number(n || 0); return '$' + (n % 1 ? n.toFixed(2) : n.toLocaleString('en-US')); }
 function param(k) { var m = new RegExp('[?&]' + k + '=([^&]*)').exec(location.search); return m ? decodeURIComponent(m[1].replace(/\+/g, ' ')) : ''; }
 function $(id) { return document.getElementById(id); }
-function setApp(html) { $('app').innerHTML = html; height(); }
+function setApp(html) { $('app').innerHTML = html; height(); toTop(); }
+// Tells the page around us (wtfdc.org) how tall the content is. Measures the content itself, not the
+// window, so the frame can shrink again (measuring the window kept the frame tall and left a gap).
+var lastH = 0;
 function height() {
   setTimeout(function() {
-    try { var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight); window.parent.postMessage({ type: 'wingsHeight', height: h }, '*'); } catch (e) {}
+    try {
+      var h = Math.ceil($('app').getBoundingClientRect().height) + 4;
+      if (Math.abs(h - lastH) < 2) return;
+      lastH = h;
+      window.parent.postMessage({ type: 'wingsHeight', height: h }, '*');
+    } catch (e) {}
   }, 30);
 }
+function toTop() { try { window.parent.postMessage({ type: 'wingsScrollTop' }, '*'); } catch (e) {} }
 window.addEventListener('resize', height);
+if (window.ResizeObserver) new ResizeObserver(height).observe(document.getElementById('app'));
 
 // ── Packages ──
 var GROUPS = [
@@ -126,7 +138,7 @@ function renderPackages() {
   });
   h += '<div id="form-slot"></div>';
   h += '<p style="text-align:center;margin-top:30px;font-size:13px;color:var(--muted)">Already give monthly? <a href="?manage=1" style="color:var(--accent-dark)">Manage or cancel your monthly gift</a> · Questions? <a href="mailto:info@wtfdc.org" style="color:var(--accent-dark)">info@wtfdc.org</a></p>';
-  setApp(h);
+  $('app').innerHTML = h; height();
   if (S.pick) renderForm();
 }
 function benefitLi(b) { return '<li>' + esc(b.name) + (b.detail ? ' <em>— ' + esc(b.detail) + '</em>' : '') + '</li>'; }
@@ -141,7 +153,11 @@ function choose(id) {
   S.freq = S.pick.group === 'monthly' ? 'monthly' : 'one-time';
   S.pay = 'card';
   renderPackages();
-  setTimeout(function() { var f = $('signup'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+  setTimeout(function() {
+    var f = $('signup'); if (!f) return;
+    if (window.parent !== window) { try { window.parent.postMessage({ type: 'wingsScrollTo', y: Math.round(f.getBoundingClientRect().top + window.scrollY) - 20 }, '*'); } catch (e) {} }
+    else f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
 }
 
 // ── Sign-up form ──
@@ -150,7 +166,7 @@ function renderForm() {
   var priceText = custom ? '' : money(p.investment) + (p.group === 'monthly' ? ' a month' : /annual/i.test(p.renewal) ? ' a year' : '');
   var h = '<div class="form" id="signup"><h2>Your sponsorship</h2>'
     + '<div class="selected"><span><strong>' + esc(p.title) + '</strong>' + (priceText ? ' · ' + esc(priceText) : '') + '</span>'
-    + '<button class="linkbtn" onclick="S.pick=null;renderPackages();window.scrollTo(0,0)">Change package</button></div>';
+    + '<button class="linkbtn" onclick="S.pick=null;renderPackages();window.scrollTo(0,0);toTop()">Change package</button></div>';
   if (custom) {
     h += '<div class="row"><div class="field"><label for="f-amount">Your gift ($) <span class="req">*</span></label><input type="number" id="f-amount" min="1" step="1" inputmode="decimal" placeholder="e.g. 50"></div>'
        + '<div class="field"><label>How often</label><div class="seg"><button type="button" class="' + (!monthly ? 'on' : '') + '" onclick="setFreq(\'one-time\')">One time</button>'
@@ -168,8 +184,8 @@ function renderForm() {
 
   h += '<div class="field"><label>Payment</label><div class="pay" id="pay">';
   var opts = monthly
-    ? [['card', 'Card — automatic monthly payment', 'Secure checkout by Square. Charged each month until you cancel.']]
-    : [['card', 'Pay by card now', 'Secure checkout by Square.'],
+    ? [['card', 'Card — automatic monthly payment', 'Next you will go to Square\'s secure payment page. Charged each month until you cancel.']]
+    : [['card', 'Pay by card now', 'Next you will go to Square\'s secure payment page.'],
        ['invoice', 'Send me an invoice', 'We will email an invoice within a few business days.'],
        ['check', 'Check by mail', 'Payable to Wings to Fly Dance Company — mailing address is shown next.'],
        ['zelle', 'Zelle', 'Send to ' + S.zelle + ' — details are shown next.']];
@@ -180,10 +196,10 @@ function renderForm() {
   });
   h += '</div></div>';
   if (monthly) {
-    h += '<label class="consent"><input type="checkbox" id="f-consent"><span>By clicking Confirm, I am signing up for a <strong>recurring monthly donation</strong> to Wings to Fly Dance Company of <strong id="consent-amt">' + (custom ? 'the amount above' : money(p.investment)) + '</strong>, charged to my card each month until I cancel. '
+    h += '<label class="consent"><input type="checkbox" id="f-consent"><span>By continuing, I am signing up for a <strong>recurring monthly donation</strong> to Wings to Fly Dance Company of <strong id="consent-amt">' + (custom ? 'the amount above' : money(p.investment)) + '</strong>, charged to my card each month until I cancel. '
        + 'I can cancel at any time on the <a href="?manage=1" target="_blank" rel="noopener">manage my monthly gift</a> page, or by emailing info@wtfdc.org.</span></label>';
   }
-  h += '<button class="submit" id="submit" onclick="submitSignup()">' + (monthly ? 'Confirm my monthly gift' : S.pay === 'card' ? 'Continue to payment' : 'Confirm my sponsorship') + '</button>'
+  h += '<button class="submit" id="submit" onclick="submitSignup()">' + (monthly ? 'Continue to secure payment ›' : S.pay === 'card' ? 'Continue to secure payment ›' : 'Confirm my sponsorship') + '</button>'
      + '<div class="err" id="err"></div>'
      + '<p style="font-size:12px;color:var(--muted);margin-top:12px">Wings to Fly Dance Company is a 501(c)(3) nonprofit. Your gift is tax-deductible to the extent allowed by law; the value of tickets or other benefits you receive is not deductible.</p>'
      + '</div>';
@@ -195,7 +211,7 @@ function renderForm() {
 function setFreq(f) { var keep = collect(); S.freq = f; renderForm(); restore(keep); }
 function markPay() {
   document.querySelectorAll('#pay label').forEach(function(l) { l.classList.toggle('on', l.querySelector('input').checked); });
-  var b = $('submit'); if (b && S.freq !== 'monthly') b.textContent = S.pay === 'card' ? 'Continue to payment' : 'Confirm my sponsorship';
+  var b = $('submit'); if (b && S.freq !== 'monthly') b.textContent = S.pay === 'card' ? 'Continue to secure payment ›' : 'Confirm my sponsorship';
 }
 function collect() {
   var o = {};
@@ -222,11 +238,15 @@ function submitSignup() {
             website2: $('f-website2').value }).then(function(r) {
     if (!r || !r.success) { btn.disabled = false; btn.textContent = 'Try again'; return showErr((r && r.message) || 'Something went wrong. Please try again.'); }
     if (r.checkoutUrl) {
-      setApp('<div class="done"><div class="icon">♥</div><h2>Almost done!</h2>'
-        + '<p>Your ' + esc(r.packageTitle) + ' sponsorship is saved. Finish with secure payment by Square — '
-        + (r.frequency === 'monthly' ? '<strong>' + esc(r.amountText) + ' a month</strong>.' : '<strong>' + esc(r.amountText) + '</strong>.') + '</p>'
-        + '<a class="bigbtn" href="' + esc(r.checkoutUrl) + '" target="_top">Continue to secure payment ›</a>'
-        + '<p style="font-size:12px;margin-top:12px">Sponsorship ID ' + esc(r.id) + '. You will come back here when the payment is complete.</p></div>');
+      // Straight on to Square's secure payment page (Square does not allow its payment page inside other websites)
+      btn.textContent = 'Opening secure payment…';
+      try { window.top.location.href = r.checkoutUrl; return; } catch (e) {}
+      // The browser blocked the jump: show the button for step 2
+      setApp('<div class="done" style="text-align:left"><div style="text-align:center"><span class="step">Step 2 of 2 — payment</span><h2>Your payment is not finished yet</h2></div>'
+        + '<p>Your ' + esc(r.packageTitle) + ' sponsorship details are saved. Click the button to pay '
+        + (r.frequency === 'monthly' ? '<strong>' + esc(r.amountText) + ' a month</strong>' : '<strong>' + esc(r.amountText) + '</strong>') + ' on Square\'s secure payment page.</p>'
+        + '<a class="bigbtn" style="text-align:center" href="' + esc(r.checkoutUrl) + '" target="_top">Pay securely with Square ›</a>'
+        + '<p style="font-size:12px;margin-top:12px;text-align:center">You will come back to this page when the payment is complete. Sponsorship ID ' + esc(r.id) + '.</p></div>');
       return;
     }
     setApp('<div class="done"><div class="icon ok">✓</div><h2>Thank you, ' + esc(v.first) + '!</h2>'
@@ -308,16 +328,32 @@ function manageCancel(id, btn) {
 (function start() {
   if (param('done')) return showDone(param('done'), param('k'));
   if (param('manage')) return showManage();
-  apiPost({ action: 'sponsorPackages' }).then(function(r) {
-    if (!r || !r.success) throw new Error('bad');
+  apiPost({ action: 'sponsorPing' }).catch(function() {});   // wakes the server so sign-up is quick
+  var shown = false;
+  function use(r) {
+    if (!r || !r.packages || !r.packages.length) return false;
     S.packages = r.packages; S.mail = r.mailAddress || []; S.zelle = r.zelle || '';
     var want = param('package');
-    if (want) S.pick = S.packages.filter(function(p) { return p.id === want || p.title.toLowerCase() === want.toLowerCase(); })[0] || null;
-    if (S.pick) S.freq = S.pick.group === 'monthly' ? 'monthly' : 'one-time';
-    renderPackages();
-  }).catch(function() {
-    setApp('<div class="done"><h2>Sorry — the sponsorship packages could not be loaded.</h2><p>Please refresh the page, or email <a href="mailto:info@wtfdc.org">info@wtfdc.org</a>.</p></div>');
-  });
+    if (want && !S.pick) S.pick = S.packages.filter(function(p) { return p.id === want || p.title.toLowerCase() === want.toLowerCase(); })[0] || null;
+    if (S.pick) { S.pick = S.packages.filter(function(p) { return p.id === S.pick.id; })[0] || S.pick; if (!shown) S.freq = S.pick.group === 'monthly' ? 'monthly' : 'one-time'; }
+    if (!shown || !$('signup')) renderPackages();   // never redraw under someone filling in the form
+    shown = true;
+    return true;
+  }
+  // 1) the copy saved in this browser last time — instant
+  try { use(JSON.parse(localStorage.getItem('wings_sponsor_pkgs') || 'null')); } catch (e) {}
+  // 2) the package list saved next to this page — fast; 3) the server — always up to date
+  fetch('sponsor_packages.json?v=' + Math.floor(Date.now() / 300000)).then(function(r) { if (!r.ok) throw 0; return r.json(); })
+    .then(function(r) { if (use(r)) { try { localStorage.setItem('wings_sponsor_pkgs', JSON.stringify(r)); } catch (e) {} } else throw 0; })
+    .catch(function() {
+      return apiPost({ action: 'sponsorPackages' }).then(function(r) {
+        if (!r || !r.success) throw new Error('bad');
+        use(r); try { localStorage.setItem('wings_sponsor_pkgs', JSON.stringify(r)); } catch (e) {}
+      });
+    })
+    .catch(function() {
+      if (!shown) setApp('<div class="done"><h2>Sorry — the sponsorship packages could not be loaded.</h2><p>Please refresh the page, or email <a href="mailto:info@wtfdc.org">info@wtfdc.org</a>.</p></div>');
+    });
 })();
 </script>
 </body>

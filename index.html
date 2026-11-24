@@ -418,6 +418,17 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
     // 0ms Instant Client-Side Slice from 1-Year Master Data
     function sliceClientCalendarData() {
       if (!S.masterData) return;
+      // External dates: the host runs the sign-up, so our spot counts are never right — don't show them
+      [S.masterData.classes, S.masterData.shows].forEach(function(list) {
+        (list || []).forEach(function(ev) {
+          if (String(ev.registrationFormType || '').toLowerCase() === 'external') { ev.spotsText = ''; ev.isFull = false; }
+        });
+      });
+      if (S.sessionsData && S.sessionsData.sessions) S.sessionsData.sessions.forEach(function(sess) {
+        (sess.instances || []).forEach(function(ev) {
+          if (String(ev.registrationFormType || sess.registrationFormType || '').toLowerCase() === 'external') { ev.spotsText = ''; ev.isFull = false; }
+        });
+      });
       var todayK = S.masterData.todayKey || dateKey(new Date());
 
       if (S.view === 'day') {

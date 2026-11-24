@@ -2411,7 +2411,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -2445,7 +2448,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2479,7 +2485,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -2513,7 +2522,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2547,7 +2559,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -2581,7 +2596,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2615,7 +2633,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2649,7 +2670,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -2683,7 +2707,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -2717,7 +2744,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -2751,7 +2781,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2785,7 +2818,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2819,7 +2855,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2853,7 +2892,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -2887,7 +2929,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2921,7 +2966,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -2955,7 +3003,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -2989,7 +3040,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3023,7 +3077,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3057,7 +3114,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3091,7 +3151,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3125,7 +3188,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3159,7 +3225,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -3193,7 +3262,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3227,7 +3299,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3261,7 +3336,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3295,7 +3373,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -3329,7 +3410,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -3363,7 +3447,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3397,7 +3484,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3431,7 +3521,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3465,7 +3558,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3499,7 +3595,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3533,7 +3632,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3567,7 +3669,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3601,7 +3706,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3635,7 +3743,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -3669,7 +3780,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3703,7 +3817,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3737,7 +3854,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3771,7 +3891,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -3805,7 +3928,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3839,7 +3965,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3873,7 +4002,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3907,7 +4039,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -3941,7 +4076,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -3975,7 +4113,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4009,7 +4150,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4043,7 +4187,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4077,7 +4224,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -4111,7 +4261,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4145,7 +4298,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4179,7 +4335,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4224,7 +4383,10 @@
       "accessOnly": true,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4258,7 +4420,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -4292,7 +4457,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4326,7 +4494,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4360,7 +4531,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4394,7 +4568,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4428,7 +4605,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4462,7 +4642,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4496,7 +4679,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4530,7 +4716,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4564,7 +4753,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -4598,7 +4790,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4632,7 +4827,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4666,7 +4864,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4700,7 +4901,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -4734,7 +4938,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4768,7 +4975,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4802,7 +5012,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4836,7 +5049,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4870,7 +5086,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4904,7 +5123,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -4938,7 +5160,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -4972,7 +5197,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 0
     },
     {
@@ -5006,7 +5234,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -5040,7 +5271,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5074,7 +5308,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5108,7 +5345,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5142,7 +5382,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -5176,7 +5419,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5210,7 +5456,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5244,7 +5493,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -5278,7 +5530,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5312,7 +5567,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 75
     },
     {
@@ -5346,7 +5604,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5380,7 +5641,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5414,7 +5678,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5448,7 +5715,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5482,7 +5752,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5516,7 +5789,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5550,7 +5826,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5584,7 +5863,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5618,7 +5900,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5652,7 +5937,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5686,7 +5974,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5720,7 +6011,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5754,7 +6048,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5788,7 +6085,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5822,7 +6122,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5856,7 +6159,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5890,7 +6196,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5924,7 +6233,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5958,7 +6270,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -5992,7 +6307,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6026,7 +6344,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6060,7 +6381,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 60
     },
     {
@@ -6094,7 +6418,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6128,7 +6455,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6162,7 +6492,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6196,7 +6529,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6230,7 +6566,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6264,7 +6603,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6298,7 +6640,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6332,7 +6677,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     },
     {
@@ -6366,7 +6714,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 20
     }
   ],
@@ -6413,7 +6764,10 @@
       "accessOnly": false,
       "registrationFormType": "Vendor",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 25
     },
     {
@@ -6468,7 +6822,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 15
     },
     {
@@ -6533,7 +6890,10 @@
       "accessOnly": false,
       "registrationFormType": "Standard",
       "externalUrl": "",
+      "paymentOption": "USD",
       "donation": false,
+      "free": false,
+      "payElsewhere": false,
       "suggestedAmount": 150
     }
   ],
@@ -6613,7 +6973,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 150,
             "instanceTitle": "Annual Dance Gala & Fundraiser"
           }
@@ -6662,7 +7025,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Inclusive Dance Session"
           },
@@ -6697,7 +7063,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Inclusive Dance Session"
           }
@@ -6746,7 +7115,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 60,
             "instanceTitle": "Imagine"
           }
@@ -6795,7 +7167,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Progressive Ballet Technique"
           },
@@ -6830,7 +7205,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Progressive Ballet Technique"
           },
@@ -6865,7 +7243,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Progressive Ballet Technique"
           },
@@ -6900,7 +7281,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Progressive Ballet Technique"
           },
@@ -6935,7 +7319,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Progressive Ballet Technique"
           },
@@ -6970,7 +7357,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Progressive Ballet Technique"
           },
@@ -7005,7 +7395,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Progressive Ballet Technique"
           }
@@ -7054,7 +7447,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 0,
             "instanceTitle": "Wings Company Rehearsal"
           }
@@ -7103,7 +7499,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Beginner/Intermediate Dance"
           },
@@ -7138,7 +7537,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Beginner/Intermediate Dance"
           },
@@ -7173,7 +7575,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "Beginner/Intermediate Dance"
           }
@@ -7222,7 +7627,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 75,
             "instanceTitle": "Private Session"
           },
@@ -7257,7 +7665,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 75,
             "instanceTitle": "Private Session"
           },
@@ -7292,7 +7703,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 75,
             "instanceTitle": "Private Session"
           },
@@ -7327,7 +7741,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 75,
             "instanceTitle": "Private Session"
           },
@@ -7362,7 +7779,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 75,
             "instanceTitle": "Private Session"
           },
@@ -7397,7 +7817,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 75,
             "instanceTitle": "Private Session"
           }
@@ -7446,7 +7869,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 0,
             "instanceTitle": "Fly Company Rehearsal"
           },
@@ -7481,7 +7907,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 0,
             "instanceTitle": "Fly Company Rehearsal"
           },
@@ -7516,7 +7945,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 0,
             "instanceTitle": "Fly Company Rehearsal"
           }
@@ -7565,7 +7997,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7600,7 +8035,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7635,7 +8073,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7670,7 +8111,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7705,7 +8149,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7740,7 +8187,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7775,7 +8225,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7810,7 +8263,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7845,7 +8301,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7880,7 +8339,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7915,7 +8377,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7950,7 +8415,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -7985,7 +8453,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8020,7 +8491,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8055,7 +8529,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8090,7 +8567,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8125,7 +8605,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8160,7 +8643,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8195,7 +8681,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8230,7 +8719,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8265,7 +8757,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8300,7 +8795,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8335,7 +8833,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8370,7 +8871,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8405,7 +8909,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8440,7 +8947,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8475,7 +8985,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8510,7 +9023,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8545,7 +9061,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8580,7 +9099,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8615,7 +9137,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8650,7 +9175,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           },
@@ -8685,7 +9213,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 20,
             "instanceTitle": "WheelDancer & Caregiver"
           }
@@ -8734,7 +9265,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 0,
             "instanceTitle": "Artistic Committee Meeting"
           },
@@ -8769,7 +9303,10 @@
             "accessOnly": false,
             "registrationFormType": "Standard",
             "externalUrl": "",
+            "paymentOption": "USD",
             "donation": false,
+            "free": false,
+            "payElsewhere": false,
             "suggestedAmount": 0,
             "instanceTitle": "Artistic Committee Meeting"
           }

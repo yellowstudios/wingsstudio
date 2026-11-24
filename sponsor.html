@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Become a Sponsor | Wings to Fly Dance Company</title>
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<style>
+  :root { --accent:#c89b3c; --accent-dark:#a8862f; --ink:#222; --muted:#6f6a64; --line:#e5e1db; --bg:#fafafa; --card:#fff; --cream:#faf6ea; --ok:#2e7d32; --bad:#c0392b; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 16px 48px; }
+  .hero { text-align:center; margin-bottom: 26px; }
+  .hero .kicker { font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--accent-dark); font-weight:700; }
+  .hero h1 { font-size: clamp(26px, 4vw, 38px); margin: 8px 0 10px; }
+  .hero p { color: var(--muted); max-width: 640px; margin: 0 auto; line-height: 1.6; font-size: 15px; }
+  .group { margin-top: 30px; }
+  .group h2 { font-size: 20px; margin: 0 0 4px; }
+  .group .gsub { color: var(--muted); font-size: 14px; margin-bottom: 14px; }
+  .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+  .pkg { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; display:flex; flex-direction:column; transition: box-shadow .15s, border-color .15s; }
+  .pkg:hover { box-shadow: 0 6px 20px rgba(0,0,0,.07); border-color: #d9cfbd; }
+  .pkg.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+  .pkg .name { font-weight:700; font-size:17px; }
+  .pkg .price { font-size: 26px; font-weight: 800; color: var(--accent-dark); margin: 6px 0 2px; }
+  .pkg .price small { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .pkg .desc { font-size: 13px; color: var(--muted); line-height: 1.5; margin: 6px 0 10px; }
+  .pkg ul { list-style:none; padding:0; margin: 0 0 12px; font-size: 13px; }
+  .pkg li { padding: 3px 0 3px 20px; position: relative; line-height: 1.35; }
+  .pkg li::before { content: '✓'; position:absolute; left:2px; color: var(--accent-dark); font-weight:700; }
+  .pkg li em { color: var(--muted); font-style: normal; }
+  .pkg .more { background:none; border:none; color: var(--accent-dark); font-size: 12px; cursor:pointer; padding: 0; text-align:left; margin: -6px 0 12px; }
+  .pkg .choose { margin-top:auto; background: var(--accent); color:#fff; border:none; border-radius: 8px; padding: 11px; font-weight:700; font-size: 14px; cursor:pointer; }
+  .pkg .choose:hover { background: var(--accent-dark); }
+  .form { background:var(--card); border:1px solid var(--line); border-radius:14px; padding: 22px; margin-top: 30px; }
+  .form h2 { margin: 0 0 4px; font-size: 20px; }
+  .selected { background: var(--cream); border:1px solid #ecdcae; border-radius: 10px; padding: 12px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px; margin: 12px 0 18px; flex-wrap: wrap; }
+  .selected strong { font-size: 16px; }
+  .linkbtn { background:none; border:none; color: var(--accent-dark); text-decoration: underline; cursor:pointer; font-size: 13px; padding: 0; }
+  .row { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field { margin-bottom: 12px; }
+  .field label { display:block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .field .hint { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  input[type=text], input[type=email], input[type=tel], input[type=number], textarea { width:100%; border:1px solid #d8d3cc; border-radius: 8px; padding: 10px 11px; font: inherit; font-size: 15px; background:#fff; }
+  input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
+  textarea { min-height: 70px; resize: vertical; }
+  .req { color: var(--bad); }
+  .seg { display:inline-flex; border:1px solid #d8d3cc; border-radius: 8px; overflow:hidden; }
+  .seg button { background:#fff; border:none; padding: 9px 16px; font: inherit; font-size: 14px; cursor:pointer; }
+  .seg button.on { background: var(--accent); color:#fff; font-weight:700; }
+  .pay { display:grid; gap: 8px; }
+  .pay label { display:flex; gap: 10px; align-items:flex-start; border:1px solid var(--line); border-radius: 10px; padding: 11px 12px; cursor:pointer; background:#fff; }
+  .pay label.on { border-color: var(--accent); background: var(--cream); }
+  .pay input { margin-top: 3px; }
+  .pay .t { font-weight: 700; font-size: 14px; }
+  .pay .d { font-size: 12px; color: var(--muted); }
+  .consent { display:flex; gap: 10px; align-items:flex-start; background: var(--cream); border:1px solid #ecdcae; border-radius: 10px; padding: 12px; font-size: 13px; line-height: 1.5; margin: 12px 0; }
+  .submit { width:100%; background: var(--accent); color:#fff; border:none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 800; cursor:pointer; margin-top: 8px; }
+  .submit:disabled { opacity: .6; cursor: default; }
+  .err { color: var(--bad); font-size: 14px; font-weight: 600; margin-top: 10px; display:none; }
+  .done { background:var(--card); border:1px solid var(--line); border-radius:14px; padding: 30px 22px; text-align:center; max-width: 560px; margin: 20px auto; }
+  .done .icon { width:64px; height:64px; border-radius:50%; margin: 0 auto 14px; display:flex; align-items:center; justify-content:center; font-size: 32px; color:#fff; background: var(--accent); }
+  .done .icon.ok { background: var(--ok); }
+  .done h2 { margin: 0 0 8px; }
+  .done p { color: var(--muted); line-height: 1.6; }
+  .done .box { background: var(--cream); border:1px solid #ecdcae; border-radius: 10px; padding: 12px; text-align:left; white-space: pre-line; font-size: 14px; margin: 14px 0; color: var(--ink); }
+  .bigbtn { display:block; background: var(--accent); color:#fff; text-decoration:none; font-weight:800; padding: 14px; border-radius: 10px; margin-top: 14px; font-size: 16px; }
+  .sub { display:block; color: var(--accent-dark); margin-top: 12px; font-size: 14px; }
+  .loading { text-align:center; color: var(--muted); padding: 50px 0; }
+  .spinner { width: 28px; height: 28px; border: 3px solid #eee; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 10px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .gift { display:flex; justify-content:space-between; align-items:center; gap: 10px; border:1px solid var(--line); border-radius: 10px; padding: 12px; margin-top: 8px; text-align:left; }
+  .hidden { display:none !important; }
+  .hp { position:absolute; left:-9999px; }
+  @media (max-width: 600px) { .row { grid-template-columns: 1fr; } .form { padding: 16px; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="loading"><div class="spinner"></div>Loading sponsorship packages…</div></div>
+
+<script>
+var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3Hhuw1kW00sOdEilXh5jebe0tc-vLIakY1WX1h2c1w/exec";
+var S = { packages: [], pick: null, freq: 'one-time', pay: 'card', mail: [], zelle: '' };
+
+function apiPost(body) {
+  return fetch(API, { method: 'POST', body: JSON.stringify(body) }).then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+}
+function esc(s) { return String(s === null || s === undefined ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function money(n) { n = Number(n || 0); return '$' + (n % 1 ? n.toFixed(2) : n.toLocaleString('en-US')); }
+function param(k) { var m = new RegExp('[?&]' + k + '=([^&]*)').exec(location.search); return m ? decodeURIComponent(m[1].replace(/\+/g, ' ')) : ''; }
+function $(id) { return document.getElementById(id); }
+function setApp(html) { $('app').innerHTML = html; height(); }
+function height() {
+  setTimeout(function() {
+    try { var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight); window.parent.postMessage({ type: 'wingsHeight', height: h }, '*'); } catch (e) {}
+  }, 30);
+}
+window.addEventListener('resize', height);
+
+// ── Packages ──
+var GROUPS = [
+  { key: 'season',  title: 'Season Partners', sub: 'A year of partnership — recognition at our productions, tickets, and more.', per: '/ year' },
+  { key: 'monthly', title: 'Monthly Giving', sub: 'Steady monthly support that keeps our doors open and our scholarships going. Cancel anytime.', per: '/ month' },
+  { key: 'custom',  title: 'Give Any Amount', sub: 'Every gift matters — choose your own amount, once or monthly.', per: '' }
+];
+
+function renderPackages() {
+  var h = '<div class="hero"><div class="kicker">Support our mission</div><h1>Become a Sponsor</h1>'
+        + '<p>Help others realize their dream to dance. Wings to Fly is a nonprofit creating opportunities for dancers with and without disabilities to train, perform and shine.</p></div>';
+  GROUPS.forEach(function(g) {
+    var list = S.packages.filter(function(p) { return p.group === g.key; });
+    if (!list.length) return;
+    h += '<div class="group"><h2>' + esc(g.title) + '</h2><div class="gsub">' + esc(g.sub) + '</div><div class="grid">';
+    list.forEach(function(p) {
+      var shown = p.benefits.slice(0, 5), rest = p.benefits.length - shown.length;
+      h += '<div class="pkg' + (S.pick && S.pick.id === p.id ? ' sel' : '') + '" id="pkg-' + esc(p.id) + '">'
+         + '<div class="name">' + esc(p.title) + '</div>'
+         + '<div class="price">' + (g.key === 'custom' ? 'Your choice' : money(p.investment) + ' <small>' + g.per + '</small>') + '</div>'
+         + (p.description ? '<div class="desc">' + esc(p.description) + '</div>' : '')
+         + (p.benefits.length ? '<ul id="ben-' + esc(p.id) + '">' + shown.map(benefitLi).join('') + '</ul>'
+             + (rest > 0 ? '<button class="more" onclick="moreBenefits(\'' + esc(p.id) + '\', this)">+ ' + rest + ' more benefit' + (rest === 1 ? '' : 's') + '</button>' : '') : '')
+         + '<button class="choose" onclick="choose(\'' + esc(p.id) + '\')">' + (S.pick && S.pick.id === p.id ? '✓ Selected' : 'Choose ' + esc(p.title)) + '</button>'
+         + '</div>';
+    });
+    h += '</div></div>';
+  });
+  h += '<div id="form-slot"></div>';
+  h += '<p style="text-align:center;margin-top:30px;font-size:13px;color:var(--muted)">Already give monthly? <a href="?manage=1" style="color:var(--accent-dark)">Manage or cancel your monthly gift</a> · Questions? <a href="mailto:info@wtfdc.org" style="color:var(--accent-dark)">info@wtfdc.org</a></p>';
+  setApp(h);
+  if (S.pick) renderForm();
+}
+function benefitLi(b) { return '<li>' + esc(b.name) + (b.detail ? ' <em>— ' + esc(b.detail) + '</em>' : '') + '</li>'; }
+function moreBenefits(id, btn) {
+  var p = S.packages.filter(function(x) { return x.id === id; })[0];
+  $('ben-' + id).innerHTML = p.benefits.map(benefitLi).join('');
+  btn.remove(); height();
+}
+
+function choose(id) {
+  S.pick = S.packages.filter(function(p) { return p.id === id; })[0];
+  S.freq = S.pick.group === 'monthly' ? 'monthly' : 'one-time';
+  S.pay = 'card';
+  renderPackages();
+  setTimeout(function() { var f = $('signup'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+}
+
+// ── Sign-up form ──
+function renderForm() {
+  var p = S.pick, custom = p.group === 'custom', monthly = S.freq === 'monthly';
+  var priceText = custom ? '' : money(p.investment) + (p.group === 'monthly' ? ' a month' : /annual/i.test(p.renewal) ? ' a year' : '');
+  var h = '<div class="form" id="signup"><h2>Your sponsorship</h2>'
+    + '<div class="selected"><span><strong>' + esc(p.title) + '</strong>' + (priceText ? ' · ' + esc(priceText) : '') + '</span>'
+    + '<button class="linkbtn" onclick="S.pick=null;renderPackages();window.scrollTo(0,0)">Change package</button></div>';
+  if (custom) {
+    h += '<div class="row"><div class="field"><label for="f-amount">Your gift ($) <span class="req">*</span></label><input type="number" id="f-amount" min="1" step="1" inputmode="decimal" placeholder="e.g. 50"></div>'
+       + '<div class="field"><label>How often</label><div class="seg"><button type="button" class="' + (!monthly ? 'on' : '') + '" onclick="setFreq(\'one-time\')">One time</button>'
+       + '<button type="button" class="' + (monthly ? 'on' : '') + '" onclick="setFreq(\'monthly\')"' + (p.monthlyReady ? '' : ' disabled title="Monthly giving online is coming soon"') + '>Monthly</button></div></div></div>';
+  }
+  h += '<div class="row"><div class="field"><label for="f-first">First name <span class="req">*</span></label><input type="text" id="f-first" autocomplete="given-name"></div>'
+     + '<div class="field"><label for="f-last">Last name <span class="req">*</span></label><input type="text" id="f-last" autocomplete="family-name"></div></div>'
+     + '<div class="row"><div class="field"><label for="f-email">Email <span class="req">*</span></label><input type="email" id="f-email" autocomplete="email"></div>'
+     + '<div class="field"><label for="f-phone">Phone' + (monthly ? ' <span class="req">*</span>' : '') + '</label><input type="tel" id="f-phone" autocomplete="tel"></div></div>'
+     + '<div class="row"><div class="field"><label for="f-business">Business or organization</label><input type="text" id="f-business" autocomplete="organization"><div class="hint">If you are sponsoring as a business.</div></div>'
+     + '<div class="field"><label for="f-website">Website</label><input type="text" id="f-website" placeholder="https://"></div></div>'
+     + '<div class="field"><label for="f-recog">How should we list your name?</label><input type="text" id="f-recog" placeholder="e.g. The Smith Family, Smith Insurance Agency, or Anonymous"><div class="hint">This is how you will appear in programs and on our sponsor page.</div></div>'
+     + '<div class="field"><label for="f-msg">Anything you would like us to know?</label><textarea id="f-msg"></textarea></div>'
+     + '<input type="text" id="f-website2" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">';
+
+  h += '<div class="field"><label>Payment</label><div class="pay" id="pay">';
+  var opts = monthly
+    ? [['card', 'Card — automatic monthly payment', 'Secure checkout by Square. Charged each month until you cancel.']]
+    : [['card', 'Pay by card now', 'Secure checkout by Square.'],
+       ['invoice', 'Send me an invoice', 'We will email an invoice within a few business days.'],
+       ['check', 'Check by mail', 'Payable to Wings to Fly Dance Company — mailing address is shown next.'],
+       ['zelle', 'Zelle', 'Send to ' + S.zelle + ' — details are shown next.']];
+  if (monthly) S.pay = 'card';
+  opts.forEach(function(o) {
+    h += '<label class="' + (S.pay === o[0] ? 'on' : '') + '"><input type="radio" name="pay" value="' + o[0] + '"' + (S.pay === o[0] ? ' checked' : '') + ' onchange="S.pay=this.value;markPay()">'
+       + '<span><span class="t">' + esc(o[1]) + '</span><br><span class="d">' + esc(o[2]) + '</span></span></label>';
+  });
+  h += '</div></div>';
+  if (monthly) {
+    h += '<label class="consent"><input type="checkbox" id="f-consent"><span>By clicking Confirm, I am signing up for a <strong>recurring monthly donation</strong> to Wings to Fly Dance Company of <strong id="consent-amt">' + (custom ? 'the amount above' : money(p.investment)) + '</strong>, charged to my card each month until I cancel. '
+       + 'I can cancel at any time on the <a href="?manage=1" target="_blank" rel="noopener">manage my monthly gift</a> page, or by emailing info@wtfdc.org.</span></label>';
+  }
+  h += '<button class="submit" id="submit" onclick="submitSignup()">' + (monthly ? 'Confirm my monthly gift' : S.pay === 'card' ? 'Continue to payment' : 'Confirm my sponsorship') + '</button>'
+     + '<div class="err" id="err"></div>'
+     + '<p style="font-size:12px;color:var(--muted);margin-top:12px">Wings to Fly Dance Company is a 501(c)(3) nonprofit. Your gift is tax-deductible to the extent allowed by law; the value of tickets or other benefits you receive is not deductible.</p>'
+     + '</div>';
+  $('form-slot').innerHTML = h;
+  var amt = $('f-amount');
+  if (amt) amt.addEventListener('input', function() { var c = $('consent-amt'); if (c) c.textContent = Number(amt.value) > 0 ? money(amt.value) : 'the amount above'; });
+  height();
+}
+function setFreq(f) { var keep = collect(); S.freq = f; renderForm(); restore(keep); }
+function markPay() {
+  document.querySelectorAll('#pay label').forEach(function(l) { l.classList.toggle('on', l.querySelector('input').checked); });
+  var b = $('submit'); if (b && S.freq !== 'monthly') b.textContent = S.pay === 'card' ? 'Continue to payment' : 'Confirm my sponsorship';
+}
+function collect() {
+  var o = {};
+  ['amount', 'first', 'last', 'email', 'phone', 'business', 'website', 'recog', 'msg'].forEach(function(k) { var el = $('f-' + k); if (el) o[k] = el.value; });
+  return o;
+}
+function restore(o) { Object.keys(o).forEach(function(k) { var el = $('f-' + k); if (el) el.value = o[k]; }); }
+function showErr(m) { var e = $('err'); e.textContent = m; e.style.display = 'block'; height(); }
+
+function submitSignup() {
+  var v = collect(), p = S.pick;
+  $('err').style.display = 'none';
+  if (p.group === 'custom' && !(Number(v.amount) >= 1)) return showErr('Please enter your gift amount.');
+  if (!v.first.trim() || !v.last.trim()) return showErr('Please enter your first and last name.');
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.email.trim())) return showErr('Please enter a valid email address.');
+  if (S.freq === 'monthly') {
+    if (String(v.phone).replace(/\D/g, '').length < 10) return showErr('Please enter your phone number (Square uses it to set up monthly payments).');
+    if (!$('f-consent').checked) return showErr('Please tick the box to agree to the monthly donation.');
+  }
+  var btn = $('submit'); btn.disabled = true; btn.textContent = 'One moment…';
+  apiPost({ action: 'sponsorSignup', packageId: p.id, amount: v.amount, frequency: S.freq, payMethod: S.pay,
+            firstName: v.first, lastName: v.last, email: v.email, phone: v.phone, businessName: v.business, website: v.website,
+            recognitionName: v.recog, message: v.msg, consent: S.freq === 'monthly' ? !!$('f-consent').checked : false,
+            website2: $('f-website2').value }).then(function(r) {
+    if (!r || !r.success) { btn.disabled = false; btn.textContent = 'Try again'; return showErr((r && r.message) || 'Something went wrong. Please try again.'); }
+    if (r.checkoutUrl) {
+      setApp('<div class="done"><div class="icon">♥</div><h2>Almost done!</h2>'
+        + '<p>Your ' + esc(r.packageTitle) + ' sponsorship is saved. Finish with secure payment by Square — '
+        + (r.frequency === 'monthly' ? '<strong>' + esc(r.amountText) + ' a month</strong>.' : '<strong>' + esc(r.amountText) + '</strong>.') + '</p>'
+        + '<a class="bigbtn" href="' + esc(r.checkoutUrl) + '" target="_top">Continue to secure payment ›</a>'
+        + '<p style="font-size:12px;margin-top:12px">Sponsorship ID ' + esc(r.id) + '. You will come back here when the payment is complete.</p></div>');
+      return;
+    }
+    setApp('<div class="done"><div class="icon ok">✓</div><h2>Thank you, ' + esc(v.first) + '!</h2>'
+      + '<p>Your <strong>' + esc(r.packageTitle) + '</strong> sponsorship (' + esc(r.amountText) + ') is confirmed. We have emailed you a copy of these details.</p>'
+      + (r.instructions ? '<div class="box">' + esc(r.instructions) + '</div>' : '')
+      + '<p style="font-size:13px">Sponsorship ID: <strong>' + esc(r.id) + '</strong></p>'
+      + '<a class="sub" href="https://www.wtfdc.org" target="_top">Return to wtfdc.org</a></div>');
+    window.scrollTo(0, 0);
+  }).catch(function() { btn.disabled = false; btn.textContent = 'Try again'; showErr('We could not reach our server. Please try again in a moment.'); });
+}
+
+// ── Back from Square ──
+function showDone(id, key) {
+  setApp('<div class="loading"><div class="spinner"></div>Confirming your payment…</div>');
+  apiPost({ action: 'sponsorStatus', id: id, k: key }).then(function(r) {
+    var paid = r && r.known && r.paid;
+    setApp('<div class="done"><div class="icon ' + (paid ? 'ok' : '') + '">' + (paid ? '✓' : '♥') + '</div>'
+      + '<h2>' + (paid ? 'Thank you for your support!' : 'Thank you!') + '</h2>'
+      + '<p>' + (paid
+          ? 'Your ' + esc(r.packageTitle) + ' sponsorship' + (r.monthly ? ' — ' + esc(r.amountText) + ' a month —' : ' of ' + esc(r.amountText)) + ' is confirmed. A thank-you email with your receipt is on its way.'
+          : 'We received your sponsorship. Square is finishing your payment and it will show as paid on our side shortly — you do not need to pay again. A thank-you email is on its way.') + '</p>'
+      + (r && r.monthly ? '<p style="font-size:13px">You can manage or cancel your monthly gift at any time <a href="?manage=1">here</a>.</p>' : '')
+      + '<p style="font-size:13px">Sponsorship ID: <strong>' + esc(id) + '</strong></p>'
+      + '<a class="bigbtn" href="https://www.wtfdc.org" target="_top">Return to wtfdc.org</a></div>');
+  }).catch(function() {
+    setApp('<div class="done"><div class="icon">♥</div><h2>Thank you!</h2><p>Your sponsorship was received. A confirmation email is on its way.</p><a class="bigbtn" href="https://www.wtfdc.org" target="_top">Return to wtfdc.org</a></div>');
+  });
+}
+
+// ── Manage / cancel a monthly gift ──
+var M = { email: '', token: '' };
+function showManage() {
+  setApp('<div class="done" style="text-align:left"><h2 style="text-align:center">Manage your monthly gift</h2>'
+    + '<p style="text-align:center">Enter the email you used when you signed up. We will email you a 6-digit code.</p>'
+    + '<div class="field"><label for="m-email">Email</label><input type="email" id="m-email" autocomplete="email"></div>'
+    + '<button class="submit" id="m-send" onclick="manageSend()">Email me a code</button><div class="err" id="err"></div>'
+    + '<div id="m-code" class="hidden" style="margin-top:16px"><div class="field"><label for="m-codein">6-digit code</label><input type="text" id="m-codein" inputmode="numeric" maxlength="6" style="letter-spacing:6px;font-size:20px;text-align:center"></div>'
+    + '<button class="submit" onclick="manageList()">Continue</button></div>'
+    + '<a class="sub" style="text-align:center" href="?">‹ Back to sponsorship packages</a></div>');
+}
+function manageSend() {
+  var email = $('m-email').value.trim(), b = $('m-send');
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return showErr('Please enter a valid email address.');
+  b.disabled = true; b.textContent = 'Sending…';
+  apiPost({ action: 'sponsorManageStart', email: email }).then(function(r) {
+    b.disabled = false; b.textContent = 'Send the code again';
+    if (!r.success) return showErr(r.message);
+    M.email = email; $('err').style.display = 'none';
+    $('m-code').classList.remove('hidden');
+    var note = document.createElement('p'); note.style.fontSize = '13px'; note.textContent = r.message; $('m-code').insertBefore(note, $('m-code').firstChild);
+    $('m-codein').focus(); height();
+  }).catch(function() { b.disabled = false; b.textContent = 'Email me a code'; showErr('We could not reach our server. Please try again.'); });
+}
+function manageList() {
+  apiPost({ action: 'sponsorManageList', email: M.email, code: $('m-codein').value.trim() }).then(function(r) {
+    if (!r.success) return showErr(r.message);
+    M.token = r.token;
+    var h = '<div class="done" style="text-align:left"><h2 style="text-align:center">Your monthly gifts</h2>';
+    if (!r.gifts.length) h += '<p style="text-align:center">There are no active monthly gifts for this email.</p>';
+    r.gifts.forEach(function(g) {
+      h += '<div class="gift"><span><strong>' + esc(g.packageTitle) + '</strong> · ' + esc(g.amountText) + ' a month' + (g.since ? '<br><span style="font-size:12px;color:var(--muted)">since ' + esc(g.since) + '</span>' : '') + '</span>'
+         + '<button class="linkbtn" style="color:var(--bad)" onclick="manageCancel(\'' + esc(g.id) + '\', this)">Cancel this gift</button></div>';
+    });
+    h += '<div class="err" id="err"></div><a class="sub" style="text-align:center" href="?">‹ Back to sponsorship packages</a></div>';
+    setApp(h);
+  });
+}
+function manageCancel(id, btn) {
+  if (btn.getAttribute('data-sure') !== '1') { btn.setAttribute('data-sure', '1'); btn.textContent = 'Tap again to confirm cancelling'; return; }
+  btn.disabled = true; btn.textContent = 'Cancelling…';
+  apiPost({ action: 'sponsorManageCancel', token: M.token, id: id }).then(function(r) {
+    if (!r.success) { btn.disabled = false; btn.textContent = 'Cancel this gift'; return showErr(r.message); }
+    btn.parentNode.innerHTML = '<span>' + esc(r.message) + '</span>';
+    height();
+  });
+}
+
+// ── Start ──
+(function start() {
+  if (param('done')) return showDone(param('done'), param('k'));
+  if (param('manage')) return showManage();
+  apiPost({ action: 'sponsorPackages' }).then(function(r) {
+    if (!r || !r.success) throw new Error('bad');
+    S.packages = r.packages; S.mail = r.mailAddress || []; S.zelle = r.zelle || '';
+    var want = param('package');
+    if (want) S.pick = S.packages.filter(function(p) { return p.id === want || p.title.toLowerCase() === want.toLowerCase(); })[0] || null;
+    if (S.pick) S.freq = S.pick.group === 'monthly' ? 'monthly' : 'one-time';
+    renderPackages();
+  }).catch(function() {
+    setApp('<div class="done"><h2>Sorry — the sponsorship packages could not be loaded.</h2><p>Please refresh the page, or email <a href="mailto:info@wtfdc.org">info@wtfdc.org</a>.</p></div>');
+  });
+})();
+</script>
+</body>
+</html>

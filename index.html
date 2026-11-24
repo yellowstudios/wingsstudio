@@ -339,6 +339,10 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
       return fetch(API,{method:'POST', body: JSON.stringify(body)}).then(function(r){if(!r.ok) throw new Error(r.status); return r.json();});
     }
 
+    // Browser storage can be blocked (private windows, some browsers inside another site's page): never let that stop the calendar
+    function storeGet(k){ try { return window.localStorage ? localStorage.getItem(k) : null; } catch(e) { return null; } }
+    function storeSet(k, v){ try { if (window.localStorage) localStorage.setItem(k, v); } catch(e) {} }
+
     function setLoading(on){
       document.getElementById('loadingOverlay').classList.toggle('active',!!on);
       document.getElementById('prevBtn').disabled=!!on;
@@ -531,16 +535,24 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
         };
       }
 
-      render();
-      setLoading(false);
+      try { render(); }
+      catch (e) { console.error('Calendar render failed:', e); }
+      finally { setLoading(false); setTimeout(broadcastHeight, 50); }
       checkDeepLink();
     }
 
     function load(forceFresh){
-      if (ADMIN_MODE) {   // Perch sends the data (including dates hidden from the website)
+      if (ADMIN_MODE) {
+        // Perch sends the full data (including dates hidden from the website). Meanwhile the website's own
+        // calendar file is shown, so the page is never stuck on "Loading…" if Perch is slow.
         if (S.masterData && !forceFresh) { sliceClientCalendarData(); return; }
-        setLoading(true);
-        try { window.parent.postMessage({ type: 'wingsAdminReady' }, '*'); } catch (e) {}
+        if (!S.adminAsked) {
+          S.adminAsked = 1;
+          var ask = function() { try { window.parent.postMessage({ type: 'wingsAdminReady' }, '*'); } catch (e) {} };
+          ask();
+          var tries = 0, timer = setInterval(function() { if (S.adminData || ++tries > 8) { clearInterval(timer); return; } ask(); }, 4000);
+        }
+        if (!S.masterData) { setLoading(true); fetchStaticJson(); }
         return;
       }
       // 1. If master GitHub data is already in memory, slice instantly in 0ms!
@@ -550,7 +562,7 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
       }
 
       // 2. Try loading full year JSON from LocalStorage
-      var localMaster = localStorage.getItem('wings_master_year_json');
+      var localMaster = storeGet('wings_master_year_json');
       if (localMaster && !forceFresh) {
         try {
           S.masterData = JSON.parse(localMaster);
@@ -564,56 +576,57 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
       fetchStaticJson();
     }
 
-function fetchStaticJson() {
-  fetch(STATIC_JSON_URL + '?t=' + new Date().getTime())
-    .then(function(r) {
-      if (!r.ok) {
-        throw new Error('Static calendar file returned HTTP ' + r.status);
-      }
-      return r.json();
-    })
-    .then(function(data) {
-      if (!data || (!Array.isArray(data.classes) && !Array.isArray(data.shows))) {
-        throw new Error('Static calendar file does not contain classes or shows arrays.');
-      }
-
-      S.masterData = data;
-
-      try {
-        localStorage.setItem('wings_master_year_json', JSON.stringify(data));
-      } catch(e) {}
-
-      if (data.sessionsPayload) {
-        S.sessionsData = data.sessionsPayload;
-        renderSessions();
-      }
-
-      sliceClientCalendarData();
-    })
+// Loads the calendar file next to this page (fast). Tries twice, then the live server, then shows a Retry button.
+function fetchWithTimeout(url, ms) {
+  var ctl = window.AbortController ? new AbortController() : null;
+  var t = ctl ? setTimeout(function() { ctl.abort(); }, ms) : null;
+  return fetch(url, ctl ? { signal: ctl.signal } : {}).then(function(r) { if (t) clearTimeout(t); return r; }, function(e) { if (t) clearTimeout(t); throw e; });
+}
+function useCalendarData(data) {
+  if (!data || (!Array.isArray(data.classes) && !Array.isArray(data.shows))) throw new Error('Calendar data has no classes or shows.');
+  if (ADMIN_MODE && S.adminData) return;   // Perch's fuller data has already arrived
+  S.masterData = data;
+  if (!ADMIN_MODE) storeSet('wings_master_year_json', JSON.stringify(data));
+  if (data.sessionsPayload) { S.sessionsData = data.sessionsPayload; try { renderSessions(); } catch (e) { console.error('Sessions:', e); } }
+  sliceClientCalendarData();
+}
+function fetchStaticJson(attempt) {
+  attempt = attempt || 1;
+  return fetchWithTimeout(STATIC_JSON_URL + '?t=' + new Date().getTime(), 12000)
+    .then(function(r) { if (!r.ok) throw new Error('Static calendar file returned HTTP ' + r.status); return r.json(); })
+    .then(useCalendarData)
     .catch(function(err) {
-      console.error('Static calendar load failed:', err);
-
-      fetchLiveApi().catch(function(apiErr) {
+      console.error('Static calendar load failed (try ' + attempt + '):', err);
+      if (S.masterData) { setLoading(false); return; }            // already showing the saved copy — keep it
+      if (attempt < 2) return new Promise(function(res) { setTimeout(res, 1500); }).then(function() { return fetchStaticJson(attempt + 1); });
+      return fetchLiveApi().catch(function(apiErr) {
         console.error('Live calendar API load failed:', apiErr);
-        setLoading(false);
-
-        document.getElementById('periodLabel').textContent =
-          'Calendar could not load. Please refresh.';
+        showLoadProblem();
       });
     });
 }
 
     function fetchLiveApi() {
-      apiGet({view:'upcoming', includeSessions:'true'}).then(function(data){
-        if (!data || data.error) { setLoading(false); return; }
-        S.masterData = data;
-        if (data.sessionsPayload) {
-          S.sessionsData = data.sessionsPayload;
-          renderSessions();
-        }
-        sliceClientCalendarData();
-      }).catch(function(){ setLoading(false); });
+      return Promise.race([
+        apiGet({view:'upcoming', includeSessions:'true'}),
+        new Promise(function(res, rej) { setTimeout(function() { rej(new Error('timeout')); }, 25000); })
+      ]).then(function(data){
+        if (!data || data.error) throw new Error((data && data.error) || 'No data');
+        useCalendarData(data);
+      });
     }
+
+    // Instead of an endless grey "Loading…": say so, with a button to try again
+    function showLoadProblem() {
+      setLoading(false);
+      document.getElementById('periodLabel').textContent = 'Calendar could not load';
+      var area = document.getElementById('calendarArea');
+      if (area) area.innerHTML = '<div style="text-align:center;padding:40px 16px;color:var(--muted);font-size:14px">'
+        + 'Sorry — the calendar could not load just now.<br><br>'
+        + '<button type="button" onclick="retryCalendarLoad()" style="font:inherit;font-weight:700;padding:10px 20px;border-radius:6px;border:none;background:var(--accent);color:#fff;cursor:pointer">Try again</button></div>';
+      broadcastHeight();
+    }
+    function retryCalendarLoad() { setLoading(true); fetchStaticJson(); }
 
     function render(){
       if (!S.data) return;
@@ -2346,6 +2359,7 @@ if (!sessionDateLabel) {
       window.addEventListener('message', function(e) {
         var d = e.data || {};
         if (d.type !== 'wingsAdminData' || !d.payload) return;
+        S.adminData = true;
         S.masterData = d.payload;
         if (d.payload.sessionsPayload) { S.sessionsData = d.payload.sessionsPayload; renderSessions(); }
         sliceClientCalendarData();

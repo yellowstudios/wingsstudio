@@ -644,6 +644,7 @@ function fetchStaticJson() {
       var typeLC = String(ev.type || '').toLowerCase();
       var catLC = String(ev.category || '').toLowerCase();
       if (typeLC === 'show' || typeLC === 'event' || catLC === 'performance') return 'Reserve Tickets';
+      if (typeLC === 'gathering') return 'RSVP';
       return 'Reserve Space';
     }
 

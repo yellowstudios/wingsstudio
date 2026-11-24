@@ -268,6 +268,12 @@
   .rf-multi-list label { display: flex !important; gap: 6px; align-items: center; font-size: 13px !important; text-transform: none !important; letter-spacing: 0 !important; color: var(--text) !important; cursor: pointer; }
   .rf-multi-list input { width: auto !important; }
   .rf-multi-list label.rf-hide { display: none !important; }
+  .rf-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; min-height: 26px; }
+  .rf-chips-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .rf-chips-none { font-size: 12px; color: var(--muted); font-style: italic; }
+  .rf-chip { display: inline-flex; align-items: center; gap: 4px; background: #faf3e0; border: 1px solid #e3cf96; color: #5c4712; border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 13px; font-weight: 600; }
+  .rf-chip button { border: none; background: transparent; color: #8a6d1f; font-size: 15px; line-height: 1; cursor: pointer; padding: 0 5px; border-radius: 50%; }
+  .rf-chip button:hover { background: #efe2bd; }
   .rf-multi-none { font-size: 13px; color: var(--muted); padding: 4px 2px; }
   .tx-list { border: 1px solid var(--border); border-radius: 8px; max-height: 340px; overflow-y: auto; }
   .tx-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
@@ -534,6 +540,7 @@
     </div>
     <nav id="nav">
       <a class="nav-btn active" data-view="dashboard" href="#" target="_blank" rel="noopener" onclick="return navClick(event,'dashboard')">Dashboard</a>
+      <a class="nav-btn" data-view="calendar" href="#" target="_blank" rel="noopener" onclick="return navClick(event,'calendar')">Calendar</a>
       <a class="nav-btn" data-view="registrations" href="#" target="_blank" rel="noopener" onclick="return navClick(event,'registrations')">Registrations</a>
       <a class="nav-btn" data-view="offerings" href="#" target="_blank" rel="noopener" onclick="return navClick(event,'offerings')">Offerings</a>
       <a class="nav-btn" data-view="instances" href="#" target="_blank" rel="noopener" onclick="return navClick(event,'instances')">Instances</a>
@@ -670,7 +677,7 @@ function enterApp(res) {
     state.dashboard = res.dashboard;
     state.loadedAt.dashboard = Date.now();
   }
-  showView(getViewConfig(_startView) ? _startView : 'dashboard');
+  showView((getViewConfig(_startView) || _startView === 'calendar') ? _startView : 'dashboard');
   setTimeout(loadDashRaw, 1500);   // dashboard filter data, so filters answer instantly
   // Load the other tabs quietly in the background so the first click on each is instant
   setTimeout(prefetchViews, 400);
@@ -851,6 +858,7 @@ function showView(view) {
   syncUrl(view);
   window.scrollTo(0, 0);
 
+  if (view === 'calendar') { renderAdminCalendar(); return; }
   if (view === 'dashboard') {
     var haveDash = !!state.loadedAt.dashboard;
     if (haveDash) renderDashboard();                 // show what we have straight away
@@ -3649,6 +3657,7 @@ function submitEditRecord(andNext) {
     if (state.view === view && state.quickEdit !== view) renderView(view);
     // Then fetch the saved rows quietly in the background (keeps your place on the page)
     loadSheetData(view, null, true, true);
+    calAfterSave(view);
   });
 }
 
@@ -4254,7 +4263,10 @@ function recControlHtml(view, f, val) {
   if (f.type === 'lookup' && f.multi) {
     var chosen = String(v || '').split(',').map(function(x) { return x.trim(); }).filter(Boolean);
     var opts = recLookupOptions(f, chosen);
-    return '<div class="rf-multi" id="' + id + '" data-multi="1">'
+    // Chosen ones first, and shown as name chips above the list so they are never hidden by scrolling
+    opts = opts.filter(function(o) { return chosen.indexOf(o.v) !== -1; }).concat(opts.filter(function(o) { return chosen.indexOf(o.v) === -1; }));
+    return '<div class="rf-multi" id="' + id + '" data-multi="1" onchange="recMultiChips(this)">'
+         + '<div class="rf-chips">' + recMultiChipsHtml(opts.filter(function(o) { return chosen.indexOf(o.v) !== -1; }), f.ro) + '</div>'
          + '<input type="text" class="rf-multi-filter" placeholder="Type to find…" oninput="recFilterMulti(this)">'
          + '<div class="rf-multi-list">' + opts.map(function(o) {
              return '<label><input type="checkbox" value="' + esc(o.v) + '"' + (chosen.indexOf(o.v) !== -1 ? ' checked' : '') + dis + '> ' + esc(o.l) + '</label>';
@@ -4263,7 +4275,7 @@ function recControlHtml(view, f, val) {
   if (f.type === 'select' || f.type === 'lookup') {
     var list = f.type === 'lookup' ? recLookupOptions(f, [String(v)]) : recSelectOptions(view, f, v);
     var cur = String(v);
-    return '<select id="' + id + '"' + dis + '><option value=""' + (cur === '' ? ' selected' : '') + '>' + (f.type === 'lookup' ? '— choose —' : '(blank)') + '</option>'
+    return '<select id="' + id + '"' + dis + '><option value=""' + (cur === '' ? ' selected' : '') + '>' + (f.type === 'lookup' ? '— choose —' : (view === 'instances' && (f.key === 'formType' || f.key === 'paymentOption')) ? '(same as the offering)' : '(blank)') + '</option>'
          + list.map(function(o) { return '<option value="' + esc(o.v) + '"' + (o.v === cur ? ' selected' : '') + '>' + esc(o.l) + '</option>'; }).join('')
          + '</select>';
   }
@@ -4298,6 +4310,24 @@ function recSelectOptions(view, f, cur) {
     seen[item.v.toLowerCase()] = 1; seenLabel[lk] = 1; out.push(item);
   });
   return out.sort(function(a, b) { return alphaCompare(String(a.l), String(b.l)); });
+}
+function recMultiChipsHtml(list, ro) {
+  if (!list.length) return '<span class="rf-chips-none">None chosen yet</span>';
+  return '<span class="rf-chips-label">Chosen:</span>' + list.map(function(o) {
+    return '<span class="rf-chip">' + esc(o.l) + (ro ? '' : '<button type="button" title="Remove" onclick="recMultiUntick(this, \'' + jsq(o.v) + '\')">×</button>') + '</span>';
+  }).join('');
+}
+function recMultiChips(box) {
+  if (!box || !box.querySelector) return;
+  var chosen = Array.prototype.slice.call(box.querySelectorAll('.rf-multi-list input[type=checkbox]:checked')).map(function(c) {
+    return { v: c.value, l: c.parentNode.textContent.trim() };
+  });
+  var chips = box.querySelector('.rf-chips'); if (chips) chips.innerHTML = recMultiChipsHtml(chosen, false);
+}
+function recMultiUntick(btn, v) {
+  var box = btn.closest('.rf-multi');
+  var c = box && box.querySelector('.rf-multi-list input[value="' + String(v).replace(/"/g, '\\"') + '"]');
+  if (c) { c.checked = false; c.dispatchEvent(new Event('change', { bubbles: true })); }
 }
 function recFilterMulti(inp) {
   // Every word typed must appear in the name (so "matt pic" finds "Matt Picarelli"); ticked people always stay visible
@@ -4453,6 +4483,7 @@ function recEditorChanged(e) {
     if (el.getAttribute && el.getAttribute('data-multi')) {
       var any = el.querySelector('input:checked'); if (any) return;
       String(v).split(',').forEach(function(x) { var c = el.querySelector('input[value="' + x.trim() + '"]'); if (c) c.checked = true; });
+      recMultiChips(el);
       return;
     }
     if (String(el.value || '').trim() !== '') return;
@@ -4651,6 +4682,7 @@ function saveRecordQuickEdits(view, btn) {
     reportBulkResult(res);
     state.rpending = {};
     loadSheetData(view, null, false, true);
+    calAfterSave(view);
   });
 }
 
@@ -4908,6 +4940,7 @@ function recFillFromOffering(offeringId) {
     else if (el.getAttribute('data-multi')) {
       var ids = String(want || '').split(',').map(function(x) { return x.trim(); }).filter(Boolean);
       el.querySelectorAll('input[type=checkbox]').forEach(function(c) { c.checked = ids.indexOf(c.value) !== -1; });
+      recMultiChips(el);
     } else if (f.type === 'duration') recDurSet('rf-' + k, want || '');
     else if (f.type === 'money') el.value = (want === '' || want === undefined) ? '' : Number(want).toFixed(2);
     else if (el.tagName === 'SELECT') {
@@ -4992,9 +5025,63 @@ function confirmRecordDelete(btn) {
     toast('Deleted ' + res.deleted.length + (res.alsoDeleted.length ? ' (and ' + res.alsoDeleted.length + ' linked)' : '') + (res.skipped.length ? ' · ' + res.skipped.length + ' still in use, not deleted' : '') + '. Copies saved in "Wings Studio — Deleted Records".', 'success', 8000);
     if (state.view === d.view) renderView(d.view);
     loadSheetData(d.view, null, true, true);
+    calAfterSave(d.view);
     if (res.alsoDeleted.length) { delete state.data.tiers; delete state.data.transactions; }
   });
 }
+
+// ═══════════════════════════════════════════════════════
+//  CALENDAR — the website calendar, with an Edit button on every date
+// ═══════════════════════════════════════════════════════
+var ADMIN_CAL_URL = 'https://yellowstudios.github.io/wingsstudio/index.html?admin=1';
+function renderAdminCalendar() {
+  var h = '<div class="section-header" style="flex-wrap:wrap;gap:10px"><h2>Calendar</h2>'
+        + '<span class="mini" style="flex:1;min-width:240px">The same calendar as the website. Click <strong>Edit</strong> on any date (or <strong>More Info</strong> → Edit) to change it. Dates marked “(Not on website)” are hidden from the public calendar.</span>'
+        + '<button class="btn secondary" onclick="refreshAdminCalendar(this)">↻ Refresh</button></div>'
+        + '<iframe id="admin-cal" title="Calendar" src="' + ADMIN_CAL_URL + '" style="display:block;width:100%;height:calc(100vh - 170px);min-height:520px;border:1px solid var(--border);border-radius:10px;background:#fff"></iframe>';
+  setMain(h);
+}
+function adminCalFrame() { var f = document.getElementById('admin-cal'); return f && f.contentWindow; }
+function adminCalSend() { var w = adminCalFrame(); if (w && state.calData) w.postMessage({ type: 'wingsAdminData', payload: state.calData }, '*'); }
+function loadAdminCalData(after) {
+  if (state.calLoading) { state.calAfter = (state.calAfter || []).concat(after ? [after] : []); return; }
+  state.calLoading = true; state.calAfter = after ? [after] : [];
+  callGAS('adminCalendarData', {}, function(res) {
+    state.calLoading = false;
+    var cbs = state.calAfter || []; state.calAfter = [];
+    if (!res || res.error) { toast('Calendar could not load: ' + ((res && res.message) || ''), 'error'); return; }
+    state.calData = res; state.calAt = Date.now();
+    cbs.forEach(function(f) { f(); });
+  });
+}
+function refreshAdminCalendar(btn) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Refreshing…'; }
+  loadAdminCalData(function() { adminCalSend(); if (btn) { btn.disabled = false; btn.textContent = '↻ Refresh'; } });
+}
+// After a date or offering is saved/deleted, the calendar shows the change
+function calAfterSave(view) {
+  if (view !== 'instances' && view !== 'offerings') return;
+  state.calAt = 0;
+  if (state.view === 'calendar') setTimeout(function() { loadAdminCalData(adminCalSend); }, 600);
+}
+window.addEventListener('message', function(e) {
+  var d = e.data || {};
+  if (typeof d !== 'object') return;
+  if (d.type === 'wingsAdminReady') {
+    if (state.calData && Date.now() - (state.calAt || 0) < 5 * 60000) adminCalSend();
+    else loadAdminCalData(adminCalSend);
+  }
+  if (d.type === 'wingsAdminEdit') {
+    var view = d.what === 'offering' ? 'offerings' : 'instances', id = d.what === 'offering' ? d.offeringId : d.instanceId;
+    if (!id) return;
+    var open = function() {
+      if (!recRowById(view, id)) { toast(id + ' was not found — try Refresh', 'error'); return; }
+      openRecordEditor(view, id);
+    };
+    if (state.schema[view] && recRowById(view, id)) open();
+    else { toast('Opening ' + id + '…', 'info', 1500); loadSheetData(view, open, true, true); }
+  }
+});
 
 function recCanEdit(view) { return state.canEdit[view] !== false; }
 function sponsorActive(r) { return !/^(expired|cancelled|pending payment)$/i.test(r.status || ''); }

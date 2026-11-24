@@ -278,6 +278,8 @@
 var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3Hhuw1kW00sOdEilXh5jebe0tc-vLIakY1WX1h2c1w/exec";
     var STATIC_JSON_URL = "./calendar_data.json"; 
     
+    // Admin view: shown inside Wings to Fly Perch (?admin=1). Data comes from Perch, every date gets an Edit button.
+    var ADMIN_MODE = /[?&]admin=1(&|$)/.test(location.search);
     var S = {view:'week',showClasses:true,showShows:true,currentMonday:mondayOf(new Date()),currentMonth:monthKey(new Date()),currentDay:new Date(),masterData:null,data:null,sessionsData:null,activeEv:null};
     var monthByDay = {}, eventMap = {};
 
@@ -524,6 +526,12 @@ var API = "https://script.google.com/macros/s/AKfycbwKBEWJYrx_TFO8xNOtz9MrJGtB3H
     }
 
     function load(forceFresh){
+      if (ADMIN_MODE) {   // Perch sends the data (including dates hidden from the website)
+        if (S.masterData && !forceFresh) { sliceClientCalendarData(); return; }
+        setLoading(true);
+        try { window.parent.postMessage({ type: 'wingsAdminReady' }, '*'); } catch (e) {}
+        return;
+      }
       // 1. If master GitHub data is already in memory, slice instantly in 0ms!
       if (S.masterData && !forceFresh) {
         sliceClientCalendarData();
@@ -681,7 +689,9 @@ function fetchStaticJson() {
             var canRegister = ev.isPublic && !ev.isFull && !ev.isPast && isUpcoming;
             
             var btnHtml = '';
-            if (canRegister) {
+            if (ADMIN_MODE) {
+              btnHtml = '<button type="button" class="btn-register admin-edit" data-edit="' + esc(ev.instanceId) + '" style="width:100%;cursor:pointer;">Edit</button>';
+            } else if (canRegister) {
               var directUrl = 'https://wtfdc.org/reserve?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true';
               btnHtml = '<a href="' + directUrl + '" target="_top" rel="noopener" class="btn-register" style="text-decoration:none;">' + btnText + '</a>';
             } else if (ev.isPast) {
@@ -1181,7 +1191,8 @@ function fetchStaticJson() {
             + '<div class="panel-event-time" style="font-size:12px;color:var(--muted);margin-bottom:2px;">'+esc(formatFriendlyTime(ev.startTime||ev.start, ev.endTime||ev.end))+'</div>'
             + '<div class="panel-event-title" style="font-weight:600;font-size:14px;margin-bottom:6px;">'+esc(ev.title)+'</div>'
             + '<div class="panel-btns" style="display:flex;gap:6px;flex-wrap:wrap;">'
-            + (ev.isPublic && !ev.isFull ? '<a href="https://wtfdc.org/reserve?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')
+            + (ADMIN_MODE ? '<button type="button" class="primary admin-edit" data-edit="' + esc(ev.instanceId) + '" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;">Edit</button>' : '')
+            + (!ADMIN_MODE && ev.isPublic && !ev.isFull ? '<a href="https://wtfdc.org/reserve?reserve=' + encodeURIComponent(ev.instanceId) + '&standalone=true" target="_top" rel="noopener" class="primary" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:none;background:var(--accent);color:#fff;text-align:center;text-decoration:none;display:inline-block;">'+btnText+'</a>' : '')
             + '<button class="btn-info" data-id="'+esc(k)+'" style="flex:1;font:inherit;font-size:12px;font-weight:600;padding:6px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);">More Info</button>'
             + '</div></div>';
         });
@@ -2313,6 +2324,35 @@ if (!sessionDateLabel) {
           '</div>'+
         '</div>';
       }).join('');
+    }
+
+    if (ADMIN_MODE) {
+      window.addEventListener('message', function(e) {
+        var d = e.data || {};
+        if (d.type !== 'wingsAdminData' || !d.payload) return;
+        S.masterData = d.payload;
+        if (d.payload.sessionsPayload) { S.sessionsData = d.payload.sessionsPayload; renderSessions(); }
+        sliceClientCalendarData();
+      });
+      // Edit buttons on the calendar and in the day lists open the date in Perch
+      document.addEventListener('click', function(e) {
+        var b = e.target.closest('[data-edit]');
+        if (!b) return;
+        e.preventDefault(); e.stopPropagation();
+        try { window.parent.postMessage({ type: 'wingsAdminEdit', instanceId: b.getAttribute('data-edit'), what: b.getAttribute('data-what') || 'instance', offeringId: b.getAttribute('data-offering') || '' }, '*'); } catch (err) {}
+      }, true);
+      // "More Info": the usual details, with Edit buttons on top (no registration form here)
+      var _publicOpenModal = openModal;
+      openModal = function(ev, openReg) {
+        _publicOpenModal(ev, false);
+        var body = document.getElementById('modalBody');
+        if (body && !body.querySelector('.admin-bar')) {
+          body.insertAdjacentHTML('afterbegin', '<div class="admin-bar" style="display:flex;gap:8px;margin-bottom:12px">'
+            + '<button type="button" data-edit="' + esc(ev.instanceId) + '" style="flex:1;font:inherit;font-weight:700;padding:9px;border-radius:6px;border:none;background:var(--accent);color:#fff;cursor:pointer">Edit this date</button>'
+            + (ev.sessionId ? '<button type="button" data-edit="' + esc(ev.instanceId) + '" data-what="offering" data-offering="' + esc(ev.sessionId) + '" style="flex:1;font:inherit;font-weight:700;padding:9px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer">Edit the offering</button>' : '')
+            + '</div>');
+        }
+      };
     }
 
     function broadcastHeight(){

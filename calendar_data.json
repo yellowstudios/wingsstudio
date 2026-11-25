@@ -1,13 +1,7 @@
 {
   "view": "year",
-  "todayKey": "2026-11-24",
+  "todayKey": "2026-11-25",
   "days": [
-    {
-      "key": "2026-10-25",
-      "name": "Sun",
-      "num": "25",
-      "monthNum": "10"
-    },
     {
       "key": "2026-10-26",
       "name": "Mon",
@@ -2376,6 +2370,12 @@
       "key": "2027-11-24",
       "name": "Wed",
       "num": "24",
+      "monthNum": "11"
+    },
+    {
+      "key": "2027-11-25",
+      "name": "Thu",
+      "num": "25",
       "monthNum": "11"
     }
   ],
@@ -8200,46 +8200,6 @@
         "videoUrl": "https://www.youtube.com/embed/HB7oJdXWcGs",
         "inclusion": true,
         "instances": [
-          {
-            "instanceId": "OI_199",
-            "title": "WheelDancer & Caregiver",
-            "location": "Wings Studio, 1649 SE Port St. Lucie Blvd., Port St. Lucie FL 34952",
-            "startTime": "5:00 PM",
-            "endTime": "6:00 PM",
-            "start": "2026-11-24T22:00:00.000Z",
-            "end": "2026-11-24T23:00:00.000Z",
-            "startMs": 1795557600000,
-            "dateLabel": "Tue, Nov 24, 2026",
-            "costText": "$20.00",
-            "spotsText": "5 spots left",
-            "dayKey": "2026-11-24",
-            "duration": "Sat Dec 30 1899 01:00:00 GMT-0500 (Eastern Standard Time)",
-            "category": "Movement",
-            "type": "Class",
-            "inclusion": true,
-            "participantNotes": "",
-            "imageUrl": "https://www.appsheet.com/template/gettablefileurl?appName=WingsStudio-836891300&tableName=Offerings&fileName=Offerings_Images%2FO_013.Image.155617.jpg",
-            "status": "pending close-out",
-            "statusLabel": "Pending Close-Out",
-            "statusColor": "#0d47a1",
-            "borderColor": "#90caf9",
-            "isPast": true,
-            "isPublic": true,
-            "isFull": false,
-            "isCancelled": false,
-            "tiers": [],
-            "accessOnly": false,
-            "registrationFormType": "Standard",
-            "externalUrl": "",
-            "paymentOption": "USD",
-            "hiddenFromSite": false,
-            "sessionId": "O_013",
-            "donation": false,
-            "free": false,
-            "payElsewhere": false,
-            "suggestedAmount": 20,
-            "instanceTitle": "WheelDancer & Caregiver"
-          },
           {
             "instanceId": "OI_311",
             "title": "WheelDancer & Caregiver",
